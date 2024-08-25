@@ -1,0 +1,7 @@
+{
+  "name": "AppMarket",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
