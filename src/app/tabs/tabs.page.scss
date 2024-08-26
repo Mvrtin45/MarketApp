@@ -1,1 +1,28 @@
-
+ion-tabs {
+    ion-tab-bar {
+      background-color: #7e7474; 
+      border-top: 1px solid #333; 
+  
+      ion-tab-button {
+        --color: #333; 
+        --color-selected: #ffffff; 
+        --ripple-color: #374049; 
+        --background: transparent; 
+  
+        ion-icon {
+          font-size: 24px; 
+        }
+  
+        ion-label {
+          font-size: 14px; 
+          font-weight: bold; 
+        }
+  
+        &.tab-selected {
+          background-color: #333; 
+          border-radius: 10px; 
+        }
+      }
+    }
+  }
+  
