@@ -1,13 +1,22 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Carrito</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Carrito</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button fill="clear">
+          Carrito
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button fill="clear">
+          Favoritos
+          <ion-icon slot="end" name="bookmark-sharp"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="center-content">
+    <ion-icon name="bag-outline"></ion-icon>
+    <ion-label>Tu Carrito De Compras Esta Vacio</ion-label>
+  </div>
 </ion-content>
