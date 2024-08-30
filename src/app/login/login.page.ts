@@ -23,7 +23,7 @@ export class LoginPage implements OnInit {
 
   ingresar() {
     if (this.formularioLogin.valid) {
-      // Maneja el inicio de sesión aquí
+      
       console.log('Formulario válido:', this.formularioLogin.value);
     } else {
       console.log('Formulario inválido');
