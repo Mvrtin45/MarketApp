@@ -2,10 +2,14 @@
   <div class="center-content">
     <ion-card class="login-card">
       <ion-card-header>
-        <ion-card-title>Iniciar sesión</ion-card-title>
+        <ion-card-title>Registro</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <form [formGroup]="formularioLogin" (ngSubmit)="ingresar()">
+        <form [formGroup]="formularioRegistro" (ngSubmit)="registrar()">
+          <ion-item>
+            <ion-label position="floating">Nombre</ion-label>
+            <ion-input formControlName="nombre"></ion-input>
+          </ion-item>
           <ion-item>
             <ion-label position="floating">Correo</ion-label>
             <ion-input formControlName="email" type="email"></ion-input>
@@ -14,16 +18,18 @@
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input formControlName="password" type="password"></ion-input>
           </ion-item>
+          <ion-item>
+            <ion-label position="floating">Fecha de Nacimiento (dd/mm/yyyy)</ion-label>
+            <ion-input formControlName="fechaNacimiento" type="text"></ion-input>
+          </ion-item>
           <ion-button class="custom-button" expand="block" type="submit">
-            Ingresar
+            Registrarse
           </ion-button>
+          <ion-note color="danger" *ngIf="formularioRegistro.get('fechaNacimiento')?.hasError('formatoFecha')">
+            El formato de la fecha debe ser dd/mm/yyyy.
+          </ion-note>
         </form>
-        <ion-button class="register-button" expand="block" [routerLink]="['/register']">
-          Registrarse
-        </ion-button>
       </ion-card-content>
     </ion-card>
   </div>
 </ion-content>
-
-

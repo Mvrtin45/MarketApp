@@ -23,10 +23,6 @@ const routes: Routes = [
     loadChildren: () => import('./jeans/jeans.module').then( m => m.JeansPageModule)
   },
   {
-    path: 'registro',
-    loadChildren: () => import('./registro/registro.module').then( m => m.RegistroPageModule)
-  },
-  {
     path: 'chaquetas',
     loadChildren: () => import('./chaquetas/chaquetas.module').then( m => m.ChaquetasPageModule)
   },
@@ -37,6 +33,10 @@ const routes: Routes = [
   {
     path: 'poleras',
     loadChildren: () => import('./poleras/poleras.module').then( m => m.PolerasPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
   }
 ];
 @NgModule({
