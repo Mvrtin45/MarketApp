@@ -1,5 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',

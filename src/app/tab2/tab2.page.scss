@@ -14,6 +14,20 @@ ion-header {
 ion-content {
     --background: #ffffff;
     padding: 16px;
+    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
   
     h1 {
       font-size: 1.8em;
@@ -62,7 +76,7 @@ ion-content {
   
               ion-label {
                 font-size: 1.2em;
-                color: #333;
+                color: #ffffff;
                 font-weight: bold;
               }
   

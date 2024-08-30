@@ -1,3 +1,6 @@
+ion-content{
+  --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+}
 ion-grid {
     ion-row {
       ion-col {
@@ -25,8 +28,8 @@ ion-grid {
             font-weight: bold; 
           }
           ion-icon {
-            font-size: 20px; /* Tamaño del icono */
-            margin-bottom: 15px; /* Espacio entre el icono y el texto */
+            font-size: 20px; 
+            margin-bottom: 15px; 
           }
         }
       }
@@ -34,17 +37,17 @@ ion-grid {
   }
   .center-content {
     display: flex;
-    flex-direction: column; /* Alinea el icono y el texto en una columna */
-    justify-content: center; /* Centra verticalmente */
-    align-items: center; /* Centra horizontalmente */
-    height: 100vh; /* Ocupa toda la altura de la pantalla */
-    text-align: center; /* Centra el texto */
-    color: #000; /* Color negro para el texto y el icono */
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    text-align: center; 
+    color: #000; 
   }
   
   ion-icon {
-    font-size: 60px; /* Tamaño del icono */
-    margin-bottom: 15px; /* Espacio entre el icono y el texto */
+    font-size: 60px; 
+    margin-bottom: 15px; 
   }
   
   

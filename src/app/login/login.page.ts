@@ -12,7 +12,7 @@ export class LoginPage implements OnInit {
   constructor(private fb: FormBuilder) {
     
     this.formularioLogin = this.fb.group({
-      correo: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
   }

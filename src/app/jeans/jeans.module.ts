@@ -4,18 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CarritoPageRoutingModule } from './carrito-routing.module';
+import { JeansPageRoutingModule } from './jeans-routing.module';
 
-import { CarritoPage } from './carrito.page';
+import { JeansPage } from './jeans.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CarritoPageRoutingModule,
-    
+    JeansPageRoutingModule
   ],
-  declarations: [CarritoPage]
+  declarations: [JeansPage]
 })
-export class CarritoPageModule {}
+export class JeansPageModule {}

@@ -2,12 +2,12 @@
   <ion-grid>
     <ion-row>
       <ion-col>
-        <ion-button fill="clear" id="top-button" [routerLink]="['/carrito']">
+        <ion-button fill="clear" [routerLink]="['/carrito']">
           Carrito
         </ion-button>
       </ion-col>
       <ion-col>
-        <ion-button fill="clear" [routerLink]="['/favoritos']">
+        <ion-button fill="clear">
           Favoritos
           <ion-icon slot="end" name="bookmark-sharp"></ion-icon>
         </ion-button>
@@ -17,8 +17,6 @@
 
   <div class="center-content">
     <ion-icon name="bag-outline"></ion-icon>
-    <ion-label>Tu Carrito De Compras Esta Vacio</ion-label>
+    <ion-label>Inicie Sesión Para Acceder a Favoritos</ion-label>
   </div>
-
-  <app-barranav name="carrito with tab"></app-barranav>
 </ion-content>

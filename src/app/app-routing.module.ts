@@ -13,6 +13,30 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'favoritos',
+    loadChildren: () => import('./favoritos/favoritos.module').then( m => m.FavoritosPageModule)
+  },
+  {
+    path: 'jeans',
+    loadChildren: () => import('./jeans/jeans.module').then( m => m.JeansPageModule)
+  },
+  {
+    path: 'registro',
+    loadChildren: () => import('./registro/registro.module').then( m => m.RegistroPageModule)
+  },
+  {
+    path: 'chaquetas',
+    loadChildren: () => import('./chaquetas/chaquetas.module').then( m => m.ChaquetasPageModule)
+  },
+  {
+    path: 'zapatillas',
+    loadChildren: () => import('./zapatillas/zapatillas.module').then( m => m.ZapatillasPageModule)
+  },
+  {
+    path: 'poleras',
+    loadChildren: () => import('./poleras/poleras.module').then( m => m.PolerasPageModule)
   }
 ];
 @NgModule({
