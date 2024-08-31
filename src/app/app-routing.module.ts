@@ -41,6 +41,30 @@ const routes: Routes = [
   {
     path: 'perfil',
     loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
+  {
+    path: 'zapasblackcat',
+    loadChildren: () => import('./zapasblackcat/zapasblackcat.module').then( m => m.ZapasblackcatPageModule)
+  },
+  {
+    path: 'jeansae',
+    loadChildren: () => import('./jeansae/jeansae.module').then( m => m.JeansaePageModule)
+  },
+  {
+    path: 'chaquetaamiri',
+    loadChildren: () => import('./chaquetaamiri/chaquetaamiri.module').then( m => m.ChaquetaamiriPageModule)
+  },
+  {
+    path: 'polerabasicasf',
+    loadChildren: () => import('./polerabasicasf/polerabasicasf.module').then( m => m.PolerabasicasfPageModule)
+  },
+  {
+    path: 'subirpubli',
+    loadChildren: () => import('./subirpubli/subirpubli.module').then( m => m.SubirpubliPageModule)
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.module').then( m => m.AdminPageModule)
   }
 ];
 @NgModule({
