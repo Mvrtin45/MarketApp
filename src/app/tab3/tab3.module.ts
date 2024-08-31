@@ -7,14 +7,18 @@ import { ExploreContainerComponentModule } from '../explore-container/explore-co
 
 import { Tab3PageRoutingModule } from './tab3-routing.module';
 
+import {MatCardModule} from '@angular/material/card';
+
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    Tab3PageRoutingModule
+    Tab3PageRoutingModule,
+    MatCardModule
   ],
   declarations: [Tab3Page]
 })
 export class Tab3PageModule {}
+

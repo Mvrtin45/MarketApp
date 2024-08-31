@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ChaquetaamiriPageRoutingModule } from './chaquetaamiri-routing.module';
 
 import { ChaquetaamiriPage } from './chaquetaamiri.page';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ChaquetaamiriPageRoutingModule
+    ChaquetaamiriPageRoutingModule,
+    MatCardModule
   ],
   declarations: [ChaquetaamiriPage]
 })

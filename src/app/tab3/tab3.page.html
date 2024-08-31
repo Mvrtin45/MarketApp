@@ -1,17 +1,128 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 3
+    <ion-title ion-title color="light">
+      2Market
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
+  <br>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="3" size-sm="3">
+        <ion-button fill="clear" [routerLink]="['/jeans']">
+          Ofertas
+        </ion-button>
+      </ion-col>
+      <ion-col size="3" size-sm="3">
+        <ion-button fill="clear" [routerLink]="['/zapatillas']">
+          Metodos de Pago
+        </ion-button>
+      </ion-col>
+      <ion-col size="3" size-sm="3">
+        <ion-button fill="clear" [routerLink]="['/poleras']">
+          Cambiar el Idioma
+        </ion-button>
+      </ion-col>
+      <ion-col size="3" size-sm="3">
+        <ion-button fill="clear" [routerLink]="['/poleras']">
+          Ayuda y Soporte
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <br>
+  <h2>Ultimas Publicaciones</h2>
+  <br>
+  <!--CARD 1-->
+  <mat-card class="custom-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <ion-button class="title-button" fill="clear" [routerLink]="['/cargocorteiz']">Pantalones Cargo Corteiz</ion-button>
+        </mat-card-title>
+        <mat-card-subtitle>Estado: Usado</mat-card-subtitle>
+        <mat-card-subtitle>$19.990</mat-card-subtitle>
+        <img mat-card-sm-image src="../assets/icon/cargocorteiz.jpg">
+      </mat-card-title-group>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+      Se vende por no uso, soy de Santiago. 
+    </mat-card-content>
+  </mat-card>
+  <!--CARD 2-->
+  <mat-card class="custom-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <ion-button class="title-button" fill="clear" [routerLink]="['/zapasretro1']">Zapatillas Retro 1</ion-button>
+        </mat-card-title>
+        <mat-card-subtitle>Estado: Nuevo</mat-card-subtitle>
+        <mat-card-subtitle>$60.000</mat-card-subtitle>
+        <img mat-card-sm-image src="../assets/icon/retro1.jpg">
+      </mat-card-title-group>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+     Nuevas, las pedí y que me quedaron chicas. Soy de Puerto Montt.
+    </mat-card-content>
+  </mat-card>
+  <!--CARD 3-->
+  <mat-card class="custom-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <ion-button class="title-button" fill="clear" [routerLink]="['/zapatosdevestir']">Zapatos de Vestir</ion-button>
+        </mat-card-title>
+        <mat-card-subtitle>Estado: Usado</mat-card-subtitle>
+        <mat-card-subtitle>$30.000</mat-card-subtitle>
+        <img mat-card-sm-image src="../assets/icon/zapatosvestir.jpg">
+      </mat-card-title-group>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+      Los usé una vez, como nuevas. Más información al DM. Soy de Santiago.
+    </mat-card-content>
+  </mat-card>
+  <br>
+  <h2>Hombre</h2>
+  <br>
+  <!--CARD 4-->
+  <mat-card class="custom-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <ion-button class="title-button" fill="clear" [routerLink]="['/polerabasicasf']">Polera Basica Slim Fit</ion-button>
+        </mat-card-title>
+        <mat-card-subtitle>Estado: Nuevo</mat-card-subtitle>
+        <mat-card-subtitle>$23.990</mat-card-subtitle>
+        <img mat-card-sm-image src="../assets/icon/polerabasica.jpg">
+      </mat-card-title-group>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+      Es una polera de segunda mano que todavía está en muy buen estado. 
+      Tiene un estilo clásico y sigue siendo cómoda para usar a diario.
+    </mat-card-content>
+  </mat-card>
+  <!--CARD 5-->
+  <mat-card class="custom-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <ion-button class="title-button" fill="clear" [routerLink]="['/chaquetaamiri']">Chaqueta Amiri</ion-button>
+        </mat-card-title>
+        <mat-card-subtitle>Estado: Usado</mat-card-subtitle>
+        <mat-card-subtitle>$79.990</mat-card-subtitle>
+        <img mat-card-sm-image src="../assets/icon/chaquetaamiri.jpg">
+      </mat-card-title-group>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+     Solo un uso, como nueva. Soy de Copiapó.
+    </mat-card-content>
+  </mat-card>
   <app-explore-container name="Tab 3 page"></app-explore-container>
 </ion-content>

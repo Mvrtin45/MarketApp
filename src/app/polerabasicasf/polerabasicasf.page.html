@@ -1,13 +1,35 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>polerabasicasf</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title ion-title color="light">
+      2Market
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">polerabasicasf</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <mat-card class="product-details-card" appearance="outlined">
+    <img mat-card-image src="../assets/icon/polerabasica.jpg" alt="Polera Basica Slim Fit">
+    
+    <mat-card-header>
+      <mat-card-title>Polera Básica Slim Fit</mat-card-title>
+      <mat-card-subtitle>Estado: Nuevo</mat-card-subtitle>
+      <mat-card-subtitle>$23.990</mat-card-subtitle>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+      <p> Es una polera de segunda mano que todavía está en muy buen estado. 
+        Tiene un estilo clásico y sigue siendo cómoda para usar a diario.</p>
+      <p><strong>Ubicación:</strong> Puerto Montt</p> 
+      <p><strong>Talla:</strong> M</p>
+      <p><strong>Color:</strong> Negro</p>
+    </mat-card-content>
+    
+    <mat-card-actions>
+      <ion-button expand="block" >Añadir al Carrito</ion-button>
+      <ion-button expand="block" >Contactar Vendedor</ion-button>
+    </mat-card-actions>
+  </mat-card>
 </ion-content>

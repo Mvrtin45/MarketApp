@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { JeansaePageRoutingModule } from './jeansae-routing.module';
 
 import { JeansaePage } from './jeansae.page';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    JeansaePageRoutingModule
+    JeansaePageRoutingModule,
+    MatCardModule
   ],
   declarations: [JeansaePage]
 })
