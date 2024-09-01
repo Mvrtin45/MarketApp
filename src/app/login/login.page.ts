@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras, ActivatedRoute} from '@angular/router';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -10,50 +10,61 @@ import { AlertController } from '@ionic/angular';
 })
 export class LoginPage implements OnInit {
   formularioLogin: FormGroup;
+  correo: string = '';
+  telefono!: number;
+  nombre: string = "";
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private activatedRoute: ActivatedRoute
   ) {
     this.formularioLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
+    });
+
+    this.activatedRoute.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        this.nombre = this.router.getCurrentNavigation()?.extras?.state?.["nom"];
+        this.correo = this.router.getCurrentNavigation()?.extras?.state?.["cor"];
+        this.telefono = this.router.getCurrentNavigation()?.extras?.state?.["telef"];
+
+        // Prellenar el campo de correo en el formulario
+        this.formularioLogin.patchValue({
+          email : this.correo
+        });
+      }
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   async ingresar() {
     if (this.formularioLogin.valid) {
-      // Obtener los datos del local storage
-      const storedData = localStorage.getItem('userData');
-      if (storedData) {
-        const userData = JSON.parse(storedData);
-        const formEmail = this.formularioLogin.get('email')?.value;
-        const formPassword = this.formularioLogin.get('password')?.value;
-        
-        // Aquí podrías validar el email y la contraseña contra los datos almacenados, si es necesario
-        if (formEmail === userData.email) {
-          // Mostrar alerta de éxito
-          const alert = await this.alertController.create({
-            header: 'Éxito',
-            message: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
-            buttons: ['OK']
-          });
+      const formEmail = this.formularioLogin.get('email')?.value;
+      const formPassword = this.formularioLogin.get('password')?.value;
 
-          await alert.present();
+      
+      // Simular validación exitosa del inicio de sesión
+      const alert = await this.alertController.create({
+        header: 'Éxito',
+        message: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
+        buttons: ['OK']
+      });
 
-          // Redirigir al perfil después de que el usuario cierre la alerta
-          alert.onDidDismiss().then(() => {
-            this.router.navigate(['/perfil']);
-          });
-        } else {
-          console.log('Correo electrónico o contraseña incorrectos');
-        }
-      } else {
-        console.log('No hay datos de usuario almacenados');
-      }
+      await alert.present();
+
+      // Navegar al perfil y pasar el correo como NavigationExtras
+      alert.onDidDismiss().then(() => {
+        const navigationExtras: NavigationExtras = {
+          queryParams: {
+            correo : formEmail
+          }
+        };
+        this.router.navigate(['/tabs/perfil'], navigationExtras);
+      });
     } else {
       console.log('Formulario inválido');
     }

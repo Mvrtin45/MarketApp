@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit,  } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
@@ -7,22 +7,31 @@ import { Router } from '@angular/router';
   styleUrls: ['./perfil.page.scss'],
 })
 export class PerfilPage implements OnInit {
-  userData: any;
+  correo: string = "";
+  telefono!: number;
+  nombre: string = "";
 
-  constructor(private router: Router) { }
+
+  constructor(private activatedRoute: ActivatedRoute, 
+    private router: Router) {
+      this.activatedRoute.queryParams.subscribe(params => {
+
+        if(this.router.getCurrentNavigation()?.extras.state){
+        this.nombre = this.router.getCurrentNavigation()?.extras?.state?.
+        ["nom"];
+        this.correo = this.router.getCurrentNavigation()?.extras?.state?.
+        ["cor"];
+        this.telefono = this.router.getCurrentNavigation()?.extras?.state?.
+        ["telef"];
+        
+      }
+    });
+    }
 
   ngOnInit() {
-    // Obtener datos del almacenamiento local
-    const storedData = localStorage.getItem('userData');
-    if (storedData) {
-      this.userData = JSON.parse(storedData);
-    } else {
-      console.log('No hay datos de usuario almacenados');
-    }
   }
 
   logout() {
-    
-    this.router.navigate(['/login']);
+    this.router.navigate(['/tabs/tab1']);
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -10,6 +10,9 @@ import { AlertController } from '@ionic/angular';
 })
 export class RegisterPage implements OnInit {
   formularioRegistro: FormGroup;
+  telefono!: number ;
+  correo: string = "";
+  nombre: string ="";
 
   constructor(
     private fb: FormBuilder,
@@ -28,14 +31,13 @@ export class RegisterPage implements OnInit {
 
   async registrar() {
     if (this.formularioRegistro.valid) {
-      const userData = {
-        email: this.formularioRegistro.get('email')?.value,
-        name: this.formularioRegistro.get('name')?.value,
-        phone: this.formularioRegistro.get('phone')?.value
+      let navigationExtras: NavigationExtras = {
+        state: {
+          cor : this.correo,
+          telef : this.telefono,
+          nom : this.nombre
+        }
       };
-
-      // Guardar datos en el almacenamiento local
-      localStorage.setItem('userData', JSON.stringify(userData));
 
       // Mostrar alerta de éxito
       const alert = await this.alertController.create({
@@ -48,7 +50,7 @@ export class RegisterPage implements OnInit {
 
       
       alert.onDidDismiss().then(() => {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], navigationExtras);
       });
     } else {
       console.log('Formulario inválido');
