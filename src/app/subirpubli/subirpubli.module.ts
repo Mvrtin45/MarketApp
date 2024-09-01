@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { SubirpubliPageRoutingModule } from './subirpubli-routing.module';
 
 import { SubirpubliPage } from './subirpubli.page';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SubirpubliPageRoutingModule
+    SubirpubliPageRoutingModule,
+    MatCardModule
   ],
   declarations: [SubirpubliPage]
 })
