@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['tab1.page.scss'],
 })
 export class Tab1Page {
-  images: string[] = [
+  imagenes: string[] = [
     '../assets/icon/vapormax.jpg',
     '../assets/icon/poleraudechile.jpg',
     '../assets/icon/airforceblancas.jpg',
@@ -21,7 +21,7 @@ export class Tab1Page {
     '../assets/icon/poleracolocolo.jpg'
   ];
 
-  descriptions: string[] = [
+  descripciones: string[] = [
     'Las Nike Air VaporMax son una línea de zapatillas deportivas fabricadas por la marca Nike que se caracterizan por su suela exterior realizada con la tecnología de amortiguación llamada "Air".',
     'Polera oficial de la Universidad de Chile, diseñada para los fanáticos y estudiantes del equipo.',
     'Las icónicas zapatillas Air Force 1 en color blanco, un clásico atemporal que combina elegancia y comodidad.',
@@ -39,24 +39,24 @@ export class Tab1Page {
 
   constructor(private router: Router) {}
 
-  get currentImage(): string {
-    return this.images[this.currentIndex];
+  get currentImagen(): string {
+    return this.imagenes[this.currentIndex];
   }
 
-  get currentDescription(): string {
-    return this.descriptions[this.currentIndex];
+  get currentDescripcion(): string {
+    return this.descripciones[this.currentIndex];
   }
 
   prevSlide() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
     } else {
-      this.currentIndex = this.images.length - 1;
+      this.currentIndex = this.imagenes.length - 1;
     }
   }
 
   nextSlide() {
-    if (this.currentIndex < this.images.length - 1) {
+    if (this.currentIndex < this.imagenes.length - 1) {
       this.currentIndex++;
     } else {
       this.currentIndex = 0;
