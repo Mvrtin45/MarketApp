@@ -1,13 +1,66 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>admin</ion-title>
+    <ion-title>Admin</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">admin</ion-title>
+      <ion-title size="large">Admin</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-list>
+    
+    <ion-item>
+      <ion-label>Eliminar Perfil</ion-label>
+      <ion-input [(ngModel)]="profileIdToDelete" placeholder="ID del perfil"></ion-input>
+      <ion-button (click)="deleteProfile()">Eliminar</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Eliminar Publicación</ion-label>
+      <ion-input [(ngModel)]="postIdToDelete" placeholder="ID de la publicación"></ion-input>
+      <ion-button (click)="deletePost()">Eliminar</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Restringir Contenido</ion-label>
+      <ion-input [(ngModel)]="contentIdToRestrict" placeholder="ID del contenido"></ion-input>
+      <ion-button (click)="restrictContent()">Restringir</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Usuarios</ion-label>
+      <ion-button (click)="viewUsers()">Ver Usuarios</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Publicaciones</ion-label>
+      <ion-button (click)="viewPosts()">Ver Publicaciones</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Reportes</ion-label>
+      <ion-button (click)="viewReports()">Ver Reportes</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Configuración</ion-label>
+      <ion-button (click)="openSettings()">Configuración</ion-button>
+    </ion-item>
+
+    
+    <ion-item>
+      <ion-label>Estadísticas</ion-label>
+      <ion-button (click)="viewStatistics()">Ver Estadísticas</ion-button>
+    </ion-item>
+  </ion-list>
 </ion-content>

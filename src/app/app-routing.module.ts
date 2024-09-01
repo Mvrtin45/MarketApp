@@ -121,6 +121,14 @@ const routes: Routes = [
   {
     path: 'zapatosvestir',
     loadChildren: () => import('./zapatosvestir/zapatosvestir.module').then( m => m.ZapatosvestirPageModule)
+  },
+  {
+    path: 'metodopago',
+    loadChildren: () => import('./metodopago/metodopago.module').then( m => m.MetodopagoPageModule)
+  },
+  {
+    path: 'ayudasoporte',
+    loadChildren: () => import('./ayudasoporte/ayudasoporte.module').then( m => m.AyudasoportePageModule)
   }
 ];
 @NgModule({
