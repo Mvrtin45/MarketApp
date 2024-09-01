@@ -1,4 +1,15 @@
 ion-header {
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    
+    .centered-title {
+      text-align: center;
+      width: 100%;
+    }
+  }
+}
+ion-header {
     ion-toolbar {
       --background: #7e7474;
       --color: #ffffff;

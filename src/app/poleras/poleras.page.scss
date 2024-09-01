@@ -1,13 +1,11 @@
 ion-header {
-  ion-button {
-    --background: transparent; 
-    --color: #000000; 
-    --background-focused: #333; 
-    --background-hover: #222; 
-    --background-activated: #444; 
-
-    ion-icon {
-      font-size: 20px; 
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    
+    .centered-title {
+      text-align: center;
+      width: 100%;
     }
   }
 }
