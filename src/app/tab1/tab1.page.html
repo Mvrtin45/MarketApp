@@ -1,9 +1,27 @@
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>INICIO</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+<ion-content>
+  
+  <ion-button class="floating-button" (click)="navigateToLogin()">Iniciar sesión</ion-button>
+  <ion-button class="floating-button" (click)="navigateToMenu()">Menú</ion-button>
+
+  <div class="carousel-container">
+    <ion-button fill="clear" (click)="prevSlide()" class="arrow-button">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-button>
+
+    <ion-img [src]="currentImage" class="carousel-image"></ion-img>
+
+    <div class="description">
+      {{ currentDescription }}
+    </div>
+
+    <ion-button fill="clear" (click)="nextSlide()" class="arrow-button">
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
 </ion-content>
