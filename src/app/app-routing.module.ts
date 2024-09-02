@@ -137,6 +137,10 @@ const routes: Routes = [
   {
     path: 'bandejaentrada',
     loadChildren: () => import('./bandejaentrada/bandejaentrada.module').then( m => m.BandejaentradaPageModule)
+  },
+  {
+    path: '**',
+    loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
   }
 ];
 @NgModule({

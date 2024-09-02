@@ -32,7 +32,7 @@ export class Tab1Page {
     'Los jeans de Fashion Nova se caracterizan por tener un diseño moderno y actualizado que sigue las últimas tendencias de la moda.',
     'Prenda básica sin estampado, muy versátil y combinable con todo! Además de cómoda.',
     'Una polera de la marca Palm generalmente se caracteriza por tener un diseño moderno y casual, ideal para un look relajado pero con estilo.',
-    'Este trapero klo lo encuentras en todo lados 2x1 y andaras pasado a mierda todo el dia'
+    'Es una prenda oficial de Colo-Colo, ideal para mostrar tu pasión por el equipo con orgullo y estilo en cualquier ocasión.'
   ];
 
   currentIndex: number = 0;
