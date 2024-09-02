@@ -8,25 +8,9 @@
 
 <ion-content>
   <br>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button fill="clear" (click)="navigateToLogin()">
-          Iniciar sesión
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button fill="clear" (click)="navigateToMenu()">
-          Menú
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button fill="clear" [routerLink]="['/register']">
-          Registrarse
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <h2 class="welcome-title">
+    ¡BIENVENIDO A 2MARKET!
+  </h2>
 
   <div class="carousel-container">
     <ion-button fill="clear" (click)="prevSlide()" class="arrow-button">

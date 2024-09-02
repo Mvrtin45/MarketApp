@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Conversación con Vendedor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="chat-container">
+    <div class="chat-messages">
+      <ion-card class="message sent">
+        <ion-card-content>
+          <p>Hola, estoy interesado en el producto que tienes en venta. ¿Podrías darme más detalles?</p>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="message received">
+        <ion-card-content>
+          <p>¡Hola! Claro, el producto es una chaqueta de cuero en excelente estado. Está disponible en talla M y en color negro.</p>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="message sent">
+        <ion-card-content>
+          <p>Perfecto. ¿Cuál es el precio y cómo puedo hacer la compra?</p>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="message received">
+        <ion-card-content>
+          <p>El precio es $50,000. Puedes hacer la compra a través de nuestra plataforma en línea, y te enviaremos las instrucciones para el pago.</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-item class="chat-input">
+      <ion-input placeholder="Escribe un mensaje..."></ion-input>
+      <ion-button expand="full">Enviar</ion-button>
+    </ion-item>
+  </div>
+</ion-content>
+

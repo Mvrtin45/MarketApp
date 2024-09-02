@@ -5,6 +5,10 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },{
+    path: '',
+    redirectTo: 'register',
+    pathMatch: 'full'
   },
   {
     path: 'carrito',
@@ -129,6 +133,10 @@ const routes: Routes = [
   {
     path: 'ayudasoporte',
     loadChildren: () => import('./ayudasoporte/ayudasoporte.module').then( m => m.AyudasoportePageModule)
+  },
+  {
+    path: 'bandejaentrada',
+    loadChildren: () => import('./bandejaentrada/bandejaentrada.module').then( m => m.BandejaentradaPageModule)
   }
 ];
 @NgModule({

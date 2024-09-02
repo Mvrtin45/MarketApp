@@ -43,7 +43,7 @@ export class LoginPage implements OnInit {
 
   async ingresar() {
     if (this.formularioLogin.valid) {
-      const formEmail = this.formularioLogin.get('email')?.value;
+      const formcorreo = this.formularioLogin.get('correo')?.value;
       const formPassword = this.formularioLogin.get('password')?.value;
 
       
@@ -53,17 +53,15 @@ export class LoginPage implements OnInit {
         message: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
         buttons: ['OK']
       });
-
-      await alert.present();
-
+      
       // Navegar al perfil y pasar el correo como NavigationExtras
       alert.onDidDismiss().then(() => {
         const navigationExtras: NavigationExtras = {
           queryParams: {
-            correo : formEmail
+            correo : formcorreo
           }
         };
-        this.router.navigate(['/tabs/perfil'], navigationExtras);
+        this.router.navigate(['/tabs/tab1'], navigationExtras);
       });
     } else {
       console.log('Formulario inválido');
