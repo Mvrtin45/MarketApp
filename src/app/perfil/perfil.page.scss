@@ -1,55 +1,60 @@
 ion-header {
-    ion-toolbar {
-      --background: #7e7474;
-      --color: #ffffff;
-      
-      .centered-title {
-        text-align: center;
-        width: 100%;
-      }
-    }
-  }
-  ion-content {
-    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
-  }
-  .profile-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  .profile-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  .profile-avatar {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 15px;
-  }
-  
-  .profile-card {
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-  }
-  
-  .profile-options {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 400px;
-    margin-top: 10px;
-  
-    ion-item {
-      flex: 1;
-      display: flex;
-      justify-content: center;
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    
+    .centered-title {
       text-align: center;
+      width: 100%;
     }
   }
+}
+ion-content {
+  --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+}
+
+  /* styles.css */
+
+.profile-content {
+--padding-start: 0;
+--padding-end: 0;
+--padding-top: 0;
+--padding-bottom: 0;
+}
+
+.profile-options {
+display: flex;
+flex-direction: column;
+margin: 16px;
+}
+
+.profile-options ion-item {
+margin-bottom: 12px;
+}
+
+.profile-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+margin: 16px;
+}
+
+.profile-header {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+}
+
+.profile-avatar {
+margin-bottom: 16px;
+}
+
+.profile-card {
+width: 100%;
+max-width: 400px;
+}
+
+.centered-title {
+text-align: center;
+}

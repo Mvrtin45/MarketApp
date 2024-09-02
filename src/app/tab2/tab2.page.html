@@ -8,7 +8,7 @@
 
 <ion-content [fullscreen]="true">
   <!--TEXTO DE LA PÁGINA-->
-  <h1>¿Qué estas buscando?</h1>
+  <h1>¿Qué estás buscando?</h1>
   <br>
   <ion-grid>
     <ion-row>
@@ -32,11 +32,10 @@
   <br>
   <ion-searchbar color="medium" placeholder="Buscar"></ion-searchbar>
   <br>
-  <h2>Te Podría interesar</h2>
+  <h2>Te Podría Interesar</h2>
   <br>
   <ion-grid>
     <ion-row>
-      <!---->
       <ion-col size="6">
         <ion-card color="medium">
           <img src="../assets/icon/polerabasica.jpg" alt="Imagen centrada" />
@@ -47,17 +46,16 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$23.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showAddAlert()">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showFavoriteAlert()">
                   <ion-icon name="bookmark-sharp"></ion-icon>
                 </ion-button>
               </div>
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <!---->
       <ion-col size="6">
         <ion-card color="medium">
           <img src="../assets/icon/chaquetaamiri.jpg" alt="Imagen centrada" />
@@ -68,20 +66,18 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$79.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showAddAlert()">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showFavoriteAlert()">
                   <ion-icon name="bookmark-sharp"></ion-icon>
                 </ion-button>
               </div>
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <!---->
       <ion-col size="6">
         <ion-card color="medium">
-          <!--CARD DE ROPA-->
           <img src="../assets/icon/jeansfn.jpg" alt="Imagen centrada" />
           <ion-card-header>
             <ion-button fill="clear" [routerLink]="['/jeansae']">Jeans American Eagle</ion-button>
@@ -91,40 +87,37 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$29.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showAddAlert()">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showFavoriteAlert()">
                   <ion-icon name="bookmark-sharp"></ion-icon>
                 </ion-button>
               </div>
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <!---->
       <ion-col size="6">
         <ion-card color="medium">
-          <!--CARD DE ROPA-->
-            <img src="../assets/icon/jordan4blackcat.jpg" alt="Imagen centrada" />
+          <img src="../assets/icon/jordan4blackcat.jpg" alt="Imagen centrada" />
           <ion-card-header>
-            <ion-button fill="clear"[routerLink]="['/zapasblackcat']">Zapatillas Air Jordan Retro 4 "Black Cat"</ion-button>
+            <ion-button fill="clear" [routerLink]="['/zapasblackcat']">Zapatillas Air Jordan Retro 4 "Black Cat"</ion-button>
           </ion-card-header>
         
           <ion-card-content>
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$129.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showAddAlert()">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
-                <ion-button fill="clear">
+                <ion-button fill="clear" (click)="showFavoriteAlert()">
                   <ion-icon name="bookmark-sharp"></ion-icon>
                 </ion-button>
               </div>
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <!---->
     </ion-row>
   </ion-grid>
   <app-explore-container name="Tab 2 page"></app-explore-container>
