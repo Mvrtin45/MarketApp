@@ -16,44 +16,65 @@
     </mat-card-header>
     
     <mat-card-content>
-      <div class="input-group">
-        <label for="title">Título:</label>
-        <input id="title" type="text" placeholder="Título del producto">
-      </div>
-      
-      <div class="input-group">
-        <label for="description">Descripción:</label>
-        <textarea id="description" placeholder="Descripción del producto"></textarea>
-      </div>
-      
-      <div class="input-group">
-        <label for="price">Precio:</label>
-        <input id="price" type="number" placeholder="Precio en CLP">
-      </div>
-  
-      <div class="input-group">
-        <label for="location">Ubicación:</label>
-        <input id="location" type="text" placeholder="Ubicación">
-      </div>
-      
-      <div class="input-group">
-        <label for="size">Talla:</label>
-        <input id="size" type="text" placeholder="Talla (opcional)">
-      </div>
-      
-      <div class="input-group">
-        <label for="color">Color:</label>
-        <input id="color" type="text" placeholder="Color (opcional)">
-      </div>
-      
-      <div class="input-group">
-        <label for="image">Imagen:</label>
-        <input id="image" type="file" accept="image/*">
-      </div>
+      <form [formGroup]="formularioPublicacion" (ngSubmit)="subirPublicacion()">
+        <!-- TITULO -->
+        <div class="input-group">
+          <label for="title">Título:</label>
+          <input id="title" type="text" formControlName="title" placeholder="Título del producto">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('title')?.invalid && formularioPublicacion.get('title')?.touched">
+            El título es obligatorio y debe tener menos de 100 caracteres.
+          </ion-text>
+        </div>
+        <!-- DESCRIPCION -->
+        <div class="input-group">
+          <label for="description">Descripción:</label>
+          <textarea id="description" formControlName="description" placeholder="Descripción del producto"></textarea>
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('description')?.invalid && formularioPublicacion.get('description')?.touched">
+            La descripción es obligatoria y debe tener menos de 500 caracteres.
+          </ion-text>
+        </div>
+        <!-- PRECIO -->
+        <div class="input-group">
+          <label for="price">Precio:</label>
+          <input id="price" type="number" formControlName="price" placeholder="Precio en CLP">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('price')?.invalid && formularioPublicacion.get('price')?.touched">
+            El precio es obligatorio y debe ser un valor positivo.
+          </ion-text>
+        </div>
+        <!-- UBICACION -->
+        <div class="input-group">
+          <label for="location">Ubicación:</label>
+          <input id="location" type="text" formControlName="location" placeholder="Ubicación">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('location')?.invalid && formularioPublicacion.get('location')?.touched">
+            La ubicación es obligatoria.
+          </ion-text>
+        </div>
+        <!-- TALLA -->
+        <div class="input-group">
+          <label for="size">Talla:</label>
+          <input id="size" type="text" formControlName="size" placeholder="Talla">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('size')?.invalid && formularioPublicacion.get('size')?.touched">
+            La talla es obligatoria.
+          </ion-text>
+        </div>
+        <!-- COLOR -->
+        <div class="input-group">
+          <label for="color">Color:</label>
+          <input id="color" type="text" formControlName="color" placeholder="Color">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('color')?.invalid && formularioPublicacion.get('color')?.touched">
+            El color es obligatorio.
+          </ion-text>
+        </div>
+        <!-- IMAGEN -->
+        <div class="input-group">
+          <label for="image">Imagen:</label>
+          <input id="image" type="file" formControlName="image" accept="image/*">
+        </div>
+        <!-- BOTON DE SUBIR PUBLI -->
+        <mat-card-actions>
+          <ion-button expand="full" fill="solid" color="primary" type="submit" [disabled]="formularioPublicacion.invalid">Subir Publicación</ion-button>
+        </mat-card-actions>
+      </form>
     </mat-card-content>
-  
-    <mat-card-actions>
-      <ion-button expand="full" fill="solid" color="primary">Subir Publicación</ion-button>
-    </mat-card-actions>
   </mat-card>
 </ion-content>

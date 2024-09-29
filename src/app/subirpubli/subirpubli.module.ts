@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'; 
 import { IonicModule } from '@ionic/angular';
 
 import { SubirpubliPageRoutingModule } from './subirpubli-routing.module';
-
 import { SubirpubliPage } from './subirpubli.page';
 import { MatCardModule } from '@angular/material/card';
 
@@ -15,8 +13,10 @@ import { MatCardModule } from '@angular/material/card';
     FormsModule,
     IonicModule,
     SubirpubliPageRoutingModule,
-    MatCardModule
+    MatCardModule,
+    ReactiveFormsModule 
   ],
   declarations: [SubirpubliPage]
 })
 export class SubirpubliPageModule {}
+

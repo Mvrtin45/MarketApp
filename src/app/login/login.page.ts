@@ -50,7 +50,9 @@ export class LoginPage implements OnInit {
       });
 
       await alert.present();
-      this.router.navigate(['/tabs/tab1']);
+      alert.onDidDismiss().then(() => {
+        this.router.navigate(['/tabs/tab1']);
+      });
     } else {
       // Mostrar alertas si el formulario no es válido
       const alert = await this.alertController.create({
