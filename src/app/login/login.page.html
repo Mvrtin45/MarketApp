@@ -10,10 +10,18 @@
             <ion-label position="floating">Correo</ion-label>
             <ion-input formControlName="email" type="email" [(ngModel)]="correo"></ion-input>
           </ion-item>
+          <!-- Mostrar error del correo -->
+          <ion-text color="danger" *ngIf="emailErrorMessage">
+            {{ emailErrorMessage }}
+          </ion-text>
           <ion-item>
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input formControlName="password" type="password"></ion-input>
           </ion-item>
+          <!-- Mostrar error de la contraseña -->
+          <ion-text color="danger" *ngIf="passwordErrorMessage">
+            {{ passwordErrorMessage }}
+          </ion-text>
           <ion-button class="custom-button" expand="block" type="submit">
             Ingresar
           </ion-button>

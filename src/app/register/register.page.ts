@@ -205,7 +205,8 @@ export class RegisterPage implements OnInit {
 
       // Mostrar alerta de éxito
       const alert = await this.alertController.create({
-        header: 'Registro exitoso. Redirigiendo al login...',
+        header: 'Completado',
+        message: 'Registro exitoso. Redirigiendo al login...',
         buttons: ['OK']
       });
 
@@ -215,6 +216,15 @@ export class RegisterPage implements OnInit {
       alert.onDidDismiss().then(() => {
         this.router.navigate(['/login'], navigationExtras);
       });
+    } else {
+      // Mostrar alertas si el formulario no es válido
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'Por favor, completa los campos requeridos correctamente.',
+        buttons: ['OK']
+      });
+
+      await alert.present();
     }
   }
 }
