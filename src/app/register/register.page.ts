@@ -21,10 +21,13 @@ export class RegisterPage implements OnInit {
   ) {
     this.formularioRegistro = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, 
-        Validators.minLength(8),
-        this.uppercaseValidator(),
-        this.lowercaseValidator(),
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          this.uppercaseValidator(),
+          this.lowercaseValidator(),
         this.numberValidator()]], 
       name: ['', [Validators.required]],
       phone: ['', [Validators.required, this.numbersvalidator()]]
