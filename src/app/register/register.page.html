@@ -3,36 +3,50 @@
     <ion-card class="registro-card">
       <ion-card-content>
         <form [formGroup]="formularioRegistro" (ngSubmit)="registrar()">
+          <!-- Campo de Nombre -->
           <ion-item>
             <ion-label position="floating">Nombre</ion-label>
             <ion-input formControlName="name"></ion-input>
           </ion-item>
+          <ion-text [class.visible]="nombreErrorMessage">
+            {{ nombreErrorMessage }}
+          </ion-text>
+          <!-- Campo de Correo -->
           <ion-item>
             <ion-label position="floating">Correo</ion-label>
             <ion-input formControlName="email" type="email" [(ngModel)]="correo"></ion-input>
           </ion-item>
+          <ion-text [class.visible]="emailErrorMessage">
+            {{ emailErrorMessage }}
+          </ion-text>
+          <!-- Campo de Contraseña -->
           <ion-item>
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input formControlName="password" type="password"></ion-input>
           </ion-item>
-          <!-- ALERTAS DE CONTRASEÑA -->
-          <ion-text color="danger" *ngIf="passwordErrorMessage">
+          <ion-text [class.visible]="passwordErrorMessage">
             {{ passwordErrorMessage }}
           </ion-text>
+          <!-- Campo de Confirmar Contraseña -->
+          <ion-item>
+            <ion-label position="floating">Confirmar Contraseña</ion-label>
+            <ion-input type="password" formControlName="confirmPassword"></ion-input>
+          </ion-item>
+          <ion-text [class.visible]="confirmPasswordErrorMessage">
+            {{ confirmPasswordErrorMessage }}
+          </ion-text>
+          <!-- Campo de Teléfono -->
           <ion-item>
             <ion-label position="floating">Teléfono</ion-label>
             <ion-input formControlName="phone"></ion-input>
           </ion-item>
-          <!-- ALERTA DE NUMERO DE TELEFONO -->
-          <ion-text color="danger" *ngIf="telefonoErrorMessage">
+          <ion-text [class.visible]="telefonoErrorMessage">
             {{ telefonoErrorMessage }}
           </ion-text>
+          <!-- Botón de registro -->
           <ion-button class="custom-button" expand="block" type="submit">
             Registrarse
           </ion-button>
-          <ion-button class="custom-button" expand="block" type="submit" [routerLink]="['/admin']">
-            ADMIN
-          </ion-button>          
         </form>
       </ion-card-content>
     </ion-card>
