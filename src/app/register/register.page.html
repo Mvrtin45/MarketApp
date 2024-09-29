@@ -5,7 +5,7 @@
         <form [formGroup]="formularioRegistro" (ngSubmit)="registrar()">
           <ion-item>
             <ion-label position="floating">Nombre</ion-label>
-            <ion-input formControlName="name" [(ngModel)]="nombre"></ion-input>
+            <ion-input formControlName="name"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Correo</ion-label>
@@ -15,16 +15,24 @@
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input formControlName="password" type="password"></ion-input>
           </ion-item>
+          <!-- ALERTAS DE CONTRASEÑA -->
+          <ion-text color="danger" *ngIf="passwordErrorMessage">
+            {{ passwordErrorMessage }}
+          </ion-text>
           <ion-item>
             <ion-label position="floating">Teléfono</ion-label>
-            <ion-input formControlName="phone" [(ngModel)]="telefono"></ion-input>
+            <ion-input formControlName="phone"></ion-input>
           </ion-item>
+          <!-- ALERTA DE NUMERO DE TELEFONO -->
+          <ion-text color="danger" *ngIf="telefonoErrorMessage">
+            {{ telefonoErrorMessage }}
+          </ion-text>
           <ion-button class="custom-button" expand="block" type="submit">
             Registrarse
           </ion-button>
           <ion-button class="custom-button" expand="block" type="submit" [routerLink]="['/admin']">
             ADMIN
-          </ion-button>
+          </ion-button>          
         </form>
       </ion-card-content>
     </ion-card>

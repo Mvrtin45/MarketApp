@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-admin',
@@ -10,48 +11,32 @@ export class AdminPage implements OnInit {
   postIdToDelete: string = '';
   contentIdToRestrict: string = '';
 
-  constructor() { }
+  constructor(private alertController: AlertController) { }
 
   ngOnInit() {
   }
 
   deleteProfile() {
-    console.log(`Eliminar perfil con ID: ${this.profileIdToDelete}`);
-   
+    this.presentAlert("El perfil se ha Eliminado Correctamente.");
   }
+
 
   deletePost() {
-    console.log(`Eliminar publicación con ID: ${this.postIdToDelete}`);
-   
+    this.presentAlert("Se eliminó la publicación.");
   }
+
+  
 
   restrictContent() {
-    console.log(`Restringir contenido con ID: ${this.contentIdToRestrict}`);
-   
+    this.presentAlert("Se Ha Restringido el contenido.");
   }
 
-  viewUsers() {
-    console.log('Ver todos los usuarios');
-    
-  }
+  async presentAlert(msj:string){
+    const alert = await this.alertController.create({
+      header: msj,
+      buttons: ['OK'],
+    });
 
-  viewPosts() {
-    console.log('Ver todas las publicaciones');
-    
-  }
-
-  viewReports() {
-    console.log('Ver reportes');
-    
-  }
-
-  openSettings() {
-    console.log('Abrir configuración');
-    
-  }
-
-  viewStatistics() {
-    console.log('Ver estadísticas');
-    
+    await alert.present();
   }
 }

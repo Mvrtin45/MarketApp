@@ -53,16 +53,8 @@ export class LoginPage implements OnInit {
         message: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
         buttons: ['OK']
       });
+        this.router.navigate(['/tabs/tab1']);
       
-      // Navegar al perfil y pasar el correo como NavigationExtras
-      alert.onDidDismiss().then(() => {
-        const navigationExtras: NavigationExtras = {
-          queryParams: {
-            correo : formcorreo
-          }
-        };
-        this.router.navigate(['/tabs/tab1'], navigationExtras);
-      });
     } else {
       console.log('Formulario inválido');
     }
