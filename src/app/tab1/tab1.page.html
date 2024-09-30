@@ -17,14 +17,16 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </ion-button>
 
-    <ion-img [src]="currentImagen" class="carousel-imagen"></ion-img>
-
-    <div class="descripcion">
-      {{ currentDescripcion }}
-    </div>
+    <ion-card class="carousel-card">
+      <ion-img [src]="currentImagen" class="carousel-imagen"></ion-img>
+      <div class="descripcion">
+        {{ currentDescripcion }}
+      </div>
+    </ion-card>
 
     <ion-button fill="clear" (click)="nextSlide()" class="arrow-button">
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </ion-button>
   </div>
 </ion-content>
+

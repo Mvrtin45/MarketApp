@@ -1,0 +1,62 @@
+ion-header {
+    ion-toolbar {
+      --background: #7e7474;
+      --color: #ffffff;
+  
+      ion-title {
+        text-align: center;
+        width: 100%;
+      }
+    }
+  }
+  
+  ion-content {
+    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+  }
+  
+  .edit-profile-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    margin: 20px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .form-group {
+    margin: 15px 0;
+  
+    ion-label {
+      color: #000000;
+      font-size: 1.1em;
+    }
+  
+    ion-input {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #000000;
+      border-radius: 5px;
+    }
+  }
+  
+  .save-button {
+    margin-top: 20px;
+    --background: #3880ff;
+    --color: #fff;
+    width: 100%;
+    font-weight: bold;
+  }
+  
+  /* Estilos para mantener el espacio de las alertas */
+ion-text {
+  font-size: 12px;
+  height: 20px; /* Fija una altura mínima */
+  display: flex;
+  align-items: center; /* Centrar verticalmente el texto de error */
+  visibility: hidden; /* Oculta el texto por defecto */
+}
+
+ion-text.visible {
+  visibility: visible; /* Solo se muestra cuando haya un error */
+  color: #ff0000; /* Color de texto de error */
+}
+  

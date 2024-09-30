@@ -8,8 +8,8 @@ import { Router } from '@angular/router';
 })
 export class Tab1Page {
   imagenes: string[] = [
-    '../assets/icon/vapormax.jpg',
-    '../assets/icon/poleraudechile.jpg',
+    '../assets/icon/vapormax2.jpg',
+    '../assets/icon/poleraudechile2.jpg',
     '../assets/icon/airforceblancas.jpg',
     '../assets/icon/retro3.jpg',
     '../assets/icon/campus.jpg',

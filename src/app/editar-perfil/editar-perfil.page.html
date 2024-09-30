@@ -1,0 +1,39 @@
+<ion-content class="editar-perfil-content">
+  <div class="center-content">
+    <ion-card class="editar-perfil-card">
+      <ion-card-content>
+        <form [formGroup]="formularioEditar" (ngSubmit)="guardarCambios()">
+          <!-- Campo de Nombre -->
+          <ion-item>
+            <ion-label position="floating">Nombre</ion-label>
+            <ion-input formControlName="name" [(ngModel)]="nombre"></ion-input>
+          </ion-item>
+          <ion-text [class.visible]="nombreErrorMessage">
+            {{ nombreErrorMessage }}
+          </ion-text>          
+          <!-- Campo de Correo -->
+          <ion-item>
+            <ion-label position="floating">Correo Electrónico</ion-label>
+            <ion-input formControlName="email" type="email" [(ngModel)]="correo"></ion-input>
+          </ion-item>
+          <ion-text [class.visible]="emailErrorMessage">
+            {{ emailErrorMessage }}
+          </ion-text>
+          <!-- Campo de Teléfono -->
+          <ion-item>
+            <ion-label position="floating">Teléfono</ion-label>
+            <ion-input formControlName="telefono" type="tel" [(ngModel)]="telefono"></ion-input>
+          </ion-item>
+          <ion-text [class.visible]="telefonoErrorMessage">
+            {{ telefonoErrorMessage }}
+          </ion-text>
+          <!-- Botón de guardar cambios -->
+          <ion-button class="custom-button" expand="block" type="submit">
+            Guardar Cambios
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+

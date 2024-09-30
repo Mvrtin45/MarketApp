@@ -27,10 +27,6 @@ const routes: Routes = [
     loadChildren: () => import('./jeans/jeans.module').then( m => m.JeansPageModule)
   },
   {
-    path: 'chaquetas',
-    loadChildren: () => import('./chaquetas/chaquetas.module').then( m => m.ChaquetasPageModule)
-  },
-  {
     path: 'zapatillas',
     loadChildren: () => import('./zapatillas/zapatillas.module').then( m => m.ZapatillasPageModule)
   },
@@ -137,6 +133,10 @@ const routes: Routes = [
   {
     path: 'bandejaentrada',
     loadChildren: () => import('./bandejaentrada/bandejaentrada.module').then( m => m.BandejaentradaPageModule)
+  },
+  {
+    path: 'editar-perfil',
+    loadChildren: () => import('./editar-perfil/editar-perfil.module').then( m => m.EditarPerfilPageModule)
   },
   {
     path: '**',
