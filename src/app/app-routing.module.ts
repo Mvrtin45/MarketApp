@@ -139,10 +139,6 @@ const routes: Routes = [
     loadChildren: () => import('./editar-perfil/editar-perfil.module').then( m => m.EditarPerfilPageModule)
   },
   {
-    path: 'configuracion',
-    loadChildren: () => import('./configuracion/configuracion.module').then( m => m.ConfiguracionPageModule)
-  },
-  {
     path: 'modificarcontrasena',
     loadChildren: () => import('./modificarcontrasena/modificarcontrasena.module').then( m => m.ModificarcontrasenaPageModule)
   },
