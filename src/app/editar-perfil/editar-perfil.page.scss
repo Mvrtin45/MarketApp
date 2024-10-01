@@ -45,18 +45,18 @@ ion-header {
     width: 100%;
     font-weight: bold;
   }
+
   
-  /* Estilos para mantener el espacio de las alertas */
 ion-text {
   font-size: 12px;
-  height: 20px; /* Fija una altura mínima */
+  height: 20px; 
   display: flex;
-  align-items: center; /* Centrar verticalmente el texto de error */
-  visibility: hidden; /* Oculta el texto por defecto */
+  align-items: center; 
+  visibility: hidden; 
 }
 
 ion-text.visible {
-  visibility: visible; /* Solo se muestra cuando haya un error */
-  color: #ff0000; /* Color de texto de error */
+  visibility: visible; 
+  color: #ff0000; 
 }
   

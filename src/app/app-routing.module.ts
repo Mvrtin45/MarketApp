@@ -139,6 +139,18 @@ const routes: Routes = [
     loadChildren: () => import('./editar-perfil/editar-perfil.module').then( m => m.EditarPerfilPageModule)
   },
   {
+    path: 'configuracion',
+    loadChildren: () => import('./configuracion/configuracion.module').then( m => m.ConfiguracionPageModule)
+  },
+  {
+    path: 'modificarcontrasena',
+    loadChildren: () => import('./modificarcontrasena/modificarcontrasena.module').then( m => m.ModificarcontrasenaPageModule)
+  },
+  {
+    path: 'recuperarcontrasena',
+    loadChildren: () => import('./recuperarcontrasena/recuperarcontrasena.module').then( m => m.RecuperarcontrasenaPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
   }
