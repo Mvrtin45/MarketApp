@@ -1,62 +1,71 @@
 ion-header {
-    ion-toolbar {
-      --background: #7e7474;
-      --color: #ffffff;
-  
-      ion-title {
-        text-align: center;
-        width: 100%;
-      }
-    }
-  }
-  
-  ion-content {
-    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
-  }
-  
-  .edit-profile-title {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #000000;
-    text-align: center;
-    margin: 20px 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  }
-  
-  .form-group {
-    margin: 15px 0;
-  
-    ion-label {
-      color: #000000;
-      font-size: 1.1em;
-    }
-  
-    ion-input {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: #000000;
-      border-radius: 5px;
-    }
-  }
-  
-  .save-button {
-    margin-top: 20px;
-    --background: #3880ff;
-    --color: #fff;
-    width: 100%;
-    font-weight: bold;
-  }
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
 
-  
-ion-text {
-  font-size: 12px;
-  height: 20px; 
+    .centered-title {
+      text-align: center;
+      width: 100%;
+    }
+  }
+}
+
+ion-content {
+  --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+}
+
+.editar-perfil-content {
   display: flex;
-  align-items: center; 
-  visibility: hidden; 
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  color: #000;
+}
+
+.editar-perfil-card {
+  width: 100%;
+  max-width: 350px;
+  border: 1px solid black; /* Borde negro para el card */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 10px;
+}
+
+ion-card-title {
+  text-align: center;
+  font-weight: bold;
+  color: #000; /* Texto negro */
+}
+
+ion-button.custom-button {
+  --background: #000; /* Fondo negro */
+  --color: #fff; /* Texto blanco */
+  font-weight: bold;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+ion-item {
+  --background: transparent;
+}
+
+ion-label {
+  color: #000; /* Color del texto en negro */
+}
+
+ion-input {
+  --color: #000; /* Texto de entrada en negro */
 }
 
 ion-text.visible {
-  visibility: visible; 
-  color: #ff0000; 
+  color: red; /* Mensaje de error visible en rojo */
 }
-  
