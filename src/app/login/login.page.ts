@@ -43,16 +43,31 @@ export class LoginPage implements OnInit {
       const formcorreo = this.formularioLogin.get('email')?.value;
       const formPassword = this.formularioLogin.get('password')?.value;
 
-      // Simular validación exitosa del inicio de sesión
-      const alert = await this.alertController.create({
-        header: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
-        buttons: ['OK']
-      });
+      // Verificar credenciales para administrador
+      if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
+  
+        const alert = await this.alertController.create({
+          header: 'Inicio de sesión exitoso.',
+          message: 'Redirigiendo al apartado de administrador...',
+          buttons: ['OK']
+        });
 
-      await alert.present();
-      alert.onDidDismiss().then(() => {
-        this.router.navigate(['/tabs/tab1']);
-      });
+        await alert.present();
+        alert.onDidDismiss().then(() => {
+          this.router.navigate(['/admin']); 
+        });
+      } else {
+        // Validación para usuario normal
+        const alert = await this.alertController.create({
+          header: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
+          buttons: ['OK']
+        });
+
+        await alert.present();
+        alert.onDidDismiss().then(() => {
+          this.router.navigate(['/tabs/tab1']);
+        });
+      }
     } else {
       // Mostrar alertas si el formulario no es válido
       const alert = await this.alertController.create({
