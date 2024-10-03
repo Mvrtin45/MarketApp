@@ -147,6 +147,14 @@ const routes: Routes = [
     loadChildren: () => import('./recuperarcontrasena/recuperarcontrasena.module').then( m => m.RecuperarcontrasenaPageModule)
   },
   {
+    path: 'admin-usuarios',
+    loadChildren: () => import('./admin-usuarios/admin-usuarios.module').then( m => m.AdminUsuariosPageModule)
+  },
+  {
+    path: 'admin-publicaciones',
+    loadChildren: () => import('./admin-publicaciones/admin-publicaciones.module').then( m => m.AdminPublicacionesPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
   }
