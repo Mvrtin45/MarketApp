@@ -67,11 +67,10 @@ ion-content {
     ion-row {
       ion-col {
         padding: 0 9px;
+        text-align: center; // Centra el contenido dentro de cada columna
         ion-button {
           --color: #000000;
-          ion-icon {
-            font-size: 20px;
-          }
+          padding: 0 10px;  // Añade un poco de espacio a los lados
         }
       }
     }
