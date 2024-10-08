@@ -115,3 +115,17 @@ h2 {
   margin-bottom: 10px;
   text-align: center;
 }
+
+ion-grid {
+  ion-row {
+    ion-col {
+      padding: 0 10px;
+      ion-button {
+        --color: #000000;
+        ion-icon {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}
