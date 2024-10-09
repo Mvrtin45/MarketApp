@@ -20,49 +20,49 @@
         <!-- TITULO -->
         <div class="input-group">
           <label for="title">Título:</label>
-          <input id="title" type="text" formControlName="title" placeholder="Título del producto">
+          <input id="title" type="text" formControlName="title" placeholder="Título del producto" >
           <ion-text color="danger" *ngIf="formularioPublicacion.get('title')?.invalid && formularioPublicacion.get('title')?.touched">
-            El título es obligatorio y debe tener menos de 100 caracteres.
+            {{ getErrorMessage('title') }}
           </ion-text>
         </div>
         <!-- DESCRIPCION -->
         <div class="input-group">
           <label for="description">Descripción:</label>
-          <textarea id="description" formControlName="description" placeholder="Descripción del producto"></textarea>
+          <textarea id="description" formControlName="description" placeholder="Descripción del producto" ></textarea>
           <ion-text color="danger" *ngIf="formularioPublicacion.get('description')?.invalid && formularioPublicacion.get('description')?.touched">
-            La descripción es obligatoria y debe tener menos de 500 caracteres.
+            {{ getErrorMessage('description') }}
           </ion-text>
         </div>
         <!-- PRECIO -->
         <div class="input-group">
           <label for="price">Precio:</label>
-          <input id="price" type="number" formControlName="price" placeholder="Precio en CLP">
+          <input id="price" type="number" formControlName="price" placeholder="Precio en CLP" >
           <ion-text color="danger" *ngIf="formularioPublicacion.get('price')?.invalid && formularioPublicacion.get('price')?.touched">
-            El precio es obligatorio y debe ser un valor positivo.
+            {{ getErrorMessage('price') }}
           </ion-text>
         </div>
         <!-- UBICACION -->
         <div class="input-group">
           <label for="location">Ubicación:</label>
-          <input id="location" type="text" formControlName="location" placeholder="Ubicación">
+          <input id="location" type="text" formControlName="location" placeholder="Ubicación" >
           <ion-text color="danger" *ngIf="formularioPublicacion.get('location')?.invalid && formularioPublicacion.get('location')?.touched">
-            La ubicación es obligatoria.
+            {{ getErrorMessage('location') }}
           </ion-text>
         </div>
         <!-- TALLA -->
         <div class="input-group">
           <label for="size">Talla:</label>
-          <input id="size" type="text" formControlName="size" placeholder="Talla">
+          <input id="size" type="text" formControlName="size" placeholder="Talla" >
           <ion-text color="danger" *ngIf="formularioPublicacion.get('size')?.invalid && formularioPublicacion.get('size')?.touched">
-            La talla es obligatoria.
+            {{ getErrorMessage('size') }}
           </ion-text>
         </div>
         <!-- COLOR -->
         <div class="input-group">
           <label for="color">Color:</label>
-          <input id="color" type="text" formControlName="color" placeholder="Color">
+          <input id="color" type="text" formControlName="color" placeholder="Color" >
           <ion-text color="danger" *ngIf="formularioPublicacion.get('color')?.invalid && formularioPublicacion.get('color')?.touched">
-            El color es obligatorio.
+            {{ getErrorMessage('color') }}
           </ion-text>
         </div>
         <!-- IMAGEN -->
