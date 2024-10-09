@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, NavigationExtras } from '@angular/router';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
+import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
   selector: 'app-register',
@@ -17,23 +19,15 @@ export class RegisterPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private storage: NativeStorage,
+    private bd: ServicebdService
   ) {
     this.formularioRegistro = this.fb.group({
-      email: ['', [Validators.required,
-      Validators.email]
-      ],
-      password: ['', [Validators.required,
-      Validators.minLength(8),
-      this.uppercaseValidator(),
-      this.lowercaseValidator(),
-      this.numberValidator(),
-      ]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8), this.passwordStrengthValidator()]],
       confirmPassword: ['', [Validators.required]],
-      name: [
-        '',
-        [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$')],
-      ],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$')]],
       phone: ['', [Validators.required, this.phonevalidator()]],
     }, { validator: this.matchPasswords('password', 'confirmPassword') });
   }
@@ -43,26 +37,26 @@ export class RegisterPage implements OnInit {
   // MENSAJE DE ERROR EN LA CONTRASEÑA
   get passwordErrorMessage() {
     const passwordControl = this.formularioRegistro.get('password');
-
+  
     if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('required')) {
       return 'La contraseña es obligatoria.';
     }
     if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('minlength')) {
       return 'La contraseña debe tener al menos 8 caracteres.';
     }
-    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('lowercase')) {
-      return 'La contraseña debe contener al menos una letra minúscula.';
-    }
     if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('uppercase')) {
       return 'La contraseña debe contener al menos una letra mayúscula.';
+    }
+    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('lowercase')) {
+      return 'La contraseña debe contener al menos una letra minúscula.';
     }
     if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('number')) {
       return 'La contraseña debe contener al menos un número.';
     }
-
+  
     return null;
   }
-
+  
   // MENSAJE DE ERROR EN LA CONFIRMACIÓN DE CONTRASEÑA
   get confirmPasswordErrorMessage() {
     const confirmPasswordControl = this.formularioRegistro.get('confirmPassword');
@@ -128,7 +122,7 @@ export class RegisterPage implements OnInit {
     return null;
   }
 
-  // Validador para verificar que las contraseñas coincidan
+  // Validador de contraseñas coincidentes
   matchPasswords(password: string, confirmPassword: string) {
     return (formGroup: FormGroup) => {
       const passwordControl = formGroup.controls[password];
@@ -142,6 +136,31 @@ export class RegisterPage implements OnInit {
       } else {
         confirmPasswordControl.setErrors(null);
       }
+    };
+  }
+
+  passwordStrengthValidator() {
+    return (control: any) => {
+      const value = control.value || '';
+      const errors: any = {};
+  
+      // Verificar si tiene al menos una letra mayúscula
+      if (!/[A-Z]/.test(value)) {
+        errors.uppercase = true;
+      }
+  
+      // Verificar si tiene al menos una letra minúscula
+      if (!/[a-z]/.test(value)) {
+        errors.lowercase = true;
+      }
+  
+      // Verificar si tiene al menos un número
+      if (!/[0-9]/.test(value)) {
+        errors.number = true;
+      }
+  
+      // Si hay errores, devolver el objeto de errores, de lo contrario devolver null
+      return Object.keys(errors).length > 0 ? errors : null;
     };
   }
 
@@ -171,53 +190,37 @@ export class RegisterPage implements OnInit {
     };
   }
 
-  // Validador para mayusculas en contraseña
-  uppercaseValidator() {
-    return (control: any) => {
-      const value = control.value || '';
-      return /[A-Z]/.test(value) ? null : { uppercase: true };
-    };
-  }
-
-  // Validador para minusculas en contraseña
-  lowercaseValidator() {
-    return (control: any) => {
-      const value = control.value || '';
-      return /[a-z]/.test(value) ? null : { lowercase: true };
-    };
-  }
-
-  // Validador para numeros en contraseña
-  numberValidator() {
-    return (control: any) => {
-      const value = control.value || '';
-      return /[0-9]/.test(value) ? null : { number: true };
-    };
-  }
-
   async registrar() {
     if (this.formularioRegistro.valid) {
-      let navigationExtras: NavigationExtras = {
-        state: {
-          cor: this.correo,
-        }
-      };
+      const formValues = this.formularioRegistro.value;
+      const { name, email, phone, password } = formValues;
 
-      // Mostrar alerta de éxito
-      const alert = await this.alertController.create({
-        header: 'Completado',
-        message: 'Registro exitoso. Redirigiendo al login...',
-        buttons: ['OK']
-      });
+      try {
+        // Guardar en NativeStorage
+        await this.storage.setItem('userDetails', { nombre: name, correo: email, telefono: phone });
 
-      await alert.present();
+        // Mostrar alerta de éxito
+        const alert = await this.alertController.create({
+          header: 'Completado',
+          message: 'Registro exitoso. Redirigiendo al login...',
+          buttons: ['OK']
+        });
 
+        await alert.present();
 
-      alert.onDidDismiss().then(() => {
-        this.router.navigate(['/login'], navigationExtras);
-      });
+        alert.onDidDismiss().then(() => {
+          this.router.navigate(['/login']);
+        });
+      } catch (error) {
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'No se pudo guardar los detalles del usuario. Inténtalo nuevamente.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
     } else {
-      // Mostrar alertas si el formulario no es válido
+      // Mostrar alerta si el formulario no es válido
       const alert = await this.alertController.create({
         header: 'Error',
         message: 'Por favor, completa los campos requeridos correctamente.',
