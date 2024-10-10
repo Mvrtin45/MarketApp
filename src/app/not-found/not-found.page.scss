@@ -1,0 +1,43 @@
+.not-found-content {
+    display: flex;
+    flex-direction: column; /* Organiza los elementos en una columna */
+    justify-content: space-between; /* Espacia los elementos entre el logo y el contenido inferior */
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    background: url('https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg') no-repeat center center; /* Fondo */
+    background-size: cover; /* Ajusta la imagen al tamaño de la pantalla */
+    color: #000; /* Color del texto */
+    text-align: center; /* Centra el texto */
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center; /* Centra el logo horizontalmente */
+    align-items: center; /* Centra el logo verticalmente */
+    flex-grow: 1; /* Permite que este contenedor ocupe espacio adicional */
+    padding-top: 50px; /* Espaciado desde la parte superior */
+  }
+  
+  .logo {
+    max-width: 200px; /* Tamaño máximo del logo */
+    height: auto; /* Mantiene la relación de aspecto del logo */
+  }
+  
+  .message-container {
+    text-align: center; /* Centra el texto */
+    margin-bottom: 20px; /* Espacio en la parte inferior */
+  }
+  
+  h1 {
+    font-size: 24px; /* Tamaño del título */
+    font-weight: bold; /* Negrita */
+  }
+  
+  p {
+    margin: 10px 0 20px 0; /* Espacio entre el párrafo y el botón */
+  }
+  
+  ion-button {
+    --background: #000; /* Fondo del botón en negro */
+    --color: #fff; /* Texto del botón en blanco */
+  }
+  
