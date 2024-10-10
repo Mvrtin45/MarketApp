@@ -7,10 +7,29 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">recuperarcontrasena</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="login-content">
+  <div class="center-content">
+    <ion-card class="login-card">
+      <ion-card-header>
+        <ion-card-title>Recuperar Contraseña</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form (ngSubmit)="recuperarContrasena()">
+          <ion-item>
+            <ion-label position="floating">Correo</ion-label>
+            <ion-input [(ngModel)]="correo" name="correo" type="email"></ion-input>
+          </ion-item>
+          <!-- Mensajes de error -->
+          <ion-text color="danger" *ngIf="emailErrorMessage">
+            {{ emailErrorMessage }}
+          </ion-text>
+          <ion-button class="custom-button" expand="block" type="submit">
+            Recuperar contraseña
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
+
+
