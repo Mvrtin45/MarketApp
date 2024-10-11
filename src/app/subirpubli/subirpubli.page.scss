@@ -2,14 +2,22 @@ ion-header {
   ion-toolbar {
     --background: #7e7474;
     --color: #ffffff;
+    display: flex; /* Habilita el uso de flexbox */
+    justify-content: space-between; /* Espacia el contenido */
+    align-items: center; /* Centra verticalmente */
+    position: relative; /* Necesario para posicionar elementos absolutamente */
 
-    .centered-title {
-      text-align: center;
-      width: 100%;
+    .logo {
+      position: absolute; /* Posiciona el logo de forma absoluta */
+      top: 10px; /* Espaciado desde la parte superior */
+      right: 10px; /* Espaciado desde la derecha */
+      width: 40px; /* Ajusta el tamaño del logo según sea necesario */
+      height: auto; /* Mantiene la proporción del logo */
     }
 
-    ion-back-button {
-      color: #ffffff;
+    .centered-title {
+      flex: 1; /* Asegura que el título ocupe el espacio disponible */
+      text-align: center; /* Centra el título horizontalmente */
     }
   }
 }
