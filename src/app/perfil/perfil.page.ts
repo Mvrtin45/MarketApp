@@ -13,60 +13,26 @@ export class PerfilPage implements OnInit {
   telefono!: number;
   nombre: string = ""; 
   valor: string = ""; 
-  arregloPublicacion: any = [
-    {
-      id: '',
-      titulo: '',
-      precio: '',
-      descripcion: '',
-      ubicacion: '',
-      talla: '',
-      color: '',
-    }
-  ]
+  userDetails: any = {}; // Datos del usuario para mostrar en el perfil
+  mensaje: string = ""; // Variable para mostrar mensajes de error o información
 
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, 
     private storage: NativeStorage, private alertController: AlertController) {
-    }
+  }
 
   ngOnInit() {
+    this.cargarUserDetails();
   }
 
-  crear(){
-    this.storage.setItem(this.nombre, this.valor);
-    this.presentAlert("Variable Storage Creada");
-  }
-
-  async consultarUserDetails(){
+  async cargarUserDetails(){
     try {
       const data = await this.storage.getItem('userDetails');
-      // Mostrar los detalles del usuario en una alerta
-      const alert = await this.alertController.create({
-        header: 'Detalles del Usuario',
-        message: `Nombre: ${data.nombre}<br>Correo: ${data.correo}<br>Teléfono: ${data.telefono}`,
-        buttons: ['OK']
-      });
-      await alert.present();
+      this.userDetails = data;
+      this.mensaje = ''; // Limpiar mensaje si se cargan los datos correctamente
     } catch (error) {
-      // Mostrar alerta en caso de error al obtener los datos
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'No se pudieron obtener los detalles del usuario.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      this.mensaje = 'No se pudieron obtener los detalles del usuario.'; // Mostrar mensaje de error
     }
-  }
-
-  async presentAlert(msj:string) {
-    const alert = await this.alertController.create({
-      header: 'Info',
-      message: msj,
-      buttons: ['OK'],
-    });
-
-    await alert.present();
   }
 
   logout() {

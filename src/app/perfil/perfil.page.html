@@ -32,21 +32,49 @@
       <ion-avatar class="profile-avatar">
         <img src="assets/icon/chaquetaamiri.jpg" alt="Imagen de perfil">
       </ion-avatar>
-
+  
       <ion-card class="profile-card">
         <ion-card-header>
           <ion-card-title>
-            AAAAAA
+            {{ userDetails.nombre || 'AAAAAA' }}
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <p>Correo electrónico: {{ correo || 'martin@gmail.com' }}</p>
-          <p>Teléfono: {{ telefono || '12345678' }}</p>
+          <p>Correo electrónico:</p>
+          <br>
+          <p>{{ userDetails.correo || 'martin@gmail.com' }}</p>
+          <p>Teléfono: </p>
+          <br>
+          <p>{{ userDetails.telefono || '12345678' }}</p>
         </ion-card-content>
       </ion-card>
     </div>
+  
+    <!-- Mensaje de información o error -->
+    <div *ngIf="mensaje" class="mensaje-info">
+      {{ mensaje }}
+    </div>
+  
+    <!-- Publicaciones -->
+    <div class="publicaciones-container">
+      <h3>Mis Publicaciones</h3>
+      <ion-list>
+        <!--  
+        <ion-item *ngFor="let publicacion of arregloPublicacion">
+          <ion-thumbnail slot="start">
+            <img [src]="publicacion.imagen" alt="Imagen de la publicación">
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ publicacion.titulo }}</h2>
+            <p>{{ publicacion.descripcion }}</p>
+            <p>Precio: {{ publicacion.precio }}</p>
+            <p>Ubicación: {{ publicacion.ubicacion }}</p>
+            <p>Talla: {{ publicacion.talla }}</p>
+            <p>Color: {{ publicacion.color }}</p>
+          </ion-label>
+        </ion-item>
+        -->
+      </ion-list>
+    </div>
   </div>
-
-  <ion-button expand="full" color="succes" (click)="consultarUserDetails()">Ver Detalles del Usuario</ion-button>
-  <ion-button color="success" (click)="crear()">Crear Variable Storage</ion-button>
 </ion-content>
