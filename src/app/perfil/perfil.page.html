@@ -12,27 +12,35 @@
 <ion-content class="profile-content">
   <!-- Opciones del perfil -->
   <div class="profile-options">
-    <ion-item [routerLink]="['/modificarcontrasena']">
-      <ion-icon slot="start" name="alert-circle"></ion-icon>
-      <ion-label>Modificar Contraseña</ion-label>
+    <h2 class="section-title">Opciones del Perfil</h2>
+    <ion-item button (click)="toggleMenu()">
+      <ion-icon slot="start" name="menu"></ion-icon>
+      <ion-label>Seleccionar Opción</ion-label>
+      <ion-icon slot="end" name="chevron-down"></ion-icon>
     </ion-item>
-    <ion-item [routerLink]="['/editar-perfil']">
-      <ion-icon slot="start" name="create"></ion-icon>
-      <ion-label>Editar Perfil</ion-label>
-    </ion-item>
-    <ion-item (click)="logout()">
-      <ion-icon slot="start" name="log-out"></ion-icon>
-      <ion-label>Cerrar sesión</ion-label>
-    </ion-item>
+    <ion-list *ngIf="menuOpen" class="dropdown-menu">
+      <ion-item [routerLink]="['/modificarcontrasena']">
+        <ion-icon slot="start" name="alert-circle"></ion-icon>
+        <ion-label>Modificar Contraseña</ion-label>
+      </ion-item>
+      <ion-item [routerLink]="['/editar-perfil']">
+        <ion-icon slot="start" name="create"></ion-icon>
+        <ion-label>Editar Perfil</ion-label>
+      </ion-item>
+      <ion-item (click)="logout()">
+        <ion-icon slot="start" name="log-out"></ion-icon>
+        <ion-label>Cerrar sesión</ion-label>
+      </ion-item>
+    </ion-list>
   </div>
-
   <!-- Contenedor del perfil -->
   <div class="profile-container">
+    <h2 class="section-title">Perfil</h2>
     <div class="profile-header">
       <ion-avatar class="profile-avatar">
         <img src="assets/icon/chaquetaamiri.jpg" alt="Imagen de perfil">
       </ion-avatar>
-  
+
       <ion-card class="profile-card">
         <ion-card-header>
           <ion-card-title>
@@ -40,41 +48,38 @@
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <p>Correo electrónico:</p>
-          <br>
-          <p>{{ userDetails.correo || 'martin@gmail.com' }}</p>
-          <p>Teléfono: </p>
-          <br>
-          <p>{{ userDetails.telefono || '12345678' }}</p>
+          <p>Correo electrónico:
+          {{ userDetails.correo || 'martin@gmail.com' }}</p>
+          <p>Teléfono:
+            {{ userDetails.telefono || '12345678' }}</p>
         </ion-card-content>
       </ion-card>
     </div>
-  
+
     <!-- Mensaje de información o error -->
     <div *ngIf="mensaje" class="mensaje-info">
       {{ mensaje }}
     </div>
-  
+
     <!-- Publicaciones -->
+    <h2 class="section-title">Mis Publicaciones</h2>
     <div class="publicaciones-container">
-      <h3>Mis Publicaciones</h3>
-      <ion-list>
-        <!--  
-        <ion-item *ngFor="let publicacion of arregloPublicacion">
+      <ion-list *ngIf="publicaciones.length > 0">
+        <ion-item *ngFor="let publicacion of publicaciones">
           <ion-thumbnail slot="start">
-            <img [src]="publicacion.imagen" alt="Imagen de la publicación">
+            <img [src]="publicacion.image" alt="Imagen de la publicación">
           </ion-thumbnail>
           <ion-label>
-            <h2>{{ publicacion.titulo }}</h2>
-            <p>{{ publicacion.descripcion }}</p>
-            <p>Precio: {{ publicacion.precio }}</p>
-            <p>Ubicación: {{ publicacion.ubicacion }}</p>
-            <p>Talla: {{ publicacion.talla }}</p>
+            <h2>{{ publicacion.title }}</h2>
+            <p>Descripción: {{ publicacion.description }}</p>
+            <p>Precio: {{ publicacion.price }}</p>
+            <p>Ubicación: {{ publicacion.location }}</p>
+            <p>Talla: {{ publicacion.size }}</p>
             <p>Color: {{ publicacion.color }}</p>
           </ion-label>
         </ion-item>
-        -->
       </ion-list>
+      <p *ngIf="publicaciones.length === 0">No hay publicaciones para mostrar.</p>
     </div>
   </div>
 </ion-content>

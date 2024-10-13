@@ -21,52 +21,122 @@ ion-header {
     }
   }
 }
+
 ion-content {
   --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
 }
 
-  /* styles.css */
+/* styles.css */
 
 .profile-content {
---padding-start: 0;
---padding-end: 0;
---padding-top: 0;
---padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
 .profile-options {
-display: flex;
-flex-direction: column;
-margin: 16px;
-}
+  display: flex;
+  flex-direction: column;
+  margin: 16px;
 
-.profile-options ion-item {
-margin-bottom: 12px;
+  ion-item {
+    margin-bottom: 12px;
+    --background: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente */
+    border-radius: 8px; /* Bordes redondeados */
+    transition: background 0.3s, transform 0.2s; /* Transiciones suaves */
+
+    &:hover {
+      --background: rgba(255, 255, 255, 1); /* Fondo completo al pasar el mouse */
+      transform: scale(1.02); /* Efecto de aumento */
+    }
+
+    ion-icon {
+      color: #7e7474; /* Cambia el color del ícono */
+    }
+  }
 }
 
 .profile-container {
-display: flex;
-flex-direction: column;
-align-items: center;
-margin: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px;
 }
 
 .profile-header {
-display: flex;
-flex-direction: column;
-align-items: center;
-text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .profile-avatar {
-margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .profile-card {
-width: 100%;
-max-width: 400px;
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente para la tarjeta */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  padding: 16px; /* Espaciado interno */
+
+  ion-card-title {
+    font-size: 20px; /* Tamaño de fuente del título */
+    color: #7e7474; /* Color del título */
+    font-weight: bold; /* Negrita */
+  }
 }
 
-.centered-title {
-text-align: center;
+.publicaciones-container {
+  width: 100%;
+  max-width: 800px; /* Ancho máximo del contenedor de publicaciones */
+  margin: 16px auto; /* Margen automático para centrar */
+}
+
+.publicaciones-container ion-list {
+  padding: 0; /* Elimina el padding */
+}
+
+.publicaciones-container ion-item {
+  display: flex; /* Usar flexbox para los elementos */
+  align-items: center; /* Centra verticalmente el contenido */
+  margin-bottom: 12px; /* Espacio entre publicaciones */
+  background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 16px; /* Espaciado interno */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  transition: background 0.3s; /* Transición suave al pasar el mouse */
+
+  &:hover {
+    background: rgba(255, 255, 255, 1); /* Fondo completo al pasar el mouse */
+  }
+
+  ion-thumbnail {
+    margin-right: 16px; /* Espacio a la derecha de la imagen */
+  }
+
+  ion-label {
+    h2 {
+      font-size: 18px; /* Tamaño de fuente del título de publicación */
+      margin-bottom: 4px; /* Margen inferior */
+      color: #7e7474; /* Color del título de publicación */
+    }
+
+    p {
+      margin: 4px 0; /* Margen entre párrafos */
+      color: #555; /* Color de texto */
+    }
+  }
+}
+
+.mensaje-info {
+  margin: 16px;
+  padding: 12px;
+  text-align: center;
+  color: #d9534f; /* Color para mensaje de error */
+  background-color: rgba(255, 235, 238, 0.8); /* Fondo para resaltar el mensaje */
+  border-radius: 8px; /* Bordes redondeados */
 }

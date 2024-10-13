@@ -19,11 +19,11 @@ export class SubirpubliPage implements OnInit {
     this.formularioPublicacion = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
-      price: ['', [Validators.required, Validators.min(1)]], // Precio mínimo de 1 CLP
+      price: ['', [Validators.required, Validators.min(1)]], 
       location: ['', Validators.required],
       size: ['', Validators.required],
       color: ['', Validators.required],
-      image: [null, Validators.required] // Imagen obligatoria
+      image: [null, Validators.required] // Cambia el tipo de imagen a File
     });
   }
 
@@ -32,35 +32,39 @@ export class SubirpubliPage implements OnInit {
   // Envío del formulario
   async subirPublicacion() {
     if (this.formularioPublicacion.valid) {
-      const formData = new FormData();
+      const nuevaPublicacion = {
+        title: this.formularioPublicacion.get('title')!.value,
+        description: this.formularioPublicacion.get('description')!.value,
+        price: this.formularioPublicacion.get('price')!.value,
+        location: this.formularioPublicacion.get('location')!.value,
+        size: this.formularioPublicacion.get('size')!.value,
+        color: this.formularioPublicacion.get('color')!.value,
+        image: this.formularioPublicacion.get('image')!.value,
+      };
 
-      // Añadimos los datos del formulario al formData
-      formData.append('title', this.formularioPublicacion.get('title')!.value);
-      formData.append('description', this.formularioPublicacion.get('description')!.value);
-      formData.append('price', this.formularioPublicacion.get('price')!.value);
-      formData.append('location', this.formularioPublicacion.get('location')!.value);
-      formData.append('size', this.formularioPublicacion.get('size')!.value);
-      formData.append('color', this.formularioPublicacion.get('color')!.value);
-      formData.append('image', this.formularioPublicacion.get('image')!.value);
+      // Guardar en local storage
+      let publicaciones = JSON.parse(localStorage.getItem('publicaciones') || '[]');
+      publicaciones.push(nuevaPublicacion);
+      localStorage.setItem('publicaciones', JSON.stringify(publicaciones));
 
-      // Simulación de subida exitosa
+      // Mostrar alerta de éxito
       const alert = await this.alertController.create({
         header: 'Publicación exitosa',
+        message: 'Tu publicación ha sido subida con éxito.',
         buttons: ['OK']
       });
       
       await alert.present();
       alert.onDidDismiss().then(() => {
-        this.router.navigate(['/tabs/perfil']);
+        this.router.navigate(['/tabs/tab1']);
       });
     } else {
-      // Mostrar alerta si el formulario es inválido
       const alert = await this.alertController.create({
         header: 'Formulario inválido',
         message: 'Por favor, revise los campos y corrija los errores.',
         buttons: ['OK']
       });
-
+  
       await alert.present();
     }
   }

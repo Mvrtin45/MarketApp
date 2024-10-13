@@ -1,4 +1,4 @@
-import { Component, OnInit,  } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
@@ -9,22 +9,30 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./perfil.page.scss'],
 })
 export class PerfilPage implements OnInit {
+  menuOpen: boolean = false;
   correo: string = "";
   telefono!: number;
   nombre: string = ""; 
-  valor: string = ""; 
   userDetails: any = {}; // Datos del usuario para mostrar en el perfil
   mensaje: string = ""; // Variable para mostrar mensajes de error o información
+  publicaciones: any[] = []; // Publicaciones para mostrar en el perfil
 
-
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, 
-    private storage: NativeStorage, private alertController: AlertController) {
-  }
+  constructor(
+    private activatedRoute: ActivatedRoute, 
+    private router: Router, 
+    private storage: NativeStorage, 
+    private alertController: AlertController
+  ) {}
 
   ngOnInit() {
     this.cargarUserDetails();
+    this.cargarPublicaciones();
   }
 
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+  
   async cargarUserDetails(){
     try {
       const data = await this.storage.getItem('userDetails');
@@ -35,7 +43,16 @@ export class PerfilPage implements OnInit {
     }
   }
 
+  cargarPublicaciones() {
+    const publicacionesGuardadas = JSON.parse(localStorage.getItem('publicaciones') || '[]');
+    this.publicaciones = publicacionesGuardadas;
+  }
+
+  borrarpubli(){
+    localStorage.removeItem('publicaciones');
+  }
   logout() {
     this.router.navigate(['/login']);
   }
 }
+
