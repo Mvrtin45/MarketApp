@@ -11,7 +11,6 @@
     <ion-row>
       <ion-col size="12">
         <h2 class="section-title">Panel de Administración</h2>
-        
         <ion-card class="action-card">
           <ion-card-content>
             <ion-button class="custom-button" expand="block" color="primary" [routerLink]="['/admin-usuarios']">
@@ -20,10 +19,25 @@
             <ion-button class="custom-button" expand="block" color="secondary" [routerLink]="['/admin-publicaciones']">
               Ver Publicaciones
             </ion-button>
+            <ion-button class="custom-button" expand="block" color="secondary" (click)="addProducto()">
+              Agregar
+            </ion-button>
+
+            <!-- Iterar sobre la lista de productos para mostrar botones de actualización y eliminación para cada uno -->
+            <div *ngFor="let producto of productos">
+              <ion-item>
+                <p>{{ producto.nombre }} - {{ producto.descripcion }}</p>
+                <ion-button class="custom-button" color="secondary" (click)="updateProducto(producto)">
+                  Actualizar
+                </ion-button>
+                <ion-button class="custom-button" color="secondary" (click)="deleteProducto(producto)">
+                  Eliminar
+                </ion-button>
+              </ion-item>
+            </div>
           </ion-card-content>
         </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
-
