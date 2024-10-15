@@ -1,34 +1,35 @@
 import { Injectable } from '@angular/core';
-//import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
+import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
-//import { Noticias } from './noticias';
+import { Appmarket } from './appmarket';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServicebdService {
-  //variable de conexión a Base de Datos
-  //public database!: SQLiteObject;
+  // Variable de conexión a Base de Datos
+  public database!: SQLiteObject;
 
-  //variables de creación de Tablas
-  tablaNoticia: string = "CREATE TABLE IF NOT EXISTS noticia(idnoticia INTEGER PRIMARY KEY autoincrement, titulo VARCHAR(100) NOT NULL, texto TEXT NOT NULL);";
+  // Variables de creación de Tablas
+  tablaProductos: string = "CREATE TABLE IF NOT EXISTS Productos( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100), descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL);";
 
-  //variables para los insert por defecto en nuestras tablas
-  registroNoticia: string = "INSERT or IGNORE INTO noticia(idnoticia, titulo, texto) VALUES (1,'Soy un titulo', 'Soy el texto de esta noticia que se esta insertando de manera autmática')";
-
-  //variables para guardar los datos de las consultas en las tablas
-  listadoNoticias = new BehaviorSubject([]);
+  // Variables para los insert por defecto en nuestras tablas 
+  registroProducto: string = "INSERT OR IGNORE INTO Productos(producto_id, nombre, descripcion, talla, ubicacion, color, precio) VALUES (1, 'Producto de Ejemplo', 'Descripción del producto de ejemplo', 'M', 'Iquique', 'Rojo', 1000);";
+  
+  // Variables para guardar los datos de las consultas en las tablas
+  listadoProductos = new BehaviorSubject([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
    constructor(
-  // private sqlite: SQLite, 
-  private platform: Platform, private alertController: AlertController) { 
-      // this.createBD();
+    private sqlite: SQLite, 
+    private platform: Platform, 
+    private alertController: AlertController) { 
+       this.createBD();
    }
-   /*
+   
   async presentAlert(titulo: string, msj:string) {
     const alert = await this.alertController.create({
       header: titulo,
@@ -40,9 +41,9 @@ export class ServicebdService {
   }
 
   //metodos para manipular los observables
-  // fetchNoticias(): Observable<Noticias[]>{
-    // return this.listadoNoticias.asObservable();
-  // }
+  fetchProductos(): Observable<any[]> {
+    return this.listadoProductos.asObservable();
+  }
 
   dbState(){
     return this.isDBReady.asObservable();
@@ -54,7 +55,7 @@ export class ServicebdService {
     this.platform.ready().then(()=>{
       //crear la Base de Datos
       this.sqlite.create({
-        name: 'noticias.db',
+        name: 'productos.db',
         location: 'default'
       }).then((db: SQLiteObject)=>{
         //capturar la conexion a la BD
@@ -68,75 +69,72 @@ export class ServicebdService {
 
   }
 
-  async crearTablas(){
-    try{
-      //ejecuto la creación de Tablas
-      await this.database.executeSql(this.tablaNoticia, []);
+  async crearTablas() {
+    try {
+      // Ejecutar la creación de Tablas
+      await this.database.executeSql(this.tablaProductos, []);
 
-      //ejecuto los insert por defecto en el caso que existan
-      await this.database.executeSql(this.registroNoticia, []);
+      // Ejecutar los insert por defecto en el caso que existan
+      await this.database.executeSql(this.registroProducto, []);
 
-      this.seleccionarNoticias();
-      //modifico el estado de la Base de Datos
+      this.seleccionarProductos();
+      // Modificar el estado de la Base de Datos
       this.isDBReady.next(true);
 
-    }catch(e){
+    } catch (e) {
       this.presentAlert('Creación de Tablas', 'Error en crear las tablas: ' + JSON.stringify(e));
     }
   }
     
-  seleccionarNoticias(){
-    return this.database.executeSql('SELECT * FROM noticia', []).then(res=>{
-       //variable para almacenar el resultado de la consulta
-       let items: Noticias[] = [];
-       //valido si trae al menos un registro
-       if(res.rows.length > 0){
-        //recorro mi resultado
-        for(var i=0; i < res.rows.length; i++){
-          //agrego los registros a mi lista
+  seleccionarProductos() {
+    return this.database.executeSql('SELECT * FROM Productos', []).then(res => {
+      // Variable para almacenar el resultado de la consulta
+      let items: any[] = [];
+      // Validar si trae al menos un registro
+      if (res.rows.length > 0) {
+        // Recorrer el resultado
+        for (var i = 0; i < res.rows.length; i++) {
+          // Agregar los registros a la lista
           items.push({
-            idnoticia: res.rows.item(i).idnoticia,
-            titulo: res.rows.item(i).titulo,
-            texto: res.rows.item(i).texto
-          })
+            producto_id: res.rows.item(i).producto_id,
+            nombre: res.rows.item(i).nombre,
+            descripcion: res.rows.item(i).descripcion,
+            talla: res.rows.item(i).talla,
+            ubicacion: res.rows.item(i).ubicacion,
+            color: res.rows.item(i).color,
+            precio: res.rows.item(i).precio
+          });
         }
-        
-       }
-       //actualizar el observable
-       this.listadoNoticias.next(items as any);
-
-    })
+      }
+      // Actualizar el observable
+      this.listadoProductos.next(items as any);
+    });
   }
   
-  eliminarNoticia(id:string){
-    return this.database.executeSql('DELETE FROM noticia WHERE idnoticia = ?',[id]).then(res=>{
-      this.presentAlert("Eliminar","Noticia Eliminada");
-      this.seleccionarNoticias();
-    }).catch(e=>{
+  eliminarProducto(id: string) {
+    return this.database.executeSql('DELETE FROM Productos WHERE producto_id = ?', [id]).then(res => {
+      this.presentAlert("Eliminar", "Producto Eliminado");
+      this.seleccionarProductos();
+    }).catch(e => {
       this.presentAlert('Eliminar', 'Error: ' + JSON.stringify(e));
-    })
+    });
   }
 
-  modificarNoticia(id:string, titulo:string, texto: string){
-    this.presentAlert("service","ID: " + id);
-    return this.database.executeSql('UPDATE noticia SET titulo = ?, texto = ? WHERE idnoticia = ?',[titulo,texto,id]).then(res=>{
-      this.presentAlert("Modificar","Noticia Modificada");
-      this.seleccionarNoticias();
-    }).catch(e=>{
+  modificarProducto(id: string, nombre: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
+    return this.database.executeSql('UPDATE Productos SET nombre = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ? WHERE producto_id = ?', [nombre,descripcion,talla,ubicacion,color,precio,id]).then(res => {
+      this.presentAlert("Modificar", "Producto Modificado");
+      this.seleccionarProductos();
+    }).catch(e => {
       this.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
-    })
-
+    });
   }
 
-  insertarNoticia(titulo:string, texto:string){
-    return this.database.executeSql('INSERT INTO noticia(titulo,texto) VALUES (?,?)',[titulo, texto]).then(res=>{
-      this.presentAlert("Insertar","Noticia Registrada");
-      this.seleccionarNoticias();
-    }).catch(e=>{
+  insertarProducto(nombre: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
+    return this.database.executeSql('INSERT INTO Productos (nombre, descripcion, talla, ubicacion, color, precio) VALUES (?, ?, ?, ?, ?, ?)', [nombre, descripcion, talla, ubicacion, color, precio]).then(res => {
+      this.presentAlert("Insertar", "Producto Registrado");
+      this.seleccionarProductos();
+    }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
-    })
+    });
   }
-  
-  
-  */
-} 
+}

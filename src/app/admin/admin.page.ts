@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ItemService } from '../item.service';
+import { ServicebdService } from '../services/servicebd.service';
  
 @Component({
   selector: 'app-admin',
@@ -8,11 +9,18 @@ import { ItemService } from '../item.service';
 })
 export class AdminPage implements OnInit {
   productos: any[] = [];
+  nombre: string = "";
+  descripcion: string = "";
+  talla: string = "";
+  ubicacion: string = "";
+  color: string = "";
+  precio!: number;
  
-  constructor(private itemService: ItemService) {}
+  constructor(private itemService: ItemService,
+    private bd: ServicebdService
+  ) {}
  
   ngOnInit() {
-    this.loadProductos();
   }
  
   loadProductos() {
@@ -32,18 +40,7 @@ export class AdminPage implements OnInit {
   }
  
   addProducto() {
-    const newProducto = {
-      nombre: 'Nuevo Producto',
-      descripcion: 'Descripción del producto',
-      talla: 'M',
-      ubicacion: 'Almacén 1',
-      color: 'Rojo',
-      precio: 100,
-      categoria_id: 1 // Ajusta el ID a una categoría válida
-    };
-    this.itemService.addItem(newProducto).subscribe(() => {
-      this.loadProductos();
-    });
+    this.bd.insertarProducto(this.nombre, this.descripcion, this.talla, this.ubicacion, this.color, this.precio);
   }
  
   updateProducto(producto: { producto_id: number; }) {
