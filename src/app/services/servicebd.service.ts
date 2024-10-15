@@ -12,13 +12,13 @@ export class ServicebdService {
   public database!: SQLiteObject;
 
   // Variables de creación de Tablas
-  tablaProductos: string = "CREATE TABLE IF NOT EXISTS Productos( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100), descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL);";
+  tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100), descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL);";
 
   // Variables para los insert por defecto en nuestras tablas 
-  registroProducto: string = "INSERT OR IGNORE INTO Productos(producto_id, nombre, descripcion, talla, ubicacion, color, precio) VALUES (1, 'Producto de Ejemplo', 'Descripción del producto de ejemplo', 'M', 'Iquique', 'Rojo', 1000);";
+  registroPublicaciones: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio) VALUES (1, 'Titulo ejemplo', 'Descripción del producto de ejemplo', 'M', 'Iquique', 'Rojo', 1000);";
   
   // Variables para guardar los datos de las consultas en las tablas
-  listadoProductos = new BehaviorSubject([]);
+  listadoPublicaciones = new BehaviorSubject([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -41,8 +41,8 @@ export class ServicebdService {
   }
 
   //metodos para manipular los observables
-  fetchProductos(): Observable<any[]> {
-    return this.listadoProductos.asObservable();
+  fetchPublicaciones(): Observable<any[]> {
+    return this.listadoPublicaciones.asObservable();
   }
 
   dbState(){
@@ -55,7 +55,7 @@ export class ServicebdService {
     this.platform.ready().then(()=>{
       //crear la Base de Datos
       this.sqlite.create({
-        name: 'productos.db',
+        name: 'Publicaciones.db',
         location: 'default'
       }).then((db: SQLiteObject)=>{
         //capturar la conexion a la BD
@@ -72,12 +72,12 @@ export class ServicebdService {
   async crearTablas() {
     try {
       // Ejecutar la creación de Tablas
-      await this.database.executeSql(this.tablaProductos, []);
+      await this.database.executeSql(this.tablaPublicaciones, []);
 
       // Ejecutar los insert por defecto en el caso que existan
-      await this.database.executeSql(this.registroProducto, []);
+      await this.database.executeSql(this.registroPublicaciones, []);
 
-      this.seleccionarProductos();
+      this.seleccionarPublicaciones();
       // Modificar el estado de la Base de Datos
       this.isDBReady.next(true);
 
@@ -86,8 +86,8 @@ export class ServicebdService {
     }
   }
     
-  seleccionarProductos() {
-    return this.database.executeSql('SELECT * FROM Productos', []).then(res => {
+  seleccionarPublicaciones() {
+    return this.database.executeSql('SELECT * FROM Publicaciones', []).then(res => {
       // Variable para almacenar el resultado de la consulta
       let items: any[] = [];
       // Validar si trae al menos un registro
@@ -97,7 +97,7 @@ export class ServicebdService {
           // Agregar los registros a la lista
           items.push({
             producto_id: res.rows.item(i).producto_id,
-            nombre: res.rows.item(i).nombre,
+            titulo: res.rows.item(i).titulo,
             descripcion: res.rows.item(i).descripcion,
             talla: res.rows.item(i).talla,
             ubicacion: res.rows.item(i).ubicacion,
@@ -107,32 +107,31 @@ export class ServicebdService {
         }
       }
       // Actualizar el observable
-      this.listadoProductos.next(items as any);
+      this.listadoPublicaciones.next(items as any);
     });
   }
   
-  eliminarProducto(id: string) {
-    return this.database.executeSql('DELETE FROM Productos WHERE producto_id = ?', [id]).then(res => {
-      this.presentAlert("Eliminar", "Producto Eliminado");
-      this.seleccionarProductos();
+  eliminarPublicacion(id: string) {
+    return this.database.executeSql('DELETE FROM Publicaciones WHERE producto_id = ?', [id]).then(res => {
+      this.presentAlert("Eliminar", "Publicacion Eliminada");
+      this.seleccionarPublicaciones();
     }).catch(e => {
       this.presentAlert('Eliminar', 'Error: ' + JSON.stringify(e));
     });
   }
 
-  modificarProducto(id: string, nombre: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
-    return this.database.executeSql('UPDATE Productos SET nombre = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ? WHERE producto_id = ?', [nombre,descripcion,talla,ubicacion,color,precio,id]).then(res => {
-      this.presentAlert("Modificar", "Producto Modificado");
-      this.seleccionarProductos();
+  modificarPublicacion(id: string, titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
+    return this.database.executeSql('UPDATE Publicaciones SET titulo = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ? WHERE producto_id = ?', [titulo,descripcion,talla,ubicacion,color,precio,id]).then(res => {
+      this.presentAlert("Modificar", "Publicacion Modificada");
+      this.seleccionarPublicaciones();
     }).catch(e => {
       this.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
     });
   }
 
-  insertarProducto(nombre: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
-    return this.database.executeSql('INSERT INTO Productos (nombre, descripcion, talla, ubicacion, color, precio) VALUES (?, ?, ?, ?, ?, ?)', [nombre, descripcion, talla, ubicacion, color, precio]).then(res => {
-      this.presentAlert("Insertar", "Producto Registrado");
-      this.seleccionarProductos();
+  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
+    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio) VALUES (?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio]).then(res => {
+      this.seleccionarPublicaciones();
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
     });

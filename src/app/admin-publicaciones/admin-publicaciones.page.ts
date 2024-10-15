@@ -9,7 +9,7 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 })
 export class AdminPublicacionesPage implements OnInit {
 
-  productos: any = [
+  publicaciones: any = [
     {
       producto_id: '',
       nombre: '',
@@ -26,28 +26,28 @@ export class AdminPublicacionesPage implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    this.bd.dbState().subscribe(data => {
-      // Validar si la BD está lista
-      if (data) {
-        // Subscribir al observable de la lista de productos
-        this.bd.fetchProductos().subscribe(res => {
-          this.productos = res;
-        });
-      }
-    });
+    this.bd.dbState().subscribe(data=>{
+    //validar si la bd esta lista
+    if(data){
+      //subscribir al observable de la listaNoticias
+      this.bd.fetchPublicaciones().subscribe(res=>{
+        this.publicaciones = res;
+      })
+    }
+  })
   }
 
-  modificar(producto: any) {
+  modificar(publicacion: any) {
     let navigationsExtras: NavigationExtras = {
       state: {
-        producto: producto
+        publicacion: publicacion
       }
     };
     this.router.navigate(['/admin-usuarios'], navigationsExtras);
   }
 
-  eliminar(producto: any) {
-    this.bd.eliminarProducto(producto.producto_id);
+  eliminar(publicacion: any) {
+    this.bd.eliminarPublicacion(publicacion.producto_id);
   }
 
   agregar() {

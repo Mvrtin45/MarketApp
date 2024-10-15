@@ -23,24 +23,24 @@
             <p><strong>Teléfono:</strong></p>
             <p><strong>Fecha de Registro:</strong></p>
             <ion-item>
-              <ion-input label="Nombre del Producto" labelPlacement="floating" placeholder="Ingrese el nombre" [(ngModel)]="producto.nombre"></ion-input>
+              <ion-input label="Nombre del publicacion" labelPlacement="floating" placeholder="Ingrese el nombre" [(ngModel)]="publicacion.titulo"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input label="Descripción" labelPlacement="floating" placeholder="Ingrese la descripción" [(ngModel)]="producto.descripcion"></ion-input>
+              <ion-input label="Descripción" labelPlacement="floating" placeholder="Ingrese la descripción" [(ngModel)]="publicacion.descripcion"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input label="Talla" labelPlacement="floating" placeholder="Ingrese la talla" [(ngModel)]="producto.talla"></ion-input>
+              <ion-input label="Talla" labelPlacement="floating" placeholder="Ingrese la talla" [(ngModel)]="publicacion.talla"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input label="Ubicación" labelPlacement="floating" placeholder="Ingrese la ubicación" [(ngModel)]="producto.ubicacion"></ion-input>
+              <ion-input label="Ubicación" labelPlacement="floating" placeholder="Ingrese la ubicación" [(ngModel)]="publicacion.ubicacion"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input label="Color" labelPlacement="floating" placeholder="Ingrese el color" [(ngModel)]="producto.color"></ion-input>
+              <ion-input label="Color" labelPlacement="floating" placeholder="Ingrese el color" [(ngModel)]="publicacion.color"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-input type="number" label="Precio (CLP)" labelPlacement="floating" placeholder="Ingrese el precio" [(ngModel)]="producto.precio"></ion-input>
+              <ion-input type="number" label="Precio (CLP)" labelPlacement="floating" placeholder="Ingrese el precio" [(ngModel)]="publicacion.precio"></ion-input>
             </ion-item>
-            <ion-button color="success" (click)="modificar()">Modificar Producto</ion-button>            
+            <ion-button color="success" (click)="modificar()">Modificar publicacion</ion-button>            
           </ion-card-content>
         </ion-card>
       </ion-col>

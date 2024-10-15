@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
   selector: 'app-subirpubli',
@@ -10,18 +11,25 @@ import { AlertController } from '@ionic/angular';
 })
 export class SubirpubliPage implements OnInit {
   formularioPublicacion: FormGroup;
+  titulo: string = "";
+  descripcion: string = "";
+  precio!: number;
+  ubicacion: string = "";
+  talla: string = "";
+  color: string = "";
 
   constructor(
     private fb: FormBuilder,
     private alertController: AlertController,
-    private router: Router
+    private router: Router,
+    private bd: ServicebdService
   ) {
     this.formularioPublicacion = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.maxLength(500)]],
-      price: ['', [Validators.required, Validators.min(1)]], 
-      location: ['', Validators.required],
-      size: ['', Validators.required],
+      titulo: ['', [Validators.required, Validators.maxLength(100)]],
+      descripcion: ['', [Validators.required, Validators.maxLength(500)]],
+      precio: ['', [Validators.required, Validators.min(1)]], 
+      ubicacion: ['', Validators.required],
+      talla: ['', Validators.required],
       color: ['', Validators.required],
       image: [null, Validators.required] // Cambia el tipo de imagen a File
     });
@@ -33,30 +41,44 @@ export class SubirpubliPage implements OnInit {
   async subirPublicacion() {
     if (this.formularioPublicacion.valid) {
       const nuevaPublicacion = {
-        title: this.formularioPublicacion.get('title')!.value,
-        description: this.formularioPublicacion.get('description')!.value,
-        price: this.formularioPublicacion.get('price')!.value,
-        location: this.formularioPublicacion.get('location')!.value,
-        size: this.formularioPublicacion.get('size')!.value,
+        titulo: this.formularioPublicacion.get('titulo')!.value,
+        descripcion: this.formularioPublicacion.get('descripcion')!.value,
+        precio: this.formularioPublicacion.get('precio')!.value,
+        ubicacion: this.formularioPublicacion.get('ubicacion')!.value,
+        talla: this.formularioPublicacion.get('talla')!.value,
         color: this.formularioPublicacion.get('color')!.value,
-        image: this.formularioPublicacion.get('image')!.value,
       };
 
-      // Guardar en local storage
-      let publicaciones = JSON.parse(localStorage.getItem('publicaciones') || '[]');
-      publicaciones.push(nuevaPublicacion);
-      localStorage.setItem('publicaciones', JSON.stringify(publicaciones));
+      // Guardar en la base de datos SQLite
+      this.bd.insertarPublicacion(
+        nuevaPublicacion.titulo,
+        nuevaPublicacion.descripcion,
+        nuevaPublicacion.talla,
+        nuevaPublicacion.ubicacion,
+        nuevaPublicacion.color,
+        nuevaPublicacion.precio
+      ).then(async () => {
 
-      // Mostrar alerta de éxito
-      const alert = await this.alertController.create({
-        header: 'Publicación exitosa',
-        message: 'Tu publicación ha sido subida con éxito.',
-        buttons: ['OK']
-      });
-      
-      await alert.present();
-      alert.onDidDismiss().then(() => {
-        this.router.navigate(['/tabs/tab1']);
+        // Mostrar alerta de éxito
+        const alert = await this.alertController.create({
+          header: 'Publicación exitosa',
+          message: 'Tu publicación ha sido subida con éxito.',
+          buttons: ['OK']
+        });
+
+        await alert.present();
+        alert.onDidDismiss().then(() => {
+          this.router.navigate(['/tabs/perfil']);
+        });
+      }).catch(async (error) => {
+        // Mostrar alerta de error en caso de que falle la inserción
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'No se pudo subir la publicación. Por favor, inténtalo de nuevo.',
+          buttons: ['OK']
+        });
+
+        await alert.present();
       });
     } else {
       const alert = await this.alertController.create({
@@ -64,7 +86,6 @@ export class SubirpubliPage implements OnInit {
         message: 'Por favor, revise los campos y corrija los errores.',
         buttons: ['OK']
       });
-  
       await alert.present();
     }
   }

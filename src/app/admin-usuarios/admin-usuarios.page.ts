@@ -9,12 +9,12 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 })
 export class AdminUsuariosPage implements OnInit {
   
-  producto: any;
+  publicacion: any;
 
   constructor(private router: Router, private activedrouter: ActivatedRoute, private bd: ServicebdService) {
     this.activedrouter.queryParams.subscribe(res => {
       if (this.router.getCurrentNavigation()?.extras.state) {
-        this.producto = this.router.getCurrentNavigation()?.extras?.state?.['producto'];
+        this.publicacion = this.router.getCurrentNavigation()?.extras?.state?.['publicacion'];
       }
     });
   }
@@ -23,14 +23,14 @@ export class AdminUsuariosPage implements OnInit {
   }
 
   modificar() {
-    this.bd.modificarProducto(
-      this.producto.producto_id,
-      this.producto.nombre,
-      this.producto.descripcion,
-      this.producto.talla,
-      this.producto.ubicacion,
-      this.producto.color,
-      this.producto.precio
+    this.bd.modificarPublicacion(
+      this.publicacion.producto_id,
+      this.publicacion.nombre,
+      this.publicacion.descripcion,
+      this.publicacion.talla,
+      this.publicacion.ubicacion,
+      this.publicacion.color,
+      this.publicacion.precio
     );
   }
 }
