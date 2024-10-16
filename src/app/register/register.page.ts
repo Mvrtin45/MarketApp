@@ -12,9 +12,11 @@ import { ServicebdService } from '../services/servicebd.service';
 })
 export class RegisterPage implements OnInit {
   formularioRegistro: FormGroup;
-  telefono!: number;
-  correo: string = "";
   nombre: string = "";
+  correo: string = "";
+  contrasena: string = "";
+  telefono!: number;
+  rol: string = "usuario";
 
   constructor(
     private fb: FormBuilder,
@@ -192,41 +194,50 @@ export class RegisterPage implements OnInit {
 
   async registrar() {
     if (this.formularioRegistro.valid) {
-      const formValues = this.formularioRegistro.value;
-      const { name, email, phone, password } = formValues;
+      const nuevoUsuario = {
+        nombre: this.formularioRegistro.get('name')!.value,
+        correo: this.formularioRegistro.get('email')!.value,
+        telefono: this.formularioRegistro.get('phone')!.value,
+        contrasena: this.formularioRegistro.get('password')!.value,
+        rol: 'usuario'
+      };
 
-      try {
-        // Guardar en NativeStorage
-        await this.storage.setItem('userDetails', { nombre: name, correo: email, telefono: phone });
+      this.bd.insertarUsuario(
+        nuevoUsuario.nombre,
+        nuevoUsuario.correo,
+        nuevoUsuario.telefono,
+        nuevoUsuario.contrasena,
+        nuevoUsuario.rol
+      ).then(async () => {
 
         // Mostrar alerta de éxito
         const alert = await this.alertController.create({
-          header: 'Completado',
-          message: 'Registro exitoso. Redirigiendo al login...',
+          header: 'Registro exitoso',
+          message: 'Tu registro se ha completado correctamente. Redirigiendo al login...',
           buttons: ['OK']
         });
 
         await alert.present();
-
         alert.onDidDismiss().then(() => {
           this.router.navigate(['/login']);
         });
-      } catch (error) {
+
+      }).catch(async (error) => {
+        // Mostrar alerta de error en caso de que falle la inserción
         const alert = await this.alertController.create({
           header: 'Error',
-          message: 'No se pudo guardar los detalles del usuario. Inténtalo nuevamente.',
+          message: 'No se pudo completar el registro. Por favor, inténtalo de nuevo.',
           buttons: ['OK']
         });
+
         await alert.present();
-      }
-    } else {
-      // Mostrar alerta si el formulario no es válido
+      });
+    }  else {
       const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'Por favor, completa los campos requeridos correctamente.',
+        header: 'Formulario inválido',
+        message: 'Por favor, revise los campos y corrija los errores.',
         buttons: ['OK']
       });
-
       await alert.present();
     }
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
@@ -9,28 +9,45 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 })
 export class AdminUsuariosPage implements OnInit {
   
-  publicacion: any;
+  usuarios: any = [
+    {
+      usuario_id: '',
+      nombre_usu: '',
+      email_usu: '',
+      telefono_usu: ''
+    }
+  ];
 
-  constructor(private router: Router, private activedrouter: ActivatedRoute, private bd: ServicebdService) {
-    this.activedrouter.queryParams.subscribe(res => {
-      if (this.router.getCurrentNavigation()?.extras.state) {
-        this.publicacion = this.router.getCurrentNavigation()?.extras?.state?.['publicacion'];
+  constructor(private router: Router, private bd: ServicebdService) {
+  }
+
+  ngOnInit() {
+    this.bd.dbState().subscribe(data => {
+      // Validar si la base de datos está lista
+      if (data) {
+        // Suscribirse al observable de la lista de usuarios
+        this.bd.fetchUsuarios().subscribe(res => {
+          this.usuarios = res;
+        });
       }
     });
   }
 
-  ngOnInit() {
+  modificar(usuario: any) {
+    let navigationsExtras: NavigationExtras = {
+      state: {
+        usuario: usuario
+      }
+    };
+    this.router.navigate(['/modificar'], navigationsExtras);
   }
 
-  modificar() {
-    this.bd.modificarPublicacion(
-      this.publicacion.producto_id,
-      this.publicacion.nombre,
-      this.publicacion.descripcion,
-      this.publicacion.talla,
-      this.publicacion.ubicacion,
-      this.publicacion.color,
-      this.publicacion.precio
-    );
+  eliminar(usuario: any) {
+    this.bd.eliminarUsuario(usuario.usuario_id); 
   }
+
+  agregar() {
+    this.router.navigate(['/agregar-usuario']); 
+  }
+
 }

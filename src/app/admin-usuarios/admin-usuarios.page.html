@@ -14,35 +14,33 @@
     <ion-row>
       <ion-col size="12">
         <h2 class="section-title">Usuarios Registrados</h2>
-        <ion-card class="user-card">
-          <ion-card-header>
-            <ion-card-title></ion-card-title>
-            <ion-card-subtitle></ion-card-subtitle>
-          </ion-card-header>
-          <ion-card-content>
-            <p><strong>Teléfono:</strong></p>
-            <p><strong>Fecha de Registro:</strong></p>
+        <ion-list>
+          <ion-item-sliding *ngFor="let usuario of usuarios">
             <ion-item>
-              <ion-input label="Nombre del publicacion" labelPlacement="floating" placeholder="Ingrese el nombre" [(ngModel)]="publicacion.titulo"></ion-input>
+              <h2>{{ usuario.nombre_usu }}</h2>
+              <ion-label style="word-wrap: break-word; white-space: normal;">
+                Email: {{ usuario.email_usu }}<br>
+                Teléfono: {{ usuario.telefono_usu }}<br>
+                ID: {{ usuario.usuario_id }}
+              </ion-label>
             </ion-item>
-            <ion-item>
-              <ion-input label="Descripción" labelPlacement="floating" placeholder="Ingrese la descripción" [(ngModel)]="publicacion.descripcion"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Talla" labelPlacement="floating" placeholder="Ingrese la talla" [(ngModel)]="publicacion.talla"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Ubicación" labelPlacement="floating" placeholder="Ingrese la ubicación" [(ngModel)]="publicacion.ubicacion"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Color" labelPlacement="floating" placeholder="Ingrese el color" [(ngModel)]="publicacion.color"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input type="number" label="Precio (CLP)" labelPlacement="floating" placeholder="Ingrese el precio" [(ngModel)]="publicacion.precio"></ion-input>
-            </ion-item>
-            <ion-button color="success" (click)="modificar()">Modificar publicacion</ion-button>            
-          </ion-card-content>
-        </ion-card>
+        
+            <ion-item-options side="end">
+              <ion-item-option (click)="modificar(usuario)">
+                <ion-icon slot="icon-only" name="pencil"></ion-icon>
+              </ion-item-option>
+              <ion-item-option color="danger" (click)="eliminar(usuario)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ion-list>
+        
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="agregar()">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </ion-col>
     </ion-row>
   </ion-grid>
