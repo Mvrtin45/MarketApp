@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Appmarket } from './appmarket';
+import { Publicaciones } from './publicaciones';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +41,7 @@ export class ServicebdService {
   }
 
   //metodos para manipular los observables
-  fetchPublicaciones(): Observable<any[]> {
+  fetchPublicaciones(): Observable<Publicaciones[]> {
     return this.listadoPublicaciones.asObservable();
   }
 
@@ -51,7 +51,7 @@ export class ServicebdService {
 
   //función para crear la Base de Datos
   createBD(){
-    //varificar si la plataforma esta disponible
+    //verificar si la plataforma esta disponible
     this.platform.ready().then(()=>{
       //crear la Base de Datos
       this.sqlite.create({
@@ -89,7 +89,7 @@ export class ServicebdService {
   seleccionarPublicaciones() {
     return this.database.executeSql('SELECT * FROM Publicaciones', []).then(res => {
       // Variable para almacenar el resultado de la consulta
-      let items: any[] = [];
+      let items: Publicaciones[] = [];
       // Validar si trae al menos un registro
       if (res.rows.length > 0) {
         // Recorrer el resultado
