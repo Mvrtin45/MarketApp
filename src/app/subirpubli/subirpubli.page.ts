@@ -43,10 +43,10 @@ export class SubirpubliPage implements OnInit {
       const nuevaPublicacion = {
         titulo: this.formularioPublicacion.get('titulo')!.value,
         descripcion: this.formularioPublicacion.get('descripcion')!.value,
-        precio: this.formularioPublicacion.get('precio')!.value,
-        ubicacion: this.formularioPublicacion.get('ubicacion')!.value,
         talla: this.formularioPublicacion.get('talla')!.value,
+        ubicacion: this.formularioPublicacion.get('ubicacion')!.value,
         color: this.formularioPublicacion.get('color')!.value,
+        precio: this.formularioPublicacion.get('precio')!.value
       };
 
       // Guardar en la base de datos SQLite

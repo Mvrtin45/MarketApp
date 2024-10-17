@@ -36,12 +36,12 @@
             {{ getErrorMessage('descripcion') }}
           </ion-text>
         </div>
-        <!-- PRECIO -->
+        <!-- TALLA -->
         <div class="input-group">
-          <label for="precio">Precio:</label>
-          <input id="precio" type="number" formControlName="precio" placeholder="Precio en CLP" [(ngModel)]="precio">
-          <ion-text color="danger" *ngIf="formularioPublicacion.get('precio')?.invalid && formularioPublicacion.get('precio')?.touched">
-            {{ getErrorMessage('precio') }}
+          <label for="talla">Talla:</label>
+          <input id="talla" type="text" formControlName="talla" placeholder="Talla" [(ngModel)]="talla">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('talla')?.invalid && formularioPublicacion.get('talla')?.touched">
+            {{ getErrorMessage('talla') }}
           </ion-text>
         </div>
         <!-- UBICACION -->
@@ -52,20 +52,20 @@
             {{ getErrorMessage('ubicacion') }}
           </ion-text>
         </div>
-        <!-- TALLA -->
-        <div class="input-group">
-          <label for="talla">Talla:</label>
-          <input id="talla" type="text" formControlName="talla" placeholder="Talla" [(ngModel)]="talla">
-          <ion-text color="danger" *ngIf="formularioPublicacion.get('talla')?.invalid && formularioPublicacion.get('talla')?.touched">
-            {{ getErrorMessage('talla') }}
-          </ion-text>
-        </div>
         <!-- COLOR -->
         <div class="input-group">
           <label for="color">Color:</label>
           <input id="color" type="text" formControlName="color" placeholder="Color" [(ngModel)]="color">
           <ion-text color="danger" *ngIf="formularioPublicacion.get('color')?.invalid && formularioPublicacion.get('color')?.touched">
             {{ getErrorMessage('color') }}  
+          </ion-text>
+        </div>
+        <!-- PRECIO -->
+        <div class="input-group">
+          <label for="precio">Precio:</label>
+          <input id="precio" type="number" formControlName="precio" placeholder="Precio en CLP" [(ngModel)]="precio">
+          <ion-text color="danger" *ngIf="formularioPublicacion.get('precio')?.invalid && formularioPublicacion.get('precio')?.touched">
+            {{ getErrorMessage('precio') }}
           </ion-text>
         </div>
         <!-- IMAGEN -->

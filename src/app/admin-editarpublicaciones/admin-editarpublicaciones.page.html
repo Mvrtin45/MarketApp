@@ -13,9 +13,64 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">admin-editarpublicaciones</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="center-content">
+    <ion-card class="editar-perfil-card">
+      <ion-card-content>
+        <form [formGroup]="formularioEditar" (ngSubmit)="modificar()">
+          <!-- Campo de Titulo -->
+          <ion-item>
+            <ion-label position="floating">Titulo</ion-label>
+            <ion-input formControlName="titulo" [(ngModel)]="publicacion.titulo"></ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="formularioEditar.get('titulo')?.invalid && formularioEditar.get('titulo')?.touched">
+            {{ getErrorMessage('titulo') }}
+          </ion-text>         
+          <!-- Campo de Descripcion -->
+          <ion-item>
+            <ion-label position="floating">Descripción</ion-label>
+            <ion-input formControlName="descripcion" [(ngModel)]="publicacion.descripcion"></ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="formularioEditar.get('descripcion')?.invalid && formularioEditar.get('descripcion')?.touched">
+            {{ getErrorMessage('descripcion') }}
+          </ion-text>
+          <!-- Campo de Talla -->
+          <ion-item>
+            <ion-label position="floating">Talla</ion-label>
+            <ion-input formControlName="talla" type="text" [(ngModel)]="publicacion.talla"></ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="formularioEditar.get('talla')?.invalid && formularioEditar.get('talla')?.touched">
+            {{ getErrorMessage('talla') }}
+          </ion-text>
+          <!-- Campo de ubicacion -->
+          <ion-item>
+            <ion-label position="floating">Ubicación</ion-label>
+            <ion-input formControlName="ubicacion" type="text" [(ngModel)]="publicacion.ubicacion"></ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="formularioEditar.get('ubicacion')?.invalid && formularioEditar.get('ubicacion')?.touched">
+            {{ getErrorMessage('ubicacion') }}
+          </ion-text>
+          <!-- Campo de Color -->
+          <ion-item>
+            <ion-label position="floating">Color</ion-label>
+            <ion-input formControlName="color" type="text" [(ngModel)]="publicacion.color"></ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="formularioEditar.get('color')?.invalid && formularioEditar.get('color')?.touched">
+            {{ getErrorMessage('color') }}  
+          </ion-text>
+          <!-- Campo de Precio -->
+          <ion-item>
+            <ion-label position="floating">Precio en CLP</ion-label>
+            <ion-input type="number" formControlName="precio" [(ngModel)]="publicacion.precio"></ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="formularioEditar.get('precio')?.invalid && formularioEditar.get('precio')?.touched">
+            {{ getErrorMessage('precio') }}
+          </ion-text>
+          <!-- Botón de guardar cambios -->
+          <ion-button class="custom-button" expand="block" type="submit">
+            Guardar Cambios
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

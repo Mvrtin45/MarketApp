@@ -21,10 +21,7 @@ export class AdminEditarusuariosPage implements OnInit {
     private bd: ServicebdService
   ) {
     this.formularioEditar = this.fb.group({
-      name: [
-        '',
-        [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$')],
-      ],
+      name: ['',[Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$')],],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, this.phoneValidator()]],
     });

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ItemService } from '../item.service';
 import { ServicebdService } from '../services/servicebd.service';
  
 @Component({
@@ -16,9 +15,7 @@ export class AdminPage implements OnInit {
   color: string = "";
   precio!: number;
  
-  constructor(private itemService: ItemService,
-    private bd: ServicebdService
-  ) {}
+  constructor(private bd: ServicebdService) {}
  
   ngOnInit() {
   }

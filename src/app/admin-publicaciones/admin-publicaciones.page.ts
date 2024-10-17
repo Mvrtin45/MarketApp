@@ -12,7 +12,7 @@ export class AdminPublicacionesPage implements OnInit {
   publicaciones: any = [
     {
       producto_id: '',
-      nombre: '',
+      titulo: '',
       descripcion: '',
       talla: '',
       ubicacion: '',
@@ -43,7 +43,7 @@ export class AdminPublicacionesPage implements OnInit {
         publicacion: publicacion
       }
     };
-    this.router.navigate(['/admin-usuarios'], navigationsExtras);
+    this.router.navigate(['/admin-editarpublicaciones'], navigationsExtras);
   }
 
   eliminar(publicacion: any) {
