@@ -155,9 +155,17 @@ const routes: Routes = [
     loadChildren: () => import('./admin-publicaciones/admin-publicaciones.module').then( m => m.AdminPublicacionesPageModule)
   },
   {
+    path: 'admin-editarusuarios',
+    loadChildren: () => import('./admin-editarusuarios/admin-editarusuarios.module').then( m => m.AdminEditarusuariosPageModule)
+  },
+  {
+    path: 'admin-editarpublicaciones',
+    loadChildren: () => import('./admin-editarpublicaciones/admin-editarpublicaciones.module').then( m => m.AdminEditarpublicacionesPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
-  }
+  },
 ];
 @NgModule({
   imports: [

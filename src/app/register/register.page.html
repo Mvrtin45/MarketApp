@@ -19,6 +19,14 @@
           <ion-text [class.visible]="emailErrorMessage">
             {{ emailErrorMessage }}
           </ion-text>
+          <!-- Campo de Teléfono -->
+          <ion-item>
+            <ion-label position="floating">Teléfono</ion-label>
+            <ion-input formControlName="phone" [(ngModel)]="telefono"></ion-input>
+          </ion-item>
+          <ion-text [class.visible]="telefonoErrorMessage">
+            {{ telefonoErrorMessage }}
+          </ion-text>
           <!-- Campo de Contraseña -->
           <ion-item>
             <ion-label position="floating">Contraseña</ion-label>
@@ -34,14 +42,6 @@
           </ion-item>
           <ion-text [class.visible]="confirmPasswordErrorMessage">
             {{ confirmPasswordErrorMessage }}
-          </ion-text>
-          <!-- Campo de Teléfono -->
-          <ion-item>
-            <ion-label position="floating">Teléfono</ion-label>
-            <ion-input formControlName="phone" [(ngModel)]="telefono"></ion-input>
-          </ion-item>
-          <ion-text [class.visible]="telefonoErrorMessage">
-            {{ telefonoErrorMessage }}
           </ion-text>
           <!-- Botón de registro -->
           <ion-button class="custom-button" expand="block" (click)="registrar()">

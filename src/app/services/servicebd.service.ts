@@ -14,7 +14,7 @@ export class ServicebdService {
 
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL);";
-  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , contrasena_usu VARCHAR(20) NOT NULL, telefono_usu INTEGER NOT NULL, rol TEXT NOT NULL DEFAULT 'usuario');";
+  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, rol TEXT NOT NULL DEFAULT 'usuario');";
   
   // Variables para los insert por defecto en nuestras tablas 
   registroPublicaciones: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio) VALUES (1, 'Titulo ejemplo', 'Descripción del producto de ejemplo', 'M', 'Iquique', 'Rojo', 1000);";
@@ -135,8 +135,8 @@ export class ServicebdService {
             usuario_id: res.rows.item(i).usuario_id,
             nombre_usu: res.rows.item(i).nombre_usu,
             email_usu: res.rows.item(i).email_usu,
-            contrasena_usu: res.rows.item(i).contrasena_usu,
             telefono_usu: res.rows.item(i).telefono_usu,
+            contrasena_usu: res.rows.item(i).contrasena_usu,
             rol: res.rows.item(i).rol
           });
         }
@@ -166,8 +166,8 @@ export class ServicebdService {
   }
   
   // MODIFICAR
-  modificarUsuario(id: string, nombre: string, email: string, contrasena: string, telefono: number, rol: string) {
-    return this.database.executeSql('UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, contrasena_usu = ?, telefono_usu = ?, rol = ? WHERE usuario_id = ?', [nombre, email, contrasena, telefono, rol, id]).then(res => {
+  modificarUsuario(id: string, nombre: string, email: string, telefono: number, contrasena: string, rol: string) {
+    return this.database.executeSql('UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ?, contrasena_usu = ?, rol = ? WHERE usuario_id = ?', [nombre, email, telefono, contrasena, rol, id]).then(res => {
       this.presentAlert("Modificar", "Usuario Modificado");
       this.seleccionarUsuarios();
     }).catch(e => {
@@ -193,8 +193,8 @@ export class ServicebdService {
     });
   } 
 
-  insertarUsuario(nombre: string, email: string, contrasena: string, telefono: number, rol: string) {
-    return this.database.executeSql('INSERT INTO Usuarios (nombre_usu, email_usu, contrasena_usu, telefono_usu, rol) VALUES (?, ?, ?, ?, ?)', [nombre, email, contrasena, telefono, rol]).then(res => {
+  insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, rol: string) {
+    return this.database.executeSql('INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol) VALUES (?, ?, ?, ?, ?)', [nombre, email, telefono, contrasena, rol]).then(res => {
       this.seleccionarUsuarios();
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));

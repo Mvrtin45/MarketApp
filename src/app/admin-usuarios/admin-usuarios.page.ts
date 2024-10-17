@@ -38,8 +38,8 @@ export class AdminUsuariosPage implements OnInit {
       state: {
         usuario: usuario
       }
-    };
-    this.router.navigate(['/modificar'], navigationsExtras);
+    }
+    this.router.navigate(['/admin-editarusuarios'], navigationsExtras);
   }
 
   eliminar(usuario: any) {

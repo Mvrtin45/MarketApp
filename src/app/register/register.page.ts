@@ -14,8 +14,8 @@ export class RegisterPage implements OnInit {
   formularioRegistro: FormGroup;
   nombre: string = "";
   correo: string = "";
-  contrasena: string = "";
   telefono!: number;
+  contrasena: string = "";
   rol: string = "usuario";
 
   constructor(

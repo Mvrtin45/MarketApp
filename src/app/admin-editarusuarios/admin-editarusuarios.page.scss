@@ -1,0 +1,83 @@
+ion-header {
+    ion-toolbar {
+      --background: #7e7474;
+      --color: #ffffff;
+      display: flex; /* Habilita el uso de flexbox */
+      justify-content: space-between; /* Espacia el contenido */
+      align-items: center; /* Centra verticalmente */
+      position: relative; /* Necesario para posicionar elementos absolutamente */
+  
+      .logo {
+        position: absolute; /* Posiciona el logo de forma absoluta */
+        top: 10px; /* Espaciado desde la parte superior */
+        right: 10px; /* Espaciado desde la derecha */
+        width: 40px; /* Ajusta el tamaño del logo según sea necesario */
+        height: auto; /* Mantiene la proporción del logo */
+      }
+  
+      .centered-title {
+        flex: 1; /* Asegura que el título ocupe el espacio disponible */
+        text-align: center; /* Centra el título horizontalmente */
+      }
+    }
+  }
+  
+  ion-content {
+    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+  }
+  
+  .editar-perfil-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    color: #000;
+  }
+  
+  .editar-perfil-card {
+    width: 100%;
+    max-width: 350px;
+    border: 1px solid black; /* Borde negro para el card */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 10px;
+  }
+  
+  ion-card-title {
+    text-align: center;
+    font-weight: bold;
+    color: #000; /* Texto negro */
+  }
+  
+  ion-button.custom-button {
+    --background: #000; /* Fondo negro */
+    --color: #fff; /* Texto blanco */
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  
+  ion-item {
+    --background: transparent;
+  }
+  
+  ion-label {
+    color: #000; /* Color del texto en negro */
+  }
+  
+  ion-input {
+    --color: #000; /* Texto de entrada en negro */
+  }
+  
+  ion-text.visible {
+    color: red; /* Mensaje de error visible en rojo */
+  }
