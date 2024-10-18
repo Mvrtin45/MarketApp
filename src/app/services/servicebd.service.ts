@@ -22,6 +22,7 @@ export class ServicebdService {
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
   listadoUsuarios = new BehaviorSubject([]);
+  listadoInfoUsuarios = new BehaviorSubject([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -50,6 +51,21 @@ export class ServicebdService {
 
   fetchUsuarios(): Observable<Usuarios[]> {
     return this.listadoUsuarios.asObservable();
+  }
+
+  async getUsuarioPorId(usuario_id: number): Promise<any> {
+    return this.database.executeSql('SELECT * FROM Usuarios WHERE usuario_id = ?', [usuario_id]).then(res => {
+      if (res.rows.length > 0) {
+        return {
+          usuario_id: res.rows.item(0).usuario_id,
+          nombre_usu: res.rows.item(0).nombre_usu,
+          email_usu: res.rows.item(0).email_usu,
+          telefono_usu: res.rows.item(0).telefono_usu,
+        };
+      }
+      this.presentAlert('ERROR', 'Error en OBTENER USUARIO' );
+      return null; // Devuelve null si no se encuentra el usuario
+    });
   }
 
   dbState(){

@@ -54,7 +54,7 @@ export class LoginPage implements OnInit {
           if (usuarioExiste) {
             const alert = await this.alertController.create({
               header: 'Inicio de sesión exitoso.',
-              message: 'Redirigiendo al perfil...',
+              message: '¡Bienvenido a AppMarket!',
               buttons: ['OK']
             });
 
