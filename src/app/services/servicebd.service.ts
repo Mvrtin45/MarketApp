@@ -15,10 +15,10 @@ export class ServicebdService {
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL);";
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, rol TEXT NOT NULL DEFAULT 'usuario');";
-  
+
   // Variables para los insert por defecto en nuestras tablas 
-  registroPublicaciones: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio) VALUES (1, 'Titulo ejemplo', 'Descripción del producto de ejemplo', 'M', 'Iquique', 'Rojo', 1000);";
-  
+  registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, rol) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123', 'admin');";
+
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
   listadoUsuarios = new BehaviorSubject([]);
@@ -83,7 +83,7 @@ export class ServicebdService {
       await this.database.executeSql(this.tablaUsuarios, []);
 
       // Ejecutar los insert por defecto en el caso que existan
-      await this.database.executeSql(this.registroPublicaciones, []);
+      await this.database.executeSql(this.registroUsuarioAdmin, []);
 
       this.seleccionarPublicaciones();
       this.seleccionarUsuarios();
@@ -198,6 +198,22 @@ export class ServicebdService {
       this.seleccionarUsuarios();
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
+    });
+  }
+
+  verificarUsuario(email_usu: string, contrasena_usu: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ? AND contrasena_usu = ?', [email_usu, contrasena_usu ])
+        .then((res) => {
+          if (res.rows.length > 0) {
+            resolve(true); // Existe un usuario con ese correo
+          } else {
+            resolve(false); // No existe el usuario
+          }
+        })
+        .catch((error) => {
+          reject(error); // Manejo de error en caso de falla en la consulta
+        });
     });
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
   selector: 'app-login',
@@ -18,21 +19,12 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private alertController: AlertController,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private bd: ServicebdService
   ) {
     this.formularioLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
-    });
-
-    this.activatedRoute.queryParams.subscribe(() => {
-      if (this.router.getCurrentNavigation()?.extras.state) {
-        this.correo = this.router.getCurrentNavigation()?.extras?.state?.["cor"];
-        // Prellenar el campo de correo en el formulario
-        this.formularioLogin.patchValue({
-          email: this.correo
-        });
-      }
     });
   }
 
@@ -45,7 +37,6 @@ export class LoginPage implements OnInit {
 
       // Verificar credenciales para administrador
       if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
-  
         const alert = await this.alertController.create({
           header: 'Inicio de sesión exitoso.',
           message: 'Redirigiendo al apartado de administrador...',
@@ -54,18 +45,32 @@ export class LoginPage implements OnInit {
 
         await alert.present();
         alert.onDidDismiss().then(() => {
-          this.router.navigate(['/admin']); 
+          this.router.navigate(['/admin']);
         });
       } else {
-        // Validación para usuario normal
-        const alert = await this.alertController.create({
-          header: 'Inicio de sesión exitoso. Redirigiendo al perfil...',
-          buttons: ['OK']
-        });
+        // Verificar si el correo existe en la base de datos
+        this.bd.verificarUsuario(formcorreo, formPassword).then(
+          async (usuarioExiste) => {
+          if (usuarioExiste) {
+            const alert = await this.alertController.create({
+              header: 'Inicio de sesión exitoso.',
+              message: 'Redirigiendo al perfil...',
+              buttons: ['OK']
+            });
 
-        await alert.present();
-        alert.onDidDismiss().then(() => {
-          this.router.navigate(['/tabs/tab1']);
+            await alert.present();
+            alert.onDidDismiss().then(() => {
+              this.router.navigate(['/tabs/tab1']);
+            });
+          } else {
+            const alert = await this.alertController.create({
+              header: 'Error',
+              message: 'Correo o contraseña incorrectos.',
+              buttons: ['OK']
+            });
+
+            await alert.present();
+          }
         });
       }
     } else {
