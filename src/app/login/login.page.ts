@@ -37,54 +37,30 @@ export class LoginPage implements OnInit {
       const formcorreo = this.formularioLogin.get('email')?.value;
       const formPassword = this.formularioLogin.get('password')?.value;
   
-      // Verificar credenciales para administrador
-      if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
-        const alert = await this.alertController.create({
-          header: 'Inicio de sesión exitoso.',
-          message: 'Redirigiendo al apartado de administrador...',
-          buttons: ['OK']
-        });
-  
-        await alert.present();
-        alert.onDidDismiss().then(() => {
+      try {
+        // Verificar credenciales para administrador
+        if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
+          await this.mostrarAlerta('Inicio de sesión exitoso.', 'Redirigiendo al apartado de administrador...');
           this.router.navigate(['/admin']);
-        });
-      } else {
-        // Verificar si el correo existe en la base de datos
-        const usuario = await this.bd.verificarUsuario(formcorreo, formPassword);
-  
-        if (usuario) {
-          // Almacenar usuario_id
-          await this.storage.setItem('usuario_id', usuario.usuario_id); 
-  
-          const alert = await this.alertController.create({
-            header: 'Inicio de sesión exitoso.',
-            message: '¡Bienvenido a AppMarket!',
-            buttons: ['OK']
-          });
-  
-          await alert.present();
-          alert.onDidDismiss().then(() => {
-            this.router.navigate(['/tabs/tab1']); 
-          });
         } else {
-          const alert = await this.alertController.create({
-            header: 'Error',
-            message: 'Correo o contraseña incorrectos.',
-            buttons: ['OK']
-          });
+          // Verificar si el correo existe en la base de datos
+          const usuario = await this.bd.verificarUsuario(formcorreo, formPassword);
   
-          await alert.present();
+          if (usuario) {
+            // Almacenar usuario_id
+            await this.storage.setItem('usuario_id', usuario.usuario_id); 
+  
+            await this.mostrarAlerta('Inicio de sesión exitoso.', '¡Bienvenido a AppMarket!');
+            this.router.navigate(['/tabs/tab1']);
+          } else {
+            await this.mostrarAlerta('Error', 'Correo o contraseña incorrectos.');
+          }
         }
+      } catch (error) {
+        await this.mostrarAlerta('Error', 'Ocurrió un problema al intentar iniciar sesión. Por favor, intenta de nuevo.');
       }
     } else {
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'Por favor, completa los campos requeridos correctamente.',
-        buttons: ['OK']
-      });
-  
-      await alert.present();
+      await this.mostrarAlerta('Error', 'Por favor, completa los campos requeridos correctamente.');
     }
   }
 
@@ -106,5 +82,14 @@ export class LoginPage implements OnInit {
       return 'La contraseña es requerida';
     }
     return null;
+  }
+
+  private async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { ServicebdService } from '../services/servicebd.service';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
 @Component({
   selector: 'app-editar-perfil',
@@ -10,39 +12,32 @@ import { AlertController } from '@ionic/angular';
 })
 export class EditarPerfilPage implements OnInit {
   formularioEditar: FormGroup;
-  nombre: string = '';
-  correo: string = '';
+  usuario: any;
+  nombre: string = "";
+  email: string = "";
   telefono!: number;
+  usuario_Id!: number;
 
-  constructor( private fb: FormBuilder, private router: Router, private alertController: AlertController, private activatedRoute: ActivatedRoute
+  constructor( 
+    private fb: FormBuilder, 
+    private router: Router, 
+    private alertController: AlertController, 
+    private storage: NativeStorage,
+    private bd: ServicebdService
   ) {
-    
     this.formularioEditar = this.fb.group({
-      name: [
+      nombre: [
         '',
         [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$')],
       ],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, this.phoneValidator()]],
     });
-
-    
-    this.activatedRoute.queryParams.subscribe(() => {
-      if (this.router.getCurrentNavigation()?.extras.state) {
-        this.correo = this.router.getCurrentNavigation()?.extras?.state?.["cor"];
-        this.nombre = this.router.getCurrentNavigation()?.extras?.state?.["nom"];
-        this.telefono = this.router.getCurrentNavigation()?.extras?.state?.["tel"];
-
-        this.formularioEditar.patchValue({
-          nombre: this.nombre,
-          email: this.correo,
-          telefono: this.telefono
-        });
-      }
-    });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.cargarDatosUsuario();
+  }
 
   // MENSAJE DE ERROR EN NOMBRE
   get nombreErrorMessage() {
@@ -121,32 +116,62 @@ export class EditarPerfilPage implements OnInit {
     };
   }
 
+  async cargarDatosUsuario() {
+    try {
+      const storedUserId = await this.storage.getItem('usuario_id'); 
+      this.usuario_Id = storedUserId; // Asegúrate de almacenar el ID del usuario
+      if (storedUserId) {
+        const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
+        if (usuarioActual) {
+          this.usuario = usuarioActual;
+          this.nombre = usuarioActual.nombre_usu;
+          this.email = usuarioActual.email_usu;
+          this.telefono = usuarioActual.telefono_usu;
+        } else {
+          await this.mostrarAlerta('No se pudo obtener los datos del usuario. EN EL TS editar-perfil');
+        }
+      } else {
+        await this.mostrarAlerta('No se pudo obtener el ID del usuario. ESTORAGE');
+      }
+    } catch (error) {
+      await this.mostrarAlerta('Error al cargar los datos del usuario. METODO ENTERO');
+    }
+  }
+
   async guardarCambios() {
     if (this.formularioEditar.valid) {
-      // Aquí podrías implementar la lógica para guardar los cambios
-      // Por ejemplo, llamar a un servicio para actualizar la información del usuario
-
-      // Mostrar alerta de éxito
-      const alert = await this.alertController.create({
-        header: 'Completado',
-        message: 'Cambios guardados exitosamente.',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-
-      // Redirigir a otra página si es necesario
-      // this.router.navigate(['/some-path']);
+      const { nombre, email, telefono } = this.formularioEditar.value;
+  
+      try {
+        await this.bd.modificarUsuarioPerfil(this.usuario_Id, nombre, email, telefono,);
+        
+        const alert = await this.alertController.create({
+          header: 'Completado',
+          message: 'Cambios guardados exitosamente.',
+          buttons: ['OK']
+        });
+        await alert.present();
+  
+        this.router.navigate(['/tabs/perfil']);
+      } catch (error) {
+        console.error('Error al guardar cambios:', error);
+      }
     } else {
-      // Mostrar alertas si el formulario no es válido
       const alert = await this.alertController.create({
         header: 'Error',
         message: 'Por favor, completa los campos requeridos correctamente.',
         buttons: ['OK']
       });
-
       await alert.present();
     }
   }
-}
 
+  async mostrarAlerta(mensaje: string) {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: mensaje,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+}

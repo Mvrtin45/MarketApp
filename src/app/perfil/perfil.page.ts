@@ -26,36 +26,40 @@ export class PerfilPage implements OnInit {
 
   ngOnInit() {
     this.cargarUsuarioActual();
+    this.bd.seleccionarUsuarios();
   }
 
   async cargarUsuarioActual() {
     try {
+      // Obtener el ID del usuario almacenado
       const storedUserId = await this.storage.getItem('usuario_id'); 
+  
       if (storedUserId) {
+        // Obtener los datos del usuario directamente desde la base de datos utilizando el ID
         const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
+  
         if (usuarioActual) {
-          this.usuario = usuarioActual;
-          this.nombre = usuarioActual.nombre_usu;
-          this.email = usuarioActual.email_usu;
+          this.usuario = usuarioActual; // Guarda todo el objeto para un acceso más sencillo
+          this.nombre = usuarioActual.nombre_usu; 
+          this.email = usuarioActual.email_usu; 
           this.telefono = usuarioActual.telefono_usu;
+          this.bd.seleccionarUsuarios();
         } else {
-          this.mostrarAlerta('No se pudo obtener los datos del usuario. EN EL TS PERFIL');
+          // Mostrar alerta si no se encuentran los datos del usuario
+          await this.mostrarAlerta("No se pudieron obtener los datos del usuario.");
         }
       } else {
-        this.mostrarAlerta('No se pudo obtener el ID del usuario.');
+        // Mostrar alerta si no se encuentra el ID en el almacenamiento
+        await this.mostrarAlerta("No se pudo obtener el ID del usuario.");
       }
     } catch (error) {
-      this.mostrarAlerta('Error al cargar los datos del usuario.');
+      // Manejar errores con una alerta
+      await this.mostrarAlerta( "Error al cargar los datos del usuario.");
     }
   }
 
-  modificar(usuario: any) {
-    let navigationsExtras: NavigationExtras = {
-      state: {
-        usuario: usuario
-      }
-    }
-    this.router.navigate(['/editar-perfil'], navigationsExtras);
+  modificar() {
+    this.router.navigate(['/editar-perfil']);
   }
 
   toggleMenu() {

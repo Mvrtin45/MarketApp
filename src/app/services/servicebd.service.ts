@@ -279,6 +279,25 @@ export class ServicebdService {
     });
   }
 
+  async modificarUsuarioPerfil(iduser: number, nombre: string, telefono: string, correo: string) {
+    try {
+      await this.database.executeSql(
+        'UPDATE Usuarios SET nombre_usu = ?, telefono_usu = ?, email_usu = ? WHERE usuario_id = ?',
+        [nombre, telefono, correo, iduser]
+      );
+  
+      // Guardar el usuario actualizado en el almacenamiento local para que se pueda usar después
+      const usuarioActualizado = { iduser, nombre, telefono, correo };
+      await this.storage.setItem('usuario', usuarioActualizado);
+  
+      // Mostrar alerta de éxito
+      await this.presentAlert("Modificar", "Perfil modificado correctamente.");
+    } catch (error) {
+      // Mostrar alerta de error si la modificación falla
+      await this.presentAlert("Modificar", "Error al modificar perfil: " + JSON.stringify(error));
+    }
+  }
+
   // INSERTAR
   insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
     return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio) VALUES (?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio]).then(res => {
@@ -288,34 +307,53 @@ export class ServicebdService {
     });
   } 
 
-  insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string) {
-    return this.database.executeSql(
-        'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id) VALUES (?, ?, ?, ?, ?)', 
-        [nombre, email, telefono, contrasena, 1]  
-    ).then(res => {
+  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string) {
+    try {
+        // Insertar usuario en la base de datos
+        const res = await this.database.executeSql(
+            'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id) VALUES (?, ?, ?, ?, ?)',
+            [nombre, email, telefono, contrasena, 1] // rol_id se establece como 1
+        );
+        if (res.insertId) {
+            // Guardar los datos del usuario recién creado en Native Storage
+            const usuario = {
+                iduser: res.insertId, // res.insertId devuelve el ID del usuario insertado
+                nombre,
+                email,
+                telefono
+            };
+            await this.storage.setItem('usuario', usuario);
+        }
+        // Seleccionar usuarios para refrescar cualquier lista o datos dependientes
         this.seleccionarUsuarios();
-    }).catch(e => {
-        this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
-    });
+    } catch (e) {
+        // Mostrar alerta de error si falla la inserción
+        await this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
+    }
 }
 
   // VERIFICAR
   async verificarUsuario(email_usu: string, contrasena_usu: string): Promise<any> {
-    const query = 'SELECT usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE email_usu = ? AND contrasena_usu = ?';
-    const res = await this.database.executeSql(query, [email_usu, contrasena_usu]);
-  
-    if (res.rows.length > 0) {
-      // Retornar el objeto del usuario
-      return {
-        usuario_id: res.rows.item(0).usuario_id,
-        nombre_usu: res.rows.item(0).nombre_usu,
-        email_usu: res.rows.item(0).email_usu,
-        telefono_usu: res.rows.item(0).telefono_usu,
-      };
-    } else {
-      return null; // Si no se encuentra el usuario
+    try {
+        const query = 'SELECT usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE email_usu = ? AND contrasena_usu = ?';
+        const res = await this.database.executeSql(query, [email_usu, contrasena_usu]);
+        if (res.rows.length > 0) {
+            // Retornar el objeto del usuario encontrado
+            return {
+                usuario_id: res.rows.item(0).usuario_id,
+                nombre_usu: res.rows.item(0).nombre_usu,
+                email_usu: res.rows.item(0).email_usu,
+                telefono_usu: res.rows.item(0).telefono_usu,
+            };
+        } else {
+            return null; // Si no se encuentra el usuario
+        }
+    } catch (e) {
+        // Manejar errores y registrar si es necesario
+        await this.presentAlert('Verificación de Usuario', 'Error: ' + JSON.stringify(e));
+        return null;
     }
-  }
+}
 
   // ACTUALIZAR
   actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {

@@ -19,7 +19,7 @@
           <!-- Campo de Nombre -->
           <ion-item>
             <ion-label position="floating">Nombre</ion-label>
-            <ion-input formControlName="name" [(ngModel)]="nombre"></ion-input>
+            <ion-input formControlName="nombre" [(ngModel)]="nombre"></ion-input>
           </ion-item>
           <ion-text [class.visible]="nombreErrorMessage">
             {{ nombreErrorMessage }}
@@ -27,7 +27,7 @@
           <!-- Campo de Correo -->
           <ion-item>
             <ion-label position="floating">Correo Electrónico</ion-label>
-            <ion-input formControlName="email" type="email" [(ngModel)]="correo"></ion-input>
+            <ion-input formControlName="email" type="email" [(ngModel)]="email"></ion-input>
           </ion-item>
           <ion-text [class.visible]="emailErrorMessage">
             {{ emailErrorMessage }}
