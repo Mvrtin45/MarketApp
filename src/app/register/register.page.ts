@@ -16,7 +16,7 @@ export class RegisterPage implements OnInit {
   correo: string = "";
   telefono!: number;
   contrasena: string = "";
-  rol: string = "usuario";
+  rol: number = 1;
 
   constructor(
     private fb: FormBuilder,
@@ -199,7 +199,7 @@ export class RegisterPage implements OnInit {
         correo: this.formularioRegistro.get('email')!.value,
         telefono: this.formularioRegistro.get('phone')!.value,
         contrasena: this.formularioRegistro.get('password')!.value,
-        rol: 'usuario'
+        rol: '1'
       };
 
       this.bd.insertarUsuario(
@@ -207,8 +207,9 @@ export class RegisterPage implements OnInit {
         nuevoUsuario.correo,
         nuevoUsuario.telefono,
         nuevoUsuario.contrasena,
-        nuevoUsuario.rol
-      ).then(async () => {
+      ).then(async (usuarioId) => {
+        // Guardar el usuario_id en NativeStorage
+        await this.storage.setItem('usuario_id', usuarioId);
 
         // Mostrar alerta de éxito
         const alert = await this.alertController.create({

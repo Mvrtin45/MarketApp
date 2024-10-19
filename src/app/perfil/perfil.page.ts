@@ -11,8 +11,10 @@ import { ServicebdService } from '../services/servicebd.service';
 })
 export class PerfilPage implements OnInit {
   menuOpen: boolean = false;
-  usuario_id: number | null = null; // Asegúrate de que esto sea number
-  usuario: any; // Cambia a 'usuario' en lugar de 'Infousuarios'
+  usuario: any; 
+  nombre: string = '';
+  email: string = '';
+  telefono: string = '';
 
   constructor(
     private activatedRoute: ActivatedRoute, 
@@ -23,10 +25,28 @@ export class PerfilPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    const usuarioId = this.activatedRoute.snapshot.paramMap.get('usuario_id'); 
-  this.usuario_id = usuarioId ? parseInt(usuarioId) : null; 
-  this.mostrarAlerta('Usuario ID', `ID de usuario: ${this.usuario_id}`); // Agrega esta línea para verificar el ID
-  this.obtenerUsuario(this.usuario_id);
+    this.cargarUsuarioActual();
+  }
+
+  async cargarUsuarioActual() {
+    try {
+      const storedUserId = await this.storage.getItem('usuario_id'); 
+      if (storedUserId) {
+        const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
+        if (usuarioActual) {
+          this.usuario = usuarioActual;
+          this.nombre = usuarioActual.nombre_usu;
+          this.email = usuarioActual.email_usu;
+          this.telefono = usuarioActual.telefono_usu;
+        } else {
+          this.mostrarAlerta('No se pudo obtener los datos del usuario. EN EL TS PERFIL');
+        }
+      } else {
+        this.mostrarAlerta('No se pudo obtener el ID del usuario.');
+      }
+    } catch (error) {
+      this.mostrarAlerta('Error al cargar los datos del usuario.');
+    }
   }
 
   modificar(usuario: any) {
@@ -38,26 +58,13 @@ export class PerfilPage implements OnInit {
     this.router.navigate(['/editar-perfil'], navigationsExtras);
   }
 
-  async obtenerUsuario(usuario_id: number | null) {
-    if (usuario_id) {
-      this.mostrarAlerta('Información', `Buscando usuario con ID: ${usuario_id}`); // Agrega esta línea
-      const usuario = await this.bd.getUsuarioPorId(usuario_id);
-      this.usuario = usuario; 
-      if (!this.usuario) {
-        this.mostrarAlerta('Error', 'No se encontró el usuario.');
-      }
-    } else {
-      this.mostrarAlerta('Error', 'ID de usuario no válido.');
-    }
-  }
-
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }
 
-  async mostrarAlerta(titulo: string, mensaje: string) {
+  async mostrarAlerta(mensaje: string) {
     const alert = await this.alertController.create({
-      header: titulo,
+      header: 'Error',
       message: mensaje,
       buttons: ['OK'],
     });

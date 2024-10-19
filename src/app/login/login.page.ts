@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private activatedRoute: ActivatedRoute,
+    private storage: NativeStorage,
     private bd: ServicebdService
   ) {
     this.formularioLogin = this.fb.group({
@@ -34,7 +36,7 @@ export class LoginPage implements OnInit {
     if (this.formularioLogin.valid) {
       const formcorreo = this.formularioLogin.get('email')?.value;
       const formPassword = this.formularioLogin.get('password')?.value;
-
+  
       // Verificar credenciales para administrador
       if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
         const alert = await this.alertController.create({
@@ -42,45 +44,46 @@ export class LoginPage implements OnInit {
           message: 'Redirigiendo al apartado de administrador...',
           buttons: ['OK']
         });
-
+  
         await alert.present();
         alert.onDidDismiss().then(() => {
           this.router.navigate(['/admin']);
         });
       } else {
         // Verificar si el correo existe en la base de datos
-        this.bd.verificarUsuario(formcorreo, formPassword).then(
-          async (usuarioExiste) => {
-          if (usuarioExiste) {
-            const alert = await this.alertController.create({
-              header: 'Inicio de sesión exitoso.',
-              message: '¡Bienvenido a AppMarket!',
-              buttons: ['OK']
-            });
-
-            await alert.present();
-            alert.onDidDismiss().then(() => {
-              this.router.navigate(['/tabs/tab1']);
-            });
-          } else {
-            const alert = await this.alertController.create({
-              header: 'Error',
-              message: 'Correo o contraseña incorrectos.',
-              buttons: ['OK']
-            });
-
-            await alert.present();
-          }
-        });
+        const usuario = await this.bd.verificarUsuario(formcorreo, formPassword);
+  
+        if (usuario) {
+          // Almacenar usuario_id
+          await this.storage.setItem('usuario_id', usuario.usuario_id); 
+  
+          const alert = await this.alertController.create({
+            header: 'Inicio de sesión exitoso.',
+            message: '¡Bienvenido a AppMarket!',
+            buttons: ['OK']
+          });
+  
+          await alert.present();
+          alert.onDidDismiss().then(() => {
+            this.router.navigate(['/tabs/tab1']); 
+          });
+        } else {
+          const alert = await this.alertController.create({
+            header: 'Error',
+            message: 'Correo o contraseña incorrectos.',
+            buttons: ['OK']
+          });
+  
+          await alert.present();
+        }
       }
     } else {
-      // Mostrar alertas si el formulario no es válido
       const alert = await this.alertController.create({
         header: 'Error',
         message: 'Por favor, completa los campos requeridos correctamente.',
         buttons: ['OK']
       });
-
+  
       await alert.present();
     }
   }
