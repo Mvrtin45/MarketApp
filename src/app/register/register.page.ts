@@ -199,7 +199,8 @@ export class RegisterPage implements OnInit {
         correo: this.formularioRegistro.get('email')!.value,
         telefono: this.formularioRegistro.get('phone')!.value,
         contrasena: this.formularioRegistro.get('password')!.value,
-        rol: '1'
+        rol: '1',
+        imagen: '/assets/icon/logo.jpg'
       };
 
       this.bd.insertarUsuario(
@@ -207,6 +208,7 @@ export class RegisterPage implements OnInit {
         nuevoUsuario.correo,
         nuevoUsuario.telefono,
         nuevoUsuario.contrasena,
+        nuevoUsuario.imagen
       ).then(async (usuarioId) => {
         // Guardar el usuario_id en NativeStorage
         await this.storage.setItem('usuario_id', usuarioId);

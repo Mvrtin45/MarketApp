@@ -16,11 +16,11 @@ export class ServicebdService {
 
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL);";
-  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, rol_id INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
+  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT , rol_id INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL (rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
 
   // Variables para los insert por defecto en nuestras tablas 
-  registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123', '2');";
+  registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   
   // Variables para guardar los datos de las consultas en las tablas
@@ -195,7 +195,7 @@ export class ServicebdService {
 
   obtenerDatosUsuario(usuario_id: number) {
     const query = `
-      SELECT nombre_usu, email_usu, telefono_usu
+      SELECT nombre_usu, email_usu, telefono_usu , imagen_usu
       FROM Usuarios 
       WHERE usuario_id = ?
     `;
@@ -206,6 +206,7 @@ export class ServicebdService {
           nombre_usu: res.rows.item(0).nombre_usu,
           email_usu: res.rows.item(0).email_usu,
           telefono_usu: res.rows.item(0).telefono_usu,
+          imagen_usu: res.rows.item(0).imagen_usu
         };
         return usuario;
       } else {
@@ -262,7 +263,7 @@ export class ServicebdService {
   
   // MODIFICAR
   modificarUsuario(id: string, nombre: string, email: string, telefono: number, contrasena: string, rol: string) {
-    return this.database.executeSql('UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ?, contrasena_usu = ?, rol = ? WHERE usuario_id = ?', [nombre, email, telefono, contrasena, rol, id]).then(res => {
+    return this.database.executeSql('UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ?, contrasena_usu = ?, rol_id = ? WHERE usuario_id = ?', [nombre, email, telefono, contrasena, rol, id]).then(res => {
       this.presentAlert("Modificar", "Usuario Modificado");
       this.seleccionarUsuarios();
     }).catch(e => {
@@ -307,12 +308,12 @@ export class ServicebdService {
     });
   } 
 
-  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string) {
+  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, imagen_usu: string) {
     try {
         // Insertar usuario en la base de datos
         const res = await this.database.executeSql(
-            'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id) VALUES (?, ?, ?, ?, ?)',
-            [nombre, email, telefono, contrasena, 1] // rol_id se establece como 1
+            'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id, imagen_usu ) VALUES (?, ?, ?, ?, ?, ?)',
+            [nombre, email, telefono, contrasena, 1, imagen_usu] 
         );
         if (res.insertId) {
             // Guardar los datos del usuario recién creado en Native Storage
@@ -370,4 +371,23 @@ export class ServicebdService {
       });
   }
 
+  async actualizarImagenUsuario(usuario_id: number, imagen_usu: string | null): Promise<void> {
+    console.log('Usuario ID:', usuario_id); // Verificar que el ID es correcto
+    const sql = 'UPDATE Usuarios SET imagen_usu = ? WHERE usuario_id = ?';
+    const data = [imagen_usu, usuario_id];
+    console.log('Actualizar usuario ID:', usuario_id);
+    console.log('Nuevo path de imagen:', imagen_usu); 
+
+    try {
+        const res = await this.database.executeSql(sql, data);
+        
+        if (res.rowsAffected > 0) {
+            await this.presentAlert("Actualización", "Imagen actualizada exitosamente.");
+        } else {
+          await this.presentAlert("Error", `No se encontró un usuario con ese ID. Respuesta: ${JSON.stringify(res)}`);
+        }
+    } catch (e) {
+        await this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
+    }
+  }
 }

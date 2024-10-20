@@ -1,53 +1,95 @@
-ion-content{
+ion-content {
   --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+  background-size: cover; // Asegura que la imagen de fondo cubra todo el contenido
+  background-position: center; // Centra la imagen de fondo
+  padding: 16px; // Agrega un poco de espacio alrededor del contenido
 }
-ion-grid {
-    ion-row {
-      ion-col {
-        display: flex;
-        justify-content: center; 
-        align-items: center; 
-        border: 1px solid #000; 
-        border-radius: 8px; 
-        padding: 0; 
-        height: auto; 
-        box-sizing: border-box; 
-  
-        ion-button {
-          --padding-start: 10px; 
-          --padding-end: 10px; 
-          --color: #000; 
-          --background: transparent; 
-          --border-radius: 0; 
-  
-          &.ion-activated {
-            font-weight: bold; 
-          }
-  
-          &:hover {
-            font-weight: bold; 
-          }
-          ion-icon {
-            font-size: 20px; 
-            margin-bottom: 15px; 
-          }
-        }
-      }
+
+ion-list {
+  margin: 0; // Elimina el margen predeterminado
+  padding: 0; // Elimina el padding predeterminado
+}
+
+ion-item {
+  background: rgba(255, 255, 255, 0.8); // Fondo blanco con opacidad para un mejor contraste
+  border-radius: 8px; // Bordes redondeados
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra suave
+  margin-bottom: 16px; // Espaciado entre elementos de la lista
+}
+
+.product-info {
+  display: flex; // Usa flexbox para organizar los elementos dentro del item
+  flex-direction: column; 
+  justify-content: center; 
+  padding: 16px; // Espaciado interno
+
+  h2 {
+    color: #333; // Color del texto del nombre del producto
+    margin: 0; // Sin margen
+  }
+
+  h3 {
+    color: #555; // Color del texto del precio
+    margin: 5px 0; // Margen vertical
+  }
+}
+
+.product-actions {
+  display: flex; // Usar flexbox para los botones de acción
+  align-items: center; // Alinear verticalmente
+
+  .quantity-button {
+    width: 36px; // Ancho fijo para los botones de cantidad
+    height: 36px; // Alto fijo
+    font-size: 24px; // Tamaño de fuente mayor
+    color: #fff; // Color del texto
+    background-color: #007bff; // Color de fondo del botón
+    border-radius: 4px; // Bordes redondeados
+    margin: 0 4px; // Espaciado entre botones
+
+    &:hover {
+      background-color: #0056b3; // Color al pasar el mouse
     }
   }
-  .center-content {
-    display: flex;
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
-    text-align: center; 
-    color: #000; 
+
+  .product-quantity {
+    font-size: 20px; // Tamaño del texto de cantidad
+    margin: 0 10px; // Espaciado horizontal
   }
-  
-  ion-icon {
-    font-size: 60px; 
-    margin-bottom: 15px; 
+}
+
+.clear-cart-button {
+  margin-top: 16px; // Margen superior para el botón de vaciar carrito
+  --background: #f44336; // Color de fondo rojo
+  --color: white; // Color del texto blanco
+  --border-radius: 8px; // Bordes redondeados
+}
+
+.total-container {
+  margin-top: 24px; // Margen superior para el contenedor total
+  text-align: center; // Centrar el texto
+
+  h3 {
+    color: #333; // Color del texto para subtotal y total
+    margin: 8px 0; // Margen vertical
   }
-  
+
+  .pay-button {
+    margin-top: 16px; // Margen superior para el botón de pago
+    --background: #4caf50; // Color de fondo verde
+    --color: white; // Color del texto blanco
+    --border-radius: 8px; // Bordes redondeados
+  }
+}
+
+.cart-icon {
+  font-size: 60px; // Tamaño de icono
+  color: #007bff; // Color del icono
+}
+
+.explore-button {
+  --background: #2196f3; // Color de fondo azul
+  --color: white; // Color del texto blanco
+  margin-top: 16px; // Margen superior
+}
   

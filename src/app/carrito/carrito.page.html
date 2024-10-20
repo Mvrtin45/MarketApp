@@ -1,22 +1,43 @@
-<ion-content [fullscreen]="true">
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button fill="clear" id="top-button" [routerLink]="['/tabs/carrito']">
-          Carrito
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button fill="clear" [routerLink]="['/favoritos']">
-          Favoritos
-          <ion-icon slot="end" name="bookmark-sharp"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+<ion-content [fullscreen]="true" class="cart-content">
+  <div *ngIf="productosCarrito.length > 0; else emptyCart">
+    <ion-list>
+      <ion-item *ngFor="let producto of productosCarrito; let i = index">
+        <ion-thumbnail slot="start">
+          <img [src]="producto.foto">
+        </ion-thumbnail>
+        <ion-label class="product-info">
+          <div class="product-details">
+            <h2>{{ producto.nombre }}</h2>
+            <h3>Precio unitario: ${{ producto.precio }}</h3>
+          </div>
+          <div class="product-actions">
+            <ion-button fill="clear" class="quantity-button" (click)="decreaseQuantity(i)">-</ion-button>
+            <span class="product-quantity">{{ producto.cantidad }}</span>
+            <ion-button fill="clear" class="quantity-button" (click)="increaseQuantity(i)">+</ion-button>
+          </div>
+          <ion-button color="danger" (click)="eliminarProducto(i)">Eliminar</ion-button>
+        </ion-label>
+      </ion-item>
+    </ion-list>
 
-  <div class="center-content">
-    <ion-icon name="bag-outline"></ion-icon>
-    <ion-label>Tu Carrito De Compras Esta Vacio</ion-label>
+    <ion-button class="clear-cart-button" expand="full" (click)="vaciarCarrito()">Vaciar carrito</ion-button>
+
+    <div class="total-container">
+      <h3>Subtotal: ${{ subtotal.toFixed(2) }}</h3>
+      <h3>Total: ${{ precioTotal.toFixed(2) }}</h3>
+
+      <ion-button class="pay-button" expand="full" (click)="Pago()">Ir a Pagar</ion-button>
+    </div>
   </div>
+
+  <ng-template #emptyCart>
+    <ion-card>
+      <ion-card-header>
+        <ion-icon name="cart-outline" class="cart-icon"></ion-icon>
+        <p>Tu carrito está vacío</p>
+        <p class="explore-text">¿Qué esperas? Explora nuestra colección y empieza a comprar.</p>
+        <ion-button (click)="recargarDatos()">Actualizar</ion-button>
+      </ion-card-header>
+    </ion-card>
+  </ng-template>
 </ion-content>
