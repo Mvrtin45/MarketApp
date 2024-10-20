@@ -20,7 +20,4 @@ export class AdminPage implements OnInit {
   ngOnInit() {
   }
  
-  addProducto() {
-    this.bd.insertarPublicacion(this.nombre, this.descripcion, this.talla, this.ubicacion, this.color, this.precio);
-  }
 }

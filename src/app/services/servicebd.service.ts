@@ -15,18 +15,20 @@ export class ServicebdService {
   public database!: SQLiteObject;
 
   // Variables de creación de Tablas
-  tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL);";
+  tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT , rol_id INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL (rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
 
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
+  registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
   listadoUsuarios = new BehaviorSubject([]);
   listadoRol = new BehaviorSubject([]);
+  listadoAgruparPublicacionesConUsuarios = new BehaviorSubject([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -62,6 +64,9 @@ export class ServicebdService {
     return this.listadoRol.asObservable();
   }
 
+  fetchPublicacionesConUsuarios(): Observable<Publicaciones[]> {
+    return this.listadoAgruparPublicacionesConUsuarios.asObservable();
+  }
   dbState(){
     return this.isDBReady.asObservable();
   }
@@ -88,6 +93,7 @@ export class ServicebdService {
 
   async crearTablas() {
     try {
+      //await this.database.executeSql('DROP TABLE IF EXISTS Publicaciones', []);
       // Ejecutar la creación de Tablas
       await this.database.executeSql(this.tablaPublicaciones, []);
       await this.database.executeSql(this.tablaUsuarios, []);
@@ -95,7 +101,9 @@ export class ServicebdService {
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
+      await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
+
 
       this.seleccionarPublicaciones();
       this.seleccionarUsuarios();
@@ -125,7 +133,8 @@ export class ServicebdService {
             talla: res.rows.item(i).talla,
             ubicacion: res.rows.item(i).ubicacion,
             color: res.rows.item(i).color,
-            precio: res.rows.item(i).precio
+            precio: res.rows.item(i).precio,
+            usuario_id: res.rows.item(i).usuario_id
           });
         }
       }
@@ -158,6 +167,7 @@ export class ServicebdService {
     });
   }
 
+  
   //OBTENER
   getPublicacionById(id: string) {
     return this.database.executeSql('SELECT * FROM Publicaciones WHERE producto_id = ?', [id]).then(data => {
@@ -215,6 +225,40 @@ export class ServicebdService {
     }).catch(e => {
       this.presentAlert("ERROR", `No se pudo obtener los datos del usuario. ${e.message}`); 
       return null;
+    });
+  }
+
+  obtenerUsuariosConPublicaciones() {
+    const query = `
+      SELECT 
+        u.usuario_id, 
+        u.nombre_usu, 
+        u.email_usu, 
+        p.producto_id, 
+        p.titulo, 
+        p.descripcion, 
+        p.talla, 
+        p.ubicacion, 
+        p.color, 
+        p.precio, 
+        p.foto_publicacion
+      FROM 
+        Usuarios u
+      LEFT JOIN 
+        Publicaciones p ON u.usuario_id = p.usuario_id
+      ORDER BY 
+        u.usuario_id;
+    `;
+  
+    return this.database.executeSql(query, []).then(res => {
+      let items: any[] = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        items.push(res.rows.item(i));
+      }
+      return items;
+    }).catch(e => {
+      console.error('Error al obtener usuarios con publicaciones:', e);
+      return [];
     });
   }
 
@@ -301,8 +345,8 @@ export class ServicebdService {
   }
 
   // INSERTAR
-  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
-    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio) VALUES (?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio]).then(res => {
+  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, imagen: string) {
+    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio, imagen]).then(res => {
       this.seleccionarPublicaciones();
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));

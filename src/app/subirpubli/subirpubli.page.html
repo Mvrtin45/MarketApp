@@ -71,7 +71,7 @@
         <!-- IMAGEN -->
         <div class="input-group">
           <label for="image">Imagen:</label>
-          <input id="image" type="file" formControlName="image" accept="image/*">
+          <input id="image" type="file" (change)="onFileSelected($event)" formControlName="image" accept="image/*">
         </div>
         <!-- BOTON DE SUBIR PUBLI -->
         <mat-card-actions>

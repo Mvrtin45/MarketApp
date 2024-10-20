@@ -6,4 +6,5 @@ export class Publicaciones {
     ubicacion!: string;
     talla!: string;
     color!: string;
+    usuario_id!: number;
 }
