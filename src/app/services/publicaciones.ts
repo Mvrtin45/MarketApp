@@ -7,4 +7,7 @@ export class Publicaciones {
     talla!: string;
     color!: string;
     usuario_id!: number;
+    foto_publicacion!: string;
+    nombre_usu!: string;
+    email_usu!: string;
 }

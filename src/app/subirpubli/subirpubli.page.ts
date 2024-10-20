@@ -17,7 +17,7 @@ export class SubirpubliPage implements OnInit {
   ubicacion: string = "";
   talla: string = "";
   color: string = "";
-  imagen: string ="";
+  imagen: string = "";
   selectedFile: File | null = null;
 
   constructor(
@@ -39,66 +39,98 @@ export class SubirpubliPage implements OnInit {
 
   ngOnInit() {}
 
+  // Método para manejar la selección del archivo
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      console.log('Archivo seleccionado:', this.selectedFile); // Depuración
+    } else {
+      this.selectedFile = null;
+      console.log('No se seleccionó ningún archivo'); // Depuración
+    }
+  }
+
   // Envío del formulario
   async subirPublicacion() {
     if (this.formularioPublicacion.valid) {
-        const fileControl = this.formularioPublicacion.get('image');
-        const file: File = fileControl?.value;
-
-        if (file) { // Asegúrate de que el archivo existe
-            const reader = new FileReader();
-            reader.onload = async () => {
-                const base64Image = reader.result as string;
-
-                // Guardar en la base de datos SQLite
-                this.bd.insertarPublicacion(
-                    this.formularioPublicacion.get('titulo')?.value,
-                    this.formularioPublicacion.get('descripcion')?.value,
-                    this.formularioPublicacion.get('talla')?.value,
-                    this.formularioPublicacion.get('ubicacion')?.value,
-                    this.formularioPublicacion.get('color')?.value,
-                    this.formularioPublicacion.get('precio')?.value,
-                    base64Image 
-                ).then(async () => {
-                    // Alerta de éxito
-                    const alert = await this.alertController.create({
-                        header: 'Publicación exitosa',
-                        message: 'Tu publicación ha sido subida con éxito.',
-                        buttons: ['OK']
-                    });
-                    await alert.present();
-                    alert.onDidDismiss().then(() => {
-                        this.router.navigate(['/tabs/perfil']);
-                    });
-                }).catch(async (error) => {
-                    // Alerta de error
-                    const alert = await this.alertController.create({
-                        header: 'Error',
-                        message: 'No se pudo subir la publicación. Por favor, inténtalo de nuevo.',
-                        buttons: ['OK']
-                    });
-                    await alert.present();
-                });
-            };
-            reader.readAsDataURL(file); // Leer el archivo como base64
-        } else {
-            // Manejar el caso en que no hay archivo seleccionado
-            const alert = await this.alertController.create({
-                header: 'Error',
-                message: 'Por favor selecciona una imagen.',
-                buttons: ['OK']
-            });
-            await alert.present();
-        }
-    } else {
+      // Obtener el usuario actual
+      const usuarioActual = await this.bd.obtenerUsuarioActual();
+      if (!usuarioActual) {
         const alert = await this.alertController.create({
-            header: 'Formulario inválido',
-            message: 'Por favor, revise los campos y corrija los errores.',
-            buttons: ['OK']
+          header: 'Error',
+          message: 'No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.',
+          buttons: ['OK']
         });
         await alert.present();
+        return;
+      }
+  
+      const nuevaPublicacion = {
+        titulo: this.formularioPublicacion.get('titulo')?.value,
+        descripcion: this.formularioPublicacion.get('descripcion')?.value,
+        talla: this.formularioPublicacion.get('talla')?.value,
+        ubicacion: this.formularioPublicacion.get('ubicacion')?.value,
+        color: this.formularioPublicacion.get('color')?.value,
+        precio: this.formularioPublicacion.get('precio')?.value,
+        imagen: this.selectedFile, // Cambiar a this.selectedFile
+        usuario_id: usuarioActual.usuario_id // Agregar el usuario_id
+      };
+  
+      if (this.selectedFile) { // Asegúrate de que hay un archivo seleccionado
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64Image = reader.result as string;
+  
+          // Guardar en la base de datos SQLite
+          this.bd.insertarPublicacion(
+            nuevaPublicacion.titulo,
+            nuevaPublicacion.descripcion,
+            nuevaPublicacion.talla,
+            nuevaPublicacion.ubicacion,
+            nuevaPublicacion.color,
+            nuevaPublicacion.precio,
+            base64Image,
+            nuevaPublicacion.usuario_id // Pasar el usuario_id como parámetro
+          ).then(async () => {
+            // Mostrar alerta de éxito
+            const alert = await this.alertController.create({
+              header: 'Publicación exitosa',
+              message: 'Tu publicación ha sido subida con éxito.',
+              buttons: ['OK']
+            });
+            await alert.present();
+            alert.onDidDismiss().then(() => {
+              this.router.navigate(['/tabs/perfil']);
+            });
+          }).catch(async (error) => {
+            // Mostrar alerta de error en caso de que falle la inserción
+            const alert = await this.alertController.create({
+              header: 'Error',
+              message: 'No se pudo subir la publicación. Por favor, inténtalo de nuevo.',
+              buttons: ['OK']
+            });
+            await alert.present();
+          });
+        };
+        reader.readAsDataURL(this.selectedFile); // Leer el archivo como base64
+      } else {
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'Por favor, selecciona una imagen.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
+    } else {
+      const alert = await this.alertController.create({
+        header: 'Formulario inválido',
+        message: 'Por favor, revise los campos y corrija los errores.',
+        buttons: ['OK']
+      });
+      await alert.present();
     }
-}
+  }
 
   // Método para mostrar mensajes de error
   getErrorMessage(field: string): string {

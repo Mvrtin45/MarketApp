@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, from } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Publicaciones } from './publicaciones';
 import { Usuarios } from './usuarios';
 import { Rol } from './rol';
@@ -23,12 +24,13 @@ export class ServicebdService {
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
+  registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
   
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
   listadoUsuarios = new BehaviorSubject([]);
   listadoRol = new BehaviorSubject([]);
-  listadoAgruparPublicacionesConUsuarios = new BehaviorSubject([]);
+  listadoAgruparPublicacionesConUsuarios = new BehaviorSubject<Publicaciones[]>([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -65,8 +67,15 @@ export class ServicebdService {
   }
 
   fetchPublicacionesConUsuarios(): Observable<Publicaciones[]> {
-    return this.listadoAgruparPublicacionesConUsuarios.asObservable();
-  }
+    return from(this.obtenerUsuariosConPublicaciones()).pipe(
+        tap((publicaciones: Publicaciones[]) => {
+            console.log('Publicaciones obtenidas:', JSON.stringify(publicaciones, null, 2)); 
+            this.listadoAgruparPublicacionesConUsuarios.next(publicaciones);
+        })
+    );
+}
+  
+
   dbState(){
     return this.isDBReady.asObservable();
   }
@@ -103,6 +112,7 @@ export class ServicebdService {
       await this.database.executeSql(this.registroUsuarioAdmin, []);
       await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
+      await this.database.executeSql(this.registroPublicacionConUsuario, []);
 
 
       this.seleccionarPublicaciones();
@@ -134,7 +144,10 @@ export class ServicebdService {
             ubicacion: res.rows.item(i).ubicacion,
             color: res.rows.item(i).color,
             precio: res.rows.item(i).precio,
-            usuario_id: res.rows.item(i).usuario_id
+            usuario_id: res.rows.item(i).usuario_id,
+            foto_publicacion: res.rows.item(i).foto_publicacion,
+            nombre_usu: res.rows.item(i).nombre_usu,
+            email_usu: res.rows.item(i).email_usu
           });
         }
       }
@@ -228,39 +241,20 @@ export class ServicebdService {
     });
   }
 
-  obtenerUsuariosConPublicaciones() {
-    const query = `
-      SELECT 
-        u.usuario_id, 
-        u.nombre_usu, 
-        u.email_usu, 
-        p.producto_id, 
-        p.titulo, 
-        p.descripcion, 
-        p.talla, 
-        p.ubicacion, 
-        p.color, 
-        p.precio, 
-        p.foto_publicacion
-      FROM 
-        Usuarios u
-      LEFT JOIN 
-        Publicaciones p ON u.usuario_id = p.usuario_id
-      ORDER BY 
-        u.usuario_id;
-    `;
-  
+  obtenerUsuariosConPublicaciones(): Promise<Publicaciones[]> {
+    const query = ` SELECT u.usuario_id, u.nombre_usu, u.email_usu, p.producto_id, p.titulo, p.descripcion, p.talla, p.ubicacion, p.color, p.precio, p.foto_publicacion FROM Usuarios u LEFT JOIN Publicaciones p ON u.usuario_id = p.usuario_id ORDER BY u.usuario_id;`;
     return this.database.executeSql(query, []).then(res => {
-      let items: any[] = [];
-      for (let i = 0; i < res.rows.length; i++) {
-        items.push(res.rows.item(i));
-      }
-      return items;
+        let items: Publicaciones[] = []; 
+        for (let i = 0; i < res.rows.length; i++) {
+            items.push(res.rows.item(i));
+        }
+        console.log('Resultados de la consulta:', items);
+        return items;
     }).catch(e => {
-      console.error('Error al obtener usuarios con publicaciones:', e);
-      return [];
+        console.error('Error al obtener usuarios con publicaciones:', e);
+        return [];
     });
-  }
+}
 
   async obtenerUsuarioActual() {
     try {
@@ -345,8 +339,8 @@ export class ServicebdService {
   }
 
   // INSERTAR
-  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, imagen: string) {
-    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio, imagen]).then(res => {
+  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, imagen: string, usuario_id: number) {
+    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio, imagen, usuario_id]).then(res => {
       this.seleccionarPublicaciones();
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
