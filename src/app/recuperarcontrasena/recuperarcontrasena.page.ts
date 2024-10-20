@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, AlertController } from '@ionic/angular';
+import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
   selector: 'app-recuperarcontrasena',
@@ -12,9 +13,11 @@ export class RecuperarcontrasenaPage implements OnInit {
   emailErrorMessage: string = '';
   correo: string = "";
 
-  constructor( private formBuilder: FormBuilder,
+  constructor(
+    private formBuilder: FormBuilder,
     private navCtrl: NavController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private bd: ServicebdService 
   ) {
     this.formularioRecuperar = this.formBuilder.group({
       email: [
@@ -27,8 +30,7 @@ export class RecuperarcontrasenaPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   async recuperarContrasena() {
     this.emailErrorMessage = ''; // Reinicia el mensaje de error
@@ -45,9 +47,20 @@ export class RecuperarcontrasenaPage implements OnInit {
       return;
     }
 
-    // Aquí puedes implementar la lógica para enviar el correo de recuperación
+    // Verificar si el correo existe en la base de datos
+    const correoExiste = await this.bd.verificarCorreo(this.correo);
+    if (!correoExiste) {
+      this.emailErrorMessage = 'El correo ingresado no está registrado.';
+      return;
+    }
 
-    // Mostrar la alerta después de la acción
+    // Si el correo existe, procede a enviar el correo de recuperación
+    // Aquí puedes implementar la lógica para enviar el correo de recuperación
+    await this.mostrarAlertaCorreoEnviado();
+  }
+
+  // Método para mostrar la alerta después de enviar el correo de recuperación
+  async mostrarAlertaCorreoEnviado() {
     const alert = await this.alertController.create({
       header: 'Correo enviado',
       message: 'Hemos enviado un enlace de recuperación de contraseña a tu correo.',

@@ -384,6 +384,18 @@ export class ServicebdService {
     console.error('Error al verificar la contraseña:', error);
     return false;
   }
+  } 
+  verificarCorreo(correo: string) {
+    return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo]).then(res => {
+      if (res.rows.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }).catch(e => {
+      console.error('Error al verificar el correo:', e);
+      return false;
+    });
   }
 
   // ACTUALIZAR
@@ -400,20 +412,6 @@ export class ServicebdService {
         this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
       });
   }
-
-  verificarCorreo(correo: string) {
-    return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo]).then(res => {
-      if (res.rows.length > 0) {
-        return true;
-      } else {
-        return false;
-      }
-    }).catch(e => {
-      console.error('Error al verificar el correo:', e);
-      return false;
-    });
-  }
-// Método ejemplo para obtener al usuario actual desde la base de datos
 
   async actualizarImagenUsuario(usuario_id: number, imagen_usu: string | null): Promise<void> {
     console.log('Usuario ID:', usuario_id); // Verificar que el ID es correcto
