@@ -143,7 +143,7 @@ export class EditarPerfilPage implements OnInit {
       const { nombre, email, telefono } = this.formularioEditar.value;
   
       try {
-        await this.bd.modificarUsuarioPerfil(this.usuario_Id, nombre, email, telefono,);
+        await this.bd.modificarUsuarioPerfil(nombre, email, telefono, this.usuario_Id);
         
         const alert = await this.alertController.create({
           header: 'Completado',

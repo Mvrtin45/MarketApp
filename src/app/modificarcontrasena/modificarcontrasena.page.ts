@@ -141,7 +141,7 @@ export class ModificarcontrasenaPage implements OnInit {
         });
         await alert.present();
         alert.onDidDismiss().then(() => {
-          this.router.navigate(['/perfil']);
+          this.router.navigate(['/tabs/perfil']);
         });
       } else {
         // Mostrar alerta si la contraseña actual no es correcta

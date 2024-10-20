@@ -4,7 +4,6 @@ import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController, ActionSheetController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
 import { CamaraService } from '../services/camara.service';
-import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-perfil',

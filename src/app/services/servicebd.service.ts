@@ -280,16 +280,17 @@ export class ServicebdService {
     });
   }
 
-  async modificarUsuarioPerfil(iduser: number, nombre: string, telefono: string, correo: string) {
+  async modificarUsuarioPerfil(nombre: string, correo: string, telefono: number, iduser: number) {
     try {
       await this.database.executeSql(
-        'UPDATE Usuarios SET nombre_usu = ?, telefono_usu = ?, email_usu = ? WHERE usuario_id = ?',
-        [nombre, telefono, correo, iduser]
+        'UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ? WHERE usuario_id = ?',
+        [nombre, correo, telefono, iduser]
       );
   
       // Guardar el usuario actualizado en el almacenamiento local para que se pueda usar después
       const usuarioActualizado = { iduser, nombre, telefono, correo };
       await this.storage.setItem('usuario', usuarioActualizado);
+      this.seleccionarUsuarios();
   
       // Mostrar alerta de éxito
       await this.presentAlert("Modificar", "Perfil modificado correctamente.");
@@ -331,7 +332,7 @@ export class ServicebdService {
         // Mostrar alerta de error si falla la inserción
         await this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
     }
-}
+  }
 
   // VERIFICAR
   async verificarUsuario(email_usu: string, contrasena_usu: string): Promise<any> {
@@ -354,8 +355,8 @@ export class ServicebdService {
         await this.presentAlert('Verificación de Usuario', 'Error: ' + JSON.stringify(e));
         return null;
     }
-}
-async verificarContrasena(currentPassword: string): Promise<boolean> {
+  }
+  async verificarContrasena(currentPassword: string): Promise<boolean> {  
   try {
     // Obtener el correo del usuario actual desde NativeStorage
     const usuarioActual = await this.storage.getItem('usuario');
@@ -369,7 +370,7 @@ async verificarContrasena(currentPassword: string): Promise<boolean> {
     }
 
     // Obtener la contraseña almacenada para el correo
-    const res = await this.database.executeSql('SELECT contrasena_usu FROM usuario WHERE correo = ?', [email]);
+    const res = await this.database.executeSql('SELECT contrasena_usu FROM Usuarios WHERE email_usu = ?', [email]);
     if (res.rows.length > 0) {
       const contrasenaAlmacenada = res.rows.item(0).contrasena_usu;
 
@@ -383,11 +384,11 @@ async verificarContrasena(currentPassword: string): Promise<boolean> {
     console.error('Error al verificar la contraseña:', error);
     return false;
   }
-}
+  }
 
   // ACTUALIZAR
   actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
-    return this.database.executeSql('UPDATE Usuarios SET contrasena_usu = ? WHERE email_usu = ?', [email_usu, contrasena_usu])
+    return this.database.executeSql('UPDATE Usuarios SET contrasena_usu = ? WHERE email_usu = ?', [contrasena_usu, email_usu])
       .then(res => {
         if (res.rowsAffected > 0) {
           this.presentAlert("Actualización", "Contraseña actualizada exitosamente.");
@@ -400,18 +401,18 @@ async verificarContrasena(currentPassword: string): Promise<boolean> {
       });
   }
 
-verificarCorreo(correo: string) {
-  return this.database.executeSql('SELECT * FROM usuario WHERE correo = ?', [correo]).then(res => {
-    if (res.rows.length > 0) {
-      return true;
-    } else {
+  verificarCorreo(correo: string) {
+    return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo]).then(res => {
+      if (res.rows.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }).catch(e => {
+      console.error('Error al verificar el correo:', e);
       return false;
-    }
-  }).catch(e => {
-    console.error('Error al verificar el correo:', e);
-    return false;
-  });
-}
+    });
+  }
 // Método ejemplo para obtener al usuario actual desde la base de datos
 
   async actualizarImagenUsuario(usuario_id: number, imagen_usu: string | null): Promise<void> {

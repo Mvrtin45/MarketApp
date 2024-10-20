@@ -119,7 +119,7 @@ export class AdminEditarusuariosPage implements OnInit {
       this.usuario.email_usu, 
       this.usuario.telefono_usu,
       this.usuario.contrasena_usu,
-      this.usuario.rol,
+      this.usuario.rol_usu,
     )
     this.router.navigate(['/admin-usuarios']);
   }
