@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
-
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { AlertController } from '@ionic/angular'; // Importa tu servicio de base de datos
+import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
   selector: 'app-modificarcontrasena',
@@ -11,12 +12,14 @@ import { AlertController } from '@ionic/angular';
 })
 export class ModificarcontrasenaPage implements OnInit {
   formularioModificarPassword: FormGroup;
+  emailUsuarioActual: string = '';
 
-  
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private nativeStorage: NativeStorage,
+    private bd: ServicebdService// Instancia del servicio de base de datos
   ) {
     this.formularioModificarPassword = this.fb.group({
       currentPassword: ['', [Validators.required]],
@@ -26,7 +29,19 @@ export class ModificarcontrasenaPage implements OnInit {
   }
 
   ngOnInit() {
+    this.obtenerEmailUsuarioActual();
   }
+
+  // Obtiene el email del usuario actual desde NativeStorage
+  async obtenerEmailUsuarioActual() {
+    try {
+      const data = await this.nativeStorage.getItem('usuario');
+      this.emailUsuarioActual = data.email;
+    } catch (error) {
+      console.error('Error al obtener el email del usuario:', error);
+    }
+  }
+
   // Validación de error para la contraseña actual
   get currentPasswordErrorMessage() {
     const currentPasswordControl = this.formularioModificarPassword.get('currentPassword');
@@ -35,6 +50,7 @@ export class ModificarcontrasenaPage implements OnInit {
     }
     return null;
   }
+
   // Validación de error para la nueva contraseña
   get newPasswordErrorMessage() {
     const newPasswordControl = this.formularioModificarPassword.get('newPassword');
@@ -55,6 +71,7 @@ export class ModificarcontrasenaPage implements OnInit {
     }
     return null;
   }
+
   // Validación de error para confirmar la nueva contraseña
   get confirmNewPasswordErrorMessage() {
     const confirmNewPasswordControl = this.formularioModificarPassword.get('confirmNewPassword');
@@ -66,6 +83,7 @@ export class ModificarcontrasenaPage implements OnInit {
     }
     return null;
   }
+
   // Validador para verificar que las contraseñas coincidan
   matchPasswords(password: string, confirmPassword: string) {
     return (formGroup: FormGroup) => {
@@ -82,6 +100,7 @@ export class ModificarcontrasenaPage implements OnInit {
       }
     };
   }
+
   // Validadores para mayúsculas, minúsculas y números en la contraseña
   uppercaseValidator() {
     return (control: any) => {
@@ -89,31 +108,50 @@ export class ModificarcontrasenaPage implements OnInit {
       return /[A-Z]/.test(value) ? null : { uppercase: true };
     };
   }
+
   lowercaseValidator() {
     return (control: any) => {
       const value = control.value || '';
       return /[a-z]/.test(value) ? null : { lowercase: true };
     };
   }
+
   numberValidator() {
     return (control: any) => {
       const value = control.value || '';
       return /[0-9]/.test(value) ? null : { number: true };
     };
   }
+
   // Método para modificar la contraseña
   async modificarPassword() {
     if (this.formularioModificarPassword.valid) {
-      // Mostrar alerta de éxito
-      const alert = await this.alertController.create({
-        header: 'Completado',
-        message: 'Contraseña modificada exitosamente.',
-        buttons: ['OK']
-      });
-      await alert.present();
-      alert.onDidDismiss().then(() => {
-        this.router.navigate(['/perfil']); // Redirigir a la página de perfil
-      });
+      const currentPassword = this.formularioModificarPassword.value.currentPassword;
+      const newPassword = this.formularioModificarPassword.value.newPassword;
+
+      // Verificar si la contraseña actual es correcta
+      const esValida = await this.bd.verificarContrasena(currentPassword);
+      if (esValida) {
+        // Actualizar la contraseña
+        await this.bd.actualizarContra(this.emailUsuarioActual, newPassword);
+        const alert = await this.alertController.create({
+          header: 'Completado',
+          message: 'Contraseña modificada exitosamente.',
+          buttons: ['OK']
+        });
+        await alert.present();
+        alert.onDidDismiss().then(() => {
+          this.router.navigate(['/perfil']);
+        });
+      } else {
+        // Mostrar alerta si la contraseña actual no es correcta
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'La contraseña actual no es correcta.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
     } else {
       // Mostrar alerta si el formulario no es válido
       const alert = await this.alertController.create({

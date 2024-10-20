@@ -355,6 +355,35 @@ export class ServicebdService {
         return null;
     }
 }
+async verificarContrasena(currentPassword: string): Promise<boolean> {
+  try {
+    // Obtener el correo del usuario actual desde NativeStorage
+    const usuarioActual = await this.storage.getItem('usuario');
+    const email = usuarioActual.email;
+
+    // Verificar si el correo existe en la base de datos
+    const correoValido = await this.verificarCorreo(email);
+    if (!correoValido) {
+      console.error('El correo no es válido o no existe.');
+      return false;
+    }
+
+    // Obtener la contraseña almacenada para el correo
+    const res = await this.database.executeSql('SELECT contrasena_usu FROM usuario WHERE correo = ?', [email]);
+    if (res.rows.length > 0) {
+      const contrasenaAlmacenada = res.rows.item(0).contrasena_usu;
+
+      // Verificar si la contraseña ingresada coincide con la almacenada
+      return currentPassword === contrasenaAlmacenada;
+    } else {
+      console.error('No se encontró el usuario con el correo proporcionado.');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error al verificar la contraseña:', error);
+    return false;
+  }
+}
 
   // ACTUALIZAR
   actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
@@ -370,6 +399,20 @@ export class ServicebdService {
         this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
       });
   }
+
+verificarCorreo(correo: string) {
+  return this.database.executeSql('SELECT * FROM usuario WHERE correo = ?', [correo]).then(res => {
+    if (res.rows.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }).catch(e => {
+    console.error('Error al verificar el correo:', e);
+    return false;
+  });
+}
+// Método ejemplo para obtener al usuario actual desde la base de datos
 
   async actualizarImagenUsuario(usuario_id: number, imagen_usu: string | null): Promise<void> {
     console.log('Usuario ID:', usuario_id); // Verificar que el ID es correcto
