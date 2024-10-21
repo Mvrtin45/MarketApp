@@ -15,8 +15,27 @@
     </ion-row>
   </ion-grid>
 
-  <div class="center-content">
-    <ion-icon name="bookmark-outline"></ion-icon>
-    <ion-label>Inicie Sesión Para Acceder a Favoritos</ion-label>
+  <!-- Mostrar favoritos si existen -->
+  <div *ngIf="favoritos.length > 0; else emptyFavorites">
+    <ion-list>
+      <ion-item *ngFor="let favorito of favoritos">
+        <ion-thumbnail slot="start">
+          <img [src]="favorito.foto">
+        </ion-thumbnail>
+        <ion-label>
+          <h2>{{ favorito.titulo }}</h2>
+          <h3>Precio: ${{ favorito.precio }}</h3>
+        </ion-label>
+      </ion-item>
+    </ion-list>
   </div>
+
+  <!-- Mostrar si no hay favoritos -->
+  <ng-template #emptyFavorites>
+    <div class="center-content">
+      <ion-icon name="bookmark-outline"></ion-icon>
+      <ion-label>Aún no tiene ningún producto en favoritos</ion-label>
+      <p>{{ favoritos.length }}</p> <!-- Mostrar el conteo de favoritos para depuración -->
+    </div>
+  </ng-template>
 </ion-content>

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
+import { MonedaService } from '../services/moneda.service';
 
 @Component({
   selector: 'app-tab2',
@@ -8,10 +9,39 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
+  Monedas: string[] = ["USD", "EUR", "CLP", "ARS", "MXN", "BRL", "GBP", "AUD", "CAD", "JPY", "HKD", "PYG", "UYU"];
+  MonedaBase: string = "CLP";  // Peso Chileno por defecto
+  MonedaDefecto: string = "USD";  // Dólar por defecto
+
+  CantidadConv: number = 1;
+  TazaConversion: number = 0;
+  Resultado: number = 0;
+
   constructor(
     private alertController: AlertController,
-    private storage: NativeStorage
+    private storage: NativeStorage,
+    private apiService: MonedaService
   ) {}
+
+  ngOnInit() {
+    this.convertirMoneda();
+  }
+
+  convertirMoneda() {
+    this.apiService.obtenerValorMoneda(this.MonedaBase).subscribe(
+      (data) => {
+          const rate = data.rates[this.MonedaDefecto]; // Obtener la tasa de cambio para la moneda de destino
+          if (rate) {
+              this.Resultado = this.CantidadConv * rate; // Realizar la conversión
+          } else {
+              console.error('La moneda de destino no está disponible.');
+          }
+      },
+      (error) => {
+          console.error('Error al obtener tasas de cambio:', error);
+      }
+  );
+  }
 
   async addToCart(nombre: string, estado: string, precio: number, foto: string, vendedor: string) { 
     const productosCarrito: any[] = await this.cargarCarrito();

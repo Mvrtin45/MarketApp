@@ -19,13 +19,15 @@ export class ServicebdService {
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT , rol_id INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL (rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
-
+  tablaFavoritos: string ="CREATE TABLE IF NOT EXISTS Favoritos ( favorito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+  
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
-  
+  registroFavoritos: string ="INSERT INTO Favoritos (producto_id, usuario_id) VALUES (1, 1);";
+
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
   listadoUsuarios = new BehaviorSubject([]);
@@ -73,7 +75,7 @@ export class ServicebdService {
             this.listadoAgruparPublicacionesConUsuarios.next(publicaciones);
         })
     );
-}
+  }
   
 
   dbState(){
@@ -107,11 +109,14 @@ export class ServicebdService {
       await this.database.executeSql(this.tablaPublicaciones, []);
       await this.database.executeSql(this.tablaUsuarios, []);
       await this.database.executeSql(this.tablaRol, []);
+      await this.database.executeSql(this.tablaFavoritos, []);
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
       await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
+      await this.database.executeSql(this.registroFavoritos, []);
+
 
 
       this.seleccionarPublicaciones();
@@ -277,6 +282,21 @@ export class ServicebdService {
       console.error('Error al obtener el usuario actual:', JSON.stringify(e));
       return null;
     }
+  }
+
+  loadFavorites(usuario_id: number) {
+    const query = `
+      SELECT P.titulo, P.precio, P.foto_publicacion AS foto FROM Favoritos F JOIN Publicaciones P ON F.producto_id = P.producto_id WHERE F.usuario_id = ?`;
+    return this.database.executeSql(query, [usuario_id]).then(res => {
+      let favoritos = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        favoritos.push(res.rows.item(i));
+      }
+      return favoritos;
+    }).catch(e => {
+      console.error("Error al obtener favoritos:", e.message);
+      return [];
+    });
   }
 
   // ELIMINAR
