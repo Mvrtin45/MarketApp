@@ -4,17 +4,57 @@ ion-content {
   background-position: center; // Centra la imagen de fondo
   padding: 16px; // Agrega un poco de espacio alrededor del contenido
 }
+ion-grid {
+  ion-row {
+    ion-col {
+      display: flex;
+      justify-content: center; 
+      align-items: center; 
+      border: 1px solid #000; 
+      border-radius: 8px; 
+      padding: 0; 
+      height: auto; 
+      box-sizing: border-box; 
 
+      ion-button {
+        --padding-start: 10px; 
+        --padding-end: 10px; 
+        --color: #000; 
+        --background: transparent; 
+        --border-radius: 0; 
+
+        &.ion-activated {
+          font-weight: bold; 
+        }
+
+        &:hover {
+          font-weight: bold; 
+        }
+        ion-icon {
+          font-size: 20px; 
+          margin-bottom: 15px; 
+        }
+      }
+    }
+  }
+}
 ion-list {
   margin: 0; // Elimina el margen predeterminado
   padding: 0; // Elimina el padding predeterminado
 }
 
 ion-item {
-  background: rgba(255, 255, 255, 0.8); // Fondo blanco con opacidad para un mejor contraste
+  background: rgba(255, 255, 255, 0.9); // Fondo blanco con opacidad para un mejor contraste
   border-radius: 8px; // Bordes redondeados
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra suave
   margin-bottom: 16px; // Espaciado entre elementos de la lista
+  display: flex; // Usa flexbox para organizar el contenido
+  align-items: center; // Alinear verticalmente el contenido
+}
+
+ion-thumbnail {
+  width: 80px; // Tamaño de la imagen
+  height: 80px; // Tamaño de la imagen
 }
 
 .product-info {
@@ -22,15 +62,24 @@ ion-item {
   flex-direction: column; 
   justify-content: center; 
   padding: 16px; // Espaciado interno
+  flex-grow: 1; // Permite que ocupe el espacio disponible
 
   h2 {
     color: #333; // Color del texto del nombre del producto
     margin: 0; // Sin margen
+    font-size: 16px; // Tamaño de fuente
   }
 
   h3 {
     color: #555; // Color del texto del precio
     margin: 5px 0; // Margen vertical
+    font-size: 14px; // Tamaño de fuente
+  }
+
+  .vendedor {
+    color: #777; // Color para el nombre del vendedor
+    font-size: 12px; // Tamaño de fuente para el vendedor
+    margin-top: 5px; // Margen superior
   }
 }
 
@@ -38,23 +87,13 @@ ion-item {
   display: flex; // Usar flexbox para los botones de acción
   align-items: center; // Alinear verticalmente
 
-  .quantity-button {
-    width: 36px; // Ancho fijo para los botones de cantidad
-    height: 36px; // Alto fijo
-    font-size: 24px; // Tamaño de fuente mayor
-    color: #fff; // Color del texto
-    background-color: #007bff; // Color de fondo del botón
-    border-radius: 4px; // Bordes redondeados
-    margin: 0 4px; // Espaciado entre botones
-
-    &:hover {
-      background-color: #0056b3; // Color al pasar el mouse
-    }
+  .quantity-button,
+  .product-quantity {
+    display: none; // Ocultar botones de cantidad y cantidad
   }
 
-  .product-quantity {
-    font-size: 20px; // Tamaño del texto de cantidad
-    margin: 0 10px; // Espaciado horizontal
+  .eliminar-button {
+    margin-top: 10px; // Margen superior para el botón de eliminar
   }
 }
 
@@ -92,4 +131,3 @@ ion-item {
   --color: white; // Color del texto blanco
   margin-top: 16px; // Margen superior
 }
-  

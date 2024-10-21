@@ -1,5 +1,24 @@
 <ion-content [fullscreen]="true" class="cart-content">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button fill="clear">
+          Carrito
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button fill="clear" [routerLink]="['/favoritos']">
+          Favoritos
+          <ion-icon slot="end" name="bookmark-sharp"></ion-icon> 
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
   <div *ngIf="productosCarrito.length > 0; else emptyCart">
+    <!-- Botón de actualizar agregado aquí -->
+    <ion-button (click)="recargarDatos()" expand="full">Actualizar</ion-button>
+    
     <ion-list>
       <ion-item *ngFor="let producto of productosCarrito; let i = index">
         <ion-thumbnail slot="start">
@@ -9,13 +28,9 @@
           <div class="product-details">
             <h2>{{ producto.nombre }}</h2>
             <h3>Precio unitario: ${{ producto.precio }}</h3>
+            <p class="vendedor">Vendedor: {{ producto.vendedor }}</p>
           </div>
-          <div class="product-actions">
-            <ion-button fill="clear" class="quantity-button" (click)="decreaseQuantity(i)">-</ion-button>
-            <span class="product-quantity">{{ producto.cantidad }}</span>
-            <ion-button fill="clear" class="quantity-button" (click)="increaseQuantity(i)">+</ion-button>
-          </div>
-          <ion-button color="danger" (click)="eliminarProducto(i)">Eliminar</ion-button>
+          <ion-button color="danger" class="eliminar-button" (click)="eliminarProducto(i)">Eliminar</ion-button>
         </ion-label>
       </ion-item>
     </ion-list>
@@ -25,8 +40,6 @@
     <div class="total-container">
       <h3>Subtotal: ${{ subtotal.toFixed(2) }}</h3>
       <h3>Total: ${{ precioTotal.toFixed(2) }}</h3>
-
-      <ion-button class="pay-button" expand="full" (click)="Pago()">Ir a Pagar</ion-button>
     </div>
   </div>
 

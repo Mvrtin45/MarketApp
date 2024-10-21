@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
-
-// Definir la interfaz para el producto
-interface Producto {
-  id: number;
-  nombre: string;
-  precio: number;
-  cantidad: number; // Campo para la cantidad
-}
 
 @Component({
   selector: 'app-tab2',
@@ -15,47 +8,54 @@ interface Producto {
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
-  constructor(private alertController: AlertController) {}
+  constructor(
+    private alertController: AlertController,
+    private storage: NativeStorage
+  ) {}
 
-  async showAddAlert(producto: Producto) {  // Especificar el tipo del parámetro
-    // Obtener el carrito del LocalStorage, o inicializar uno vacío si no existe
-    let carrito: Producto[] = JSON.parse(localStorage.getItem('productos_carrito') || '[]');
+  async addToCart(nombre: string, estado: string, precio: number, foto: string, vendedor: string) { 
+    const productosCarrito: any[] = await this.cargarCarrito();
 
-    // Verificar si el producto ya está en el carrito
-    const productoExistente = carrito.find(item => item.id === producto.id);
-    
-    if (productoExistente) {
-        // Si el producto ya existe, incrementar la cantidad
-        productoExistente.cantidad += producto.cantidad;
+    const existingProductIndex = productosCarrito.findIndex(item => item.nombre === nombre && item.vendedor === vendedor);
+
+    if (existingProductIndex >= 0) {
+      // Si ya existe, aumentar la cantidad
+      productosCarrito[existingProductIndex].cantidad++;
     } else {
-        // Si no existe, agregar el producto al carrito
-        carrito.push(producto);
+      // Si no existe, agregar el producto al carrito
+      productosCarrito.push({
+        nombre: nombre,
+        estado: estado,
+        precio: precio,
+        foto: foto,
+        vendedor: vendedor, 
+        cantidad: 1, // La cantidad inicial
+        stock: 10 // Ejemplo de stock disponible
+      });
     }
 
-    // Guardar el carrito actualizado en el LocalStorage
-    localStorage.setItem('productos_carrito', JSON.stringify(carrito));
+    await this.storage.setItem('productos_carrito', productosCarrito);
+    await this.showAddAlert();
+  }
 
-    // Mostrar la alerta de que el producto ha sido agregado
+  async cargarCarrito(): Promise<any[]> { 
+    try {
+      const productos = await this.storage.getItem('productos_carrito');
+      return productos || []; // Devuelve el carrito o un array vacío si no hay productos
+    } catch (error) {
+      console.log('Error al cargar productos del carrito', error);
+      return []; // Retorna un array vacío en caso de error
+    }
+  }
+
+  async showAddAlert() {
     const alert = await this.alertController.create({
       header: 'Carrito',
-      message: `El producto ${producto.nombre} ha sido agregado al carrito de compra por $${producto.precio}.`,
+      message: 'El producto ha sido agregado al carrito de compra.',
       buttons: ['OK'],
     });
 
     await alert.present();
-  }
-
-  // Ejemplo de función que puedes llamar para agregar un producto
-  agregarProductoAlCarrito() {
-    const nuevoProducto: Producto = {
-      id: 1, // ID del producto
-      nombre: 'Camisa de Algodón',
-      precio: 25.99,
-      cantidad: 1 // Cantidad a agregar
-    };
-
-    // Llamar al método para agregar el producto al carrito y mostrar la alerta
-    this.showAddAlert(nuevoProducto);
   }
 
   async showFavoriteAlert() {

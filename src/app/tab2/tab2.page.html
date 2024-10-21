@@ -49,7 +49,7 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$23.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear" (click)="showAddAlert({ id: 1, nombre: 'Polera Básica Slim Fit', precio: 23990, cantidad: 1 })">
+                <ion-button fill="clear" (click)="addToCart('Polera Básica Slim Fit', 'Nuevo', 23990, '../assets/icon/polerabasica.jpg', 'Juanito Juan')">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
                 <ion-button fill="clear" (click)="showFavoriteAlert()">
@@ -69,8 +69,8 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$79.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear" >
-                  <ion-icon name="add-circle-sharp"></ion-icon>
+                <ion-button fill="clear" (click)="addToCart('Chaqueta Amiri', 'Nuevo', 79990, '../assets/icon/chaquetaamiri.jpg', 'Alexis')">
+                  <ion-icon name="add-circle-sharp" ></ion-icon>
                 </ion-button>
                 <ion-button fill="clear" (click)="showFavoriteAlert()">
                   <ion-icon name="bookmark-sharp"></ion-icon>
@@ -90,7 +90,7 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$29.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear" >
+                <ion-button fill="clear" (click)="addToCart('Jeans American Eagle', 'Nuevo', 29990, '../assets/icon/jeansfn.jpg', 'Humberto Suazo')">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
                 <ion-button fill="clear" (click)="showFavoriteAlert()">
@@ -111,7 +111,7 @@
             <ion-label>Estado: Nuevo</ion-label>
             <ion-label>$129.990</ion-label>
               <div class="button-container">
-                <ion-button fill="clear" >
+                <ion-button fill="clear" (click)="addToCart('Zapatillas Air Jordan Retro 4 Black Cat', 'Nuevo', 129990, '../assets/icon/jordan4blackcat.jpg', 'Marcelo Diaz')">
                   <ion-icon name="add-circle-sharp"></ion-icon>
                 </ion-button>
                 <ion-button fill="clear" (click)="showFavoriteAlert()">

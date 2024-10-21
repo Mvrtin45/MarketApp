@@ -112,7 +112,6 @@ export class ServicebdService {
       await this.database.executeSql(this.registroUsuarioAdmin, []);
       await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
-      await this.database.executeSql(this.registroPublicacionConUsuario, []);
 
 
       this.seleccionarPublicaciones();
