@@ -43,34 +43,26 @@ export class PerfilPage implements OnInit {
     try {
       const storedUserId = await this.storage.getItem('usuario_id');
       console.log('Stored User ID:', storedUserId);
+      if (storedUserId) {
+        const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
+        if (usuarioActual) {
+          this.usuario = usuarioActual; // Guarda todo el objeto para un acceso más sencillo
+          this.nombre = usuarioActual.nombre_usu;
+          this.email = usuarioActual.email_usu;
+          this.telefono = usuarioActual.telefono_usu;
 
-      if (!storedUserId) {
-        await this.presentAlert("ERROR", "No se pudo obtener el ID del usuario.");
-        return; 
+          // Verifica que la propiedad 'imagen_usu' existe antes de asignarla
+          if (usuarioActual.imagen_usu) {
+            this.photoUrl = usuarioActual.imagen_usu;
+          }
+        } else {
+          await this.presentAlert("ERROR","No se pudieron obtener los datos del usuario.");
+        }
+      } else {
+        await this.presentAlert("ERROR","No se pudo obtener el ID del usuario.");
       }
-
-      const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
-     
-      if (!usuarioActual) {
-        await this.presentAlert("ERROR", "No se pudieron obtener los datos del usuario.");
-        return; // Detener la ejecución si no se encuentra el usuario
-      }
-
-      // Asignar los valores al objeto y propiedades del usuario
-      this.usuario = usuarioActual; // Guarda todo el objeto
-      this.nombre = usuarioActual.nombre_usu || ''; // Asignar cadena vacía si no hay valor
-      this.email = usuarioActual.email_usu || ''; // Asignar cadena vacía si no hay valor
-      this.telefono = usuarioActual.telefono_usu || ''; // Asignar cadena vacía si no hay valor
-      this.imagen = usuarioActual.imagen_usu || ''; // Asignar cadena vacía si no hay imagen
-
-      // Verificar si existe la propiedad de la imagen
-      this.photoUrl = usuarioActual.imagen_usu || this.photoUrl; // Asignar la URL de la imagen o imagen por defecto
-
-      console.log('Usuario cargado:', this.usuario); // Log para verificar el usuario
-
     } catch (error) {
-      console.error('Error al cargar los datos del usuario:', error); // Loguear el error para depuración
-      await this.presentAlert("ERROR", "Error al cargar los datos del usuario.");
+      await this.presentAlert("ERROR","Error al cargar los datos del usuario.");
     }
   }
 

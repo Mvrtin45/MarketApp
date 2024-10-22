@@ -349,8 +349,6 @@ export class ServicebdService {
       await this.storage.setItem('usuario', usuarioActualizado);
       this.seleccionarUsuarios();
   
-      // Mostrar alerta de éxito
-      await this.presentAlert("Modificar", "Perfil modificado correctamente.");
     } catch (error) {
       // Mostrar alerta de error si la modificación falla
       await this.presentAlert("Modificar", "Error al modificar perfil: " + JSON.stringify(error));
@@ -461,6 +459,7 @@ export class ServicebdService {
       .then(res => {
         if (res.rowsAffected > 0) {
           this.presentAlert("Actualización", "Contraseña actualizada exitosamente.");
+          this.seleccionarUsuarios();
         } else {
           this.presentAlert("Error", "No se encontró un usuario con ese correo.");
         }

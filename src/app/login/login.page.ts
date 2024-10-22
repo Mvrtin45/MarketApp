@@ -30,7 +30,9 @@ export class LoginPage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    
+  }
 
   async ingresar() {
     if (this.formularioLogin.valid) {

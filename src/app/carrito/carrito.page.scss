@@ -1,3 +1,26 @@
+ion-header {
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    display: flex; /* Habilita el uso de flexbox */
+    justify-content: space-between; /* Espacia el contenido */
+    align-items: center; /* Centra verticalmente */
+    position: relative; /* Necesario para posicionar elementos absolutamente */
+
+    .logo {
+      position: absolute; /* Posiciona el logo de forma absoluta */
+      top: 10px; /* Espaciado desde la parte superior */
+      right: 10px; /* Espaciado desde la derecha */
+      width: 40px; /* Ajusta el tamaño del logo según sea necesario */
+      height: auto; /* Mantiene la proporción del logo */
+    }
+
+    .centered-title {
+      flex: 1; /* Asegura que el título ocupe el espacio disponible */
+      text-align: center; /* Centra el título horizontalmente */
+    }
+  }
+}
 ion-content {
   --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
   background-size: cover; // Asegura que la imagen de fondo cubra todo el contenido
