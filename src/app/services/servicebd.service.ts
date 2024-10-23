@@ -411,35 +411,37 @@ export class ServicebdService {
         return null;
     }
   }
+  
   async verificarContrasena(currentPassword: string): Promise<boolean> {  
-  try {
-    // Obtener el correo del usuario actual desde NativeStorage
-    const usuarioActual = await this.storage.getItem('usuario');
-    const email = usuarioActual.email;
-
-    // Verificar si el correo existe en la base de datos
-    const correoValido = await this.verificarCorreo(email);
-    if (!correoValido) {
-      console.error('El correo no es válido o no existe.');
+    try {
+      // Obtener el usuario actual desde NativeStorage
+      const usuarioActual = await this.storage.getItem('usuario');
+      const email = usuarioActual.correo; // Cambia 'email' a 'correo'
+  
+      // Verificar si el correo existe en la base de datos
+      const correoValido = await this.verificarCorreo(email);
+      if (!correoValido) {
+        console.error('El correo no es válido o no existe.');
+        return false;
+      }
+  
+      // Obtener la contraseña almacenada para el correo
+      const res = await this.database.executeSql('SELECT contrasena_usu FROM Usuarios WHERE email_usu = ?', [email]);
+      if (res.rows.length > 0) {
+        const contrasenaAlmacenada = res.rows.item(0).contrasena_usu;
+  
+        // Verificar si la contraseña ingresada coincide con la almacenada
+        return currentPassword === contrasenaAlmacenada;
+      } else {
+        console.error('No se encontró el usuario con el correo proporcionado.');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error al verificar la contraseña:', error);
       return false;
     }
-
-    // Obtener la contraseña almacenada para el correo
-    const res = await this.database.executeSql('SELECT contrasena_usu FROM Usuarios WHERE email_usu = ?', [email]);
-    if (res.rows.length > 0) {
-      const contrasenaAlmacenada = res.rows.item(0).contrasena_usu;
-
-      // Verificar si la contraseña ingresada coincide con la almacenada
-      return currentPassword === contrasenaAlmacenada;
-    } else {
-      console.error('No se encontró el usuario con el correo proporcionado.');
-      return false;
-    }
-  } catch (error) {
-    console.error('Error al verificar la contraseña:', error);
-    return false;
   }
-  } 
+
   verificarCorreo(correo: string) {
     return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo]).then(res => {
       if (res.rows.length > 0) {
@@ -454,19 +456,31 @@ export class ServicebdService {
   }
 
   // ACTUALIZAR
-  actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
-    return this.database.executeSql('UPDATE Usuarios SET contrasena_usu = ? WHERE email_usu = ?', [contrasena_usu, email_usu])
-      .then(res => {
-        if (res.rowsAffected > 0) {
-          this.presentAlert("Actualización", "Contraseña actualizada exitosamente.");
-          this.seleccionarUsuarios();
-        } else {
-          this.presentAlert("Error", "No se encontró un usuario con ese correo.");
-        }
-      })
-      .catch(e => {
-        this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
-      });
+  async actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
+    try {
+      // Asegurarse de que el correo esté limpio
+      email_usu = email_usu.trim().toLowerCase();
+  
+      // Verificar si el correo existe antes de intentar actualizar
+      const resSelect = await this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [email_usu]);
+      console.log('Usuarios encontrados:', resSelect.rows.length);
+  
+      if (resSelect.rows.length === 0) {
+        this.presentAlert("Error", "No se encontró un usuario con ese correo.");
+        return;
+      }
+  
+      // Realizar la actualización de la contraseña
+      const resUpdate = await this.database.executeSql('UPDATE Usuarios SET contrasena_usu = ? WHERE email_usu = ?', [contrasena_usu, email_usu]);
+  
+      if (resUpdate.rowsAffected > 0) {
+        this.seleccionarUsuarios();
+      } else {
+        this.presentAlert("Error", "No se encontró un usuario con ese correo.");
+      }
+    } catch (e) {
+      this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
+    }
   }
 
   async actualizarImagenUsuario(usuario_id: number, imagen_usu: string | null): Promise<void> {

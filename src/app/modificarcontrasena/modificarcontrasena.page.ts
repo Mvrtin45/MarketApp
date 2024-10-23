@@ -35,12 +35,19 @@ export class ModificarcontrasenaPage implements OnInit {
   // Obtiene el email del usuario actual desde NativeStorage
   async obtenerEmailUsuarioActual() {
     try {
-      const data = await this.nativeStorage.getItem('usuario');
-      this.emailUsuarioActual = data.email;
+        const data = await this.nativeStorage.getItem('usuario');
+        console.log('Datos recuperados de NativeStorage:', JSON.stringify(data)); // Mostrar el contenido exacto
+        
+        if (data && (data.email || data.correo)) {
+            this.emailUsuarioActual = data.email || data.correo;
+            console.log('Email del usuario actual:', this.emailUsuarioActual);
+        } else {
+            console.warn('No se encontró el email en los datos almacenados.');
+        }
     } catch (error) {
-      console.error('Error al obtener el email del usuario:', error);
+        console.error('Error al obtener el email del usuario:', error);
     }
-  }
+}
 
   // Validación de error para la contraseña actual
   get currentPasswordErrorMessage() {
@@ -125,41 +132,39 @@ export class ModificarcontrasenaPage implements OnInit {
 
   // Método para modificar la contraseña
   async modificarPassword() {
-    if (this.formularioModificarPassword.valid) {
-      const currentPassword = this.formularioModificarPassword.value.currentPassword;
-      const newPassword = this.formularioModificarPassword.value.newPassword;
+  if (this.formularioModificarPassword.valid) {
+    const currentPassword = this.formularioModificarPassword.value.currentPassword;
+    const newPassword = this.formularioModificarPassword.value.newPassword;
 
-      // Verificar si la contraseña actual es correcta
-      const esValida = await this.bd.verificarContrasena(currentPassword);
-      if (esValida) {
-        // Actualizar la contraseña
-        await this.bd.actualizarContra(this.emailUsuarioActual, newPassword);
-        const alert = await this.alertController.create({
-          header: 'Completado',
-          message: 'Contraseña modificada exitosamente.',
-          buttons: ['OK']
-        });
-        await alert.present();
-        alert.onDidDismiss().then(() => {
-          this.router.navigate(['/tabs/perfil']);
-        });
-      } else {
-        // Mostrar alerta si la contraseña actual no es correcta
-        const alert = await this.alertController.create({
-          header: 'Error',
-          message: 'La contraseña actual no es correcta.',
-          buttons: ['OK']
-        });
-        await alert.present();
-      }
-    } else {
-      // Mostrar alerta si el formulario no es válido
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'Por favor, completa los campos requeridos correctamente.',
+    const esValida = await this.bd.verificarContrasena(currentPassword);
+    if (esValida) {
+      console.log('Email usado para actualizar contraseña:', this.emailUsuarioActual); // Confirmar email
+
+      await this.bd.actualizarContra(this.emailUsuarioActual, newPassword);
+      const successAlert = await this.alertController.create({
+        header: 'Completado',
+        message: 'Contraseña Actualizada exitosamente.',
         buttons: ['OK']
       });
-      await alert.present();
+      await successAlert.present();
+      successAlert.onDidDismiss().then(() => {
+        this.router.navigate(['/login']);
+      });
+    } else {
+      const errorAlert = await this.alertController.create({
+        header: 'Error',
+        message: 'La contraseña actual no es correcta.',
+        buttons: ['OK']
+      });
+      await errorAlert.present();
     }
+  } else {
+    const invalidFormAlert = await this.alertController.create({
+      header: 'Error',
+      message: 'Por favor, completa los campos requeridos correctamente.',
+      buttons: ['OK']
+    });
+    await invalidFormAlert.present();
   }
+}
 }
