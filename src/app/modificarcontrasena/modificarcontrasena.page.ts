@@ -47,7 +47,7 @@ export class ModificarcontrasenaPage implements OnInit {
     } catch (error) {
         console.error('Error al obtener el email del usuario:', error);
     }
-}
+  }
 
   // Validación de error para la contraseña actual
   get currentPasswordErrorMessage() {

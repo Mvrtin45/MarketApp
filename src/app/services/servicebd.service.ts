@@ -113,7 +113,7 @@ export class ServicebdService {
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
-      await this.database.executeSql(this.registroPublicacion, []);
+      //await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
       await this.database.executeSql(this.registroFavoritos, []);
 

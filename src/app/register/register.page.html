@@ -1,4 +1,4 @@
-<ion-content class="registro-content">
+<ion-content class="registro-content" scroll="false">
   <div class="center-content">
     <ion-card class="registro-card">
       <ion-card-content>
@@ -38,7 +38,7 @@
           <!-- Campo de Confirmar Contraseña -->
           <ion-item>
             <ion-label position="floating">Confirmar Contraseña</ion-label>
-            <ion-input type="password" formControlName="confirmPassword" ></ion-input>
+            <ion-input type="password" formControlName="confirmPassword"></ion-input>
           </ion-item>
           <ion-text [class.visible]="confirmPasswordErrorMessage">
             {{ confirmPasswordErrorMessage }}
@@ -48,9 +48,9 @@
             Registrarse
           </ion-button>
           <!-- Botón de "¿Ya tienes una cuenta?" -->
-        <ion-button fill="clear" color="primary" [routerLink]="['/login']">
-          ¿Ya tienes una cuenta?
-        </ion-button>
+          <ion-button fill="clear" color="primary" [routerLink]="['/login']">
+            ¿Ya tienes una cuenta?
+          </ion-button>
         </form>
       </ion-card-content>
     </ion-card>

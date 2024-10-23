@@ -12,7 +12,7 @@ ion-header {
 
 ion-content {
   --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
-  
+
   .section-title {
     text-align: center;
     font-size: 1.8em;
@@ -34,6 +34,17 @@ ion-content {
       --padding: 10px;
       font-size: 1.1em;
       font-weight: bold;
+      --color: #ffffff; /* Color de texto */
+
+      &.primary-button {
+        --background: #040404; /* Color personalizado para botones principales */
+        --background-activated: #C70039; /* Color al hacer clic */
+      }
+
+      &.secondary-button {
+        --background: #494b4c; /* Color personalizado para el botón secundario */
+        --background-activated: #2c80b4; /* Color al hacer clic */
+      }
     }
   }
 }

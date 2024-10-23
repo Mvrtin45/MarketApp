@@ -27,6 +27,25 @@ ion-content {
 }
 
 /* styles.css */
+.section-title {
+  font-size: 22px; /* Ajustado para que se vea bien en pantallas móviles */
+  font-weight: bold; /* Resaltar el título */
+  color: #ffffff; /* Color consistente con el resto de la app */
+  text-align: center; /* Centrado para un diseño limpio y simétrico */
+  background: #7e7474; /* Fondo semi-transparente */
+  padding: 8px 16px; /* Espaciado para que se vea bien en móviles */
+  border-radius: 8px; /* Bordes suaves y redondeados */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera para destacar */
+  margin: 12px auto; /* Márgenes superiores e inferiores para separación */
+  max-width: 90%; /* Limitar el ancho para que no se extienda más allá de la pantalla */
+  transition: transform 0.3s, background 0.3s; /* Transición suave */
+
+  /* Efecto visual al tocar */
+  &:active {
+    background: rgb(0, 0, 0); /* Fondo completo al tocar */
+    transform: scale(1.02); /* Ligera ampliación al tocar */
+  }
+}
 
 .profile-content {
   --padding-start: 0;

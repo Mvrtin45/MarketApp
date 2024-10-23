@@ -18,6 +18,7 @@ ion-header {
   --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
   background-size: cover;
   background-position: center;
+  padding-bottom: 60px;
 }
 
 .center-content {
@@ -28,6 +29,9 @@ ion-header {
   height: 100%;
   text-align: center;
   color: #000;
+  padding: 20px;
+  margin: 20px; /* Espacio alrededor del contenido */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .registro-card {
@@ -79,4 +83,11 @@ ion-text.visible {
   color: #ff0000; /* Color de texto de error */
 }
 
+/* Evitar que el teclado empuje el contenido */
+@media (max-height: 600px) {
+  .registro-content {
+    height: auto;
+    padding-bottom: 60px; /* Espacio adicional para el teclado */
+  }
+}
   
