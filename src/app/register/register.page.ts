@@ -216,7 +216,7 @@ export class RegisterPage implements OnInit {
         // Mostrar alerta de éxito
         const alert = await this.alertController.create({
           header: 'Registro exitoso',
-          message: 'Tu registro se ha completado correctamente. Redirigiendo al login...',
+          message: 'Tu registro se ha completado correctamente.',
           buttons: ['OK']
         });
 
@@ -227,22 +227,20 @@ export class RegisterPage implements OnInit {
 
       }).catch(async (error) => {
         // Mostrar alerta de error en caso de que falle la inserción
-        const alert = await this.alertController.create({
-          header: 'Error',
-          message: 'No se pudo completar el registro. Por favor, inténtalo de nuevo.',
-          buttons: ['OK']
-        });
-
-        await alert.present();
+        await this.mostrarAlerta('Formulario inválido', 'No se pudo completar el registro. Por favor, inténtalo de nuevo.');
       });
     }  else {
-      const alert = await this.alertController.create({
-        header: 'Formulario inválido',
-        message: 'Por favor, revise los campos y corrija los errores.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      await this.mostrarAlerta('Error', 'Por favor, revise los campos y corrija los errores.');
     }
+  }
+
+  private async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }
 

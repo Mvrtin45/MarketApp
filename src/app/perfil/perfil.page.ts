@@ -32,11 +32,12 @@ export class PerfilPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.cargarUsuarioActual();
-  }
-
-  async recargarDatos() {
-    await this.cargarUsuarioActual();
+    // Espera a que la base de datos esté lista antes de cargar los datos del usuario
+    this.bd.dbState().subscribe(data => {
+      if (data) {
+        this.cargarUsuarioActual();
+      }
+    });
   }
 
   async cargarUsuarioActual() {
@@ -44,25 +45,24 @@ export class PerfilPage implements OnInit {
       const storedUserId = await this.storage.getItem('usuario_id');
       console.log('Stored User ID:', storedUserId);
       if (storedUserId) {
-        const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
-        if (usuarioActual) {
-          this.usuario = usuarioActual; // Guarda todo el objeto para un acceso más sencillo
-          this.nombre = usuarioActual.nombre_usu;
-          this.email = usuarioActual.email_usu;
-          this.telefono = usuarioActual.telefono_usu;
-
-          // Verifica que la propiedad 'imagen_usu' existe antes de asignarla
-          if (usuarioActual.imagen_usu) {
-            this.photoUrl = usuarioActual.imagen_usu;
+        this.bd.fetchUsuarios().subscribe(res => {
+          this.usuario = res.find(user => user.usuario_id === storedUserId);
+          if (this.usuario) {
+            this.nombre = this.usuario.nombre_usu;
+            this.email = this.usuario.email_usu;
+            this.telefono = this.usuario.telefono_usu;
+            if (this.usuario.imagen_usu) {
+              this.photoUrl = this.usuario.imagen_usu;
+            }
+          } else {
+            this.presentAlert("ERROR", "No se pudieron obtener los datos del usuario.");
           }
-        } else {
-          await this.presentAlert("ERROR","No se pudieron obtener los datos del usuario.");
-        }
+        });
       } else {
-        await this.presentAlert("ERROR","No se pudo obtener el ID del usuario.");
+        this.presentAlert("ERROR", "No se pudo obtener el ID del usuario.");
       }
     } catch (error) {
-      await this.presentAlert("ERROR","Error al cargar los datos del usuario.");
+      this.presentAlert("ERROR", "Error al cargar los datos del usuario.");
     }
   }
 
@@ -139,8 +139,6 @@ export class PerfilPage implements OnInit {
       const imagePath = await this.camaraService.takePhoto();
       this.photoUrl = imagePath;
 
-      console.log('Usuario ID antes de la actualización:', this.usuario?.usuario_id); // Loguea el ID del usuario
-
       if (this.usuario && this.usuario.usuario_id) {
         await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imagePath);
         await this.presentAlert("Actualización", "Imagen actualizada exitosamente.");
@@ -153,10 +151,8 @@ export class PerfilPage implements OnInit {
 
   async selectImage() {
     try {
-      const imagePath = await this.camaraService.pickImage();  // Seleccionar imagen
-      this.photoUrl = imagePath;  // Asignar la nueva ruta de la imagen
-
-      console.log('Usuario ID antes de la actualización al seleccionar imagen:', this.usuario?.usuario_id); // Log para depurar
+      const imagePath = await this.camaraService.pickImage();
+      this.photoUrl = imagePath;
 
       if (this.usuario && this.usuario.usuario_id) {
         await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imagePath);
@@ -169,9 +165,9 @@ export class PerfilPage implements OnInit {
   }
 
   async deletePhoto() {
-    this.photoUrl = '/assets/icon/logo.jpg'; // Restablecer a la imagen por defecto
+    this.photoUrl = '/assets/icon/logo.jpg';
     if (this.usuario && this.usuario.usuario_id) {
-      await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, null);  // Borrar la imagen de la BD
+      await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, null);
     }
   }
 

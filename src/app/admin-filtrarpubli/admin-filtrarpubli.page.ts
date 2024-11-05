@@ -13,9 +13,7 @@ export class AdminFiltrarpubliPage implements OnInit {
 
   constructor(private router: Router, private bd: ServicebdService) { 
     this.bd.fetchPublicacionesConUsuarios().subscribe(res => {
-      console.log('Datos recibidos:', res); // Verifica lo que estás recibiendo aquí
       this.publicacionesPorUsuario = this.agruparPublicacionesPorUsuario(res);
-      console.log('Datos agrupados:', this.publicacionesPorUsuario); // Verifica los datos agrupados
     });
   }
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ServicebdService } from '../services/servicebd.service';
+import { Router } from '@angular/router';
  
 @Component({
   selector: 'app-admin',
@@ -15,9 +16,12 @@ export class AdminPage implements OnInit {
   color: string = "";
   precio!: number;
  
-  constructor(private bd: ServicebdService) {}
+  constructor(private bd: ServicebdService, private router: Router,) {}
  
   ngOnInit() {
   }
- 
+  
+  logout() {
+    this.router.navigate(['/login']);
+  }
 }

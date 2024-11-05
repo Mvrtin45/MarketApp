@@ -57,12 +57,7 @@ export class SubirpubliPage implements OnInit {
       // Obtener el usuario actual
       const usuarioActual = await this.bd.obtenerUsuarioActual();
       if (!usuarioActual) {
-        const alert = await this.alertController.create({
-          header: 'Error',
-          message: 'No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.',
-          buttons: ['OK']
-        });
-        await alert.present();
+        await this.mostrarAlerta('Error', 'No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.');
         return;
       }
   
@@ -104,31 +99,15 @@ export class SubirpubliPage implements OnInit {
               this.router.navigate(['/tabs/perfil']);
             });
           }).catch(async (error) => {
-            // Mostrar alerta de error en caso de que falle la inserción
-            const alert = await this.alertController.create({
-              header: 'Error',
-              message: 'No se pudo subir la publicación. Por favor, inténtalo de nuevo.',
-              buttons: ['OK']
-            });
-            await alert.present();
+            await this.mostrarAlerta('Error', 'No se pudo subir la publicación. Por favor, inténtalo de nuevo.');
           });
         };
         reader.readAsDataURL(this.selectedFile); // Leer el archivo como base64
       } else {
-        const alert = await this.alertController.create({
-          header: 'Error',
-          message: 'Por favor, selecciona una imagen.',
-          buttons: ['OK']
-        });
-        await alert.present();
+        await this.mostrarAlerta('Error', 'Por favor, selecciona una imagen.');
       }
     } else {
-      const alert = await this.alertController.create({
-        header: 'Formulario inválido',
-        message: 'Por favor, revise los campos y corrija los errores.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      await this.mostrarAlerta('Formulario inválido.', 'Por favor, revise los campos y corrija los errores.');
     }
   }
 
@@ -146,5 +125,14 @@ export class SubirpubliPage implements OnInit {
       return 'El valor debe ser mayor a 0';
     }
     return '';
+  }
+
+  private async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }

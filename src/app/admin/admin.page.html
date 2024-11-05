@@ -3,6 +3,12 @@
     <ion-title class="centered-title" color="light">
       Administrador - Inicio
     </ion-title>
+    <!-- Botón de Cerrar Sesión -->
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -16,10 +22,10 @@
             <ion-button class="custom-button primary-button" expand="block" [routerLink]="['/admin-usuarios']">
               Ver Usuarios
             </ion-button>
-            <ion-button class="custom-button primary-button" expand="block"  [routerLink]="['/admin-publicaciones']">
+            <ion-button class="custom-button primary-button" expand="block" [routerLink]="['/admin-publicaciones']">
               Ver Publicaciones
             </ion-button>
-            <ion-button class="custom-button secondary-button" expand="block"  [routerLink]="['/admin-filtrarpubli']">
+            <ion-button class="custom-button secondary-button" expand="block" [routerLink]="['/admin-filtrarpubli']">
               Ver Publicaciones Según Usuario
             </ion-button>
           </ion-card-content>
