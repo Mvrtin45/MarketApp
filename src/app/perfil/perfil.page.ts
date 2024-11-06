@@ -141,7 +141,6 @@ export class PerfilPage implements OnInit {
 
       if (this.usuario && this.usuario.usuario_id) {
         await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imagePath);
-        await this.presentAlert("Actualización", "Imagen actualizada exitosamente.");
       }
     } catch (error) {
       console.error('Error al tomar la foto:', error);
@@ -156,7 +155,6 @@ export class PerfilPage implements OnInit {
 
       if (this.usuario && this.usuario.usuario_id) {
         await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imagePath);
-        await this.presentAlert("Actualización", "Imagen actualizada exitosamente.");
       }
     } catch (error) {
       console.error('Error al seleccionar la imagen:', error);

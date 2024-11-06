@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
@@ -20,19 +20,17 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private alertController: AlertController,
-    private activatedRoute: ActivatedRoute,
     private storage: NativeStorage,
     private bd: ServicebdService
   ) {
+    // Agregamos la validación personalizada para evitar espacios en blanco
     this.formularioLogin = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email, this.noWhitespaceValidator]],
+      password: ['', [Validators.required, this.noWhitespaceValidator]],
     });
   }
 
-  ngOnInit() {
-    
-  }
+  ngOnInit() {}
 
   async ingresar() {
     if (this.formularioLogin.valid) {
@@ -40,18 +38,14 @@ export class LoginPage implements OnInit {
       const formPassword = this.formularioLogin.get('password')?.value;
   
       try {
-        // Verificar credenciales para administrador
         if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
           await this.mostrarAlerta('Inicio de sesión exitoso.', 'Redirigiendo al apartado de administrador...');
           this.router.navigate(['/admin']);
         } else {
-          // Verificar si el correo existe en la base de datos
           const usuario = await this.bd.verificarUsuario(formcorreo, formPassword);
   
           if (usuario) {
-            // Almacenar usuario_id
             await this.storage.setItem('usuario_id', usuario.usuario_id); 
-  
             await this.mostrarAlerta('Inicio de sesión exitoso.', '¡Bienvenido a AppMarket!');
             this.router.navigate(['/tabs/tab1']);
           } else {
@@ -69,10 +63,14 @@ export class LoginPage implements OnInit {
   // Método para obtener el mensaje de error del campo email
   get emailErrorMessage() {
     const emailControl = this.formularioLogin.get('email');
-    if (emailControl?.hasError('required')) {
-      return 'El correo es requerido';
-    } else if (emailControl?.hasError('email')) {
-      return 'Por favor, ingrese un correo válido';
+    if (emailControl?.touched || emailControl?.dirty) { 
+      if (emailControl?.hasError('required')) {
+        return 'El correo es requerido';
+      } else if (emailControl?.hasError('email')) {
+        return 'Por favor, ingrese un correo válido';
+      } else if (emailControl?.hasError('whitespace')) {
+        return 'El correo no debe contener espacios en blanco';
+      }
     }
     return null;
   }
@@ -80,10 +78,20 @@ export class LoginPage implements OnInit {
   // Método para obtener el mensaje de error del campo password
   get passwordErrorMessage() {
     const passwordControl = this.formularioLogin.get('password');
-    if (passwordControl?.hasError('required')) {
-      return 'La contraseña es requerida';
+    if (passwordControl?.touched || passwordControl?.dirty) { 
+      if (passwordControl?.hasError('required')) {
+        return 'La contraseña es requerida';
+      } else if (passwordControl?.hasError('whitespace')) {
+        return 'La contraseña no debe contener espacios en blanco';
+      }
     }
     return null;
+  }
+
+  // Validación personalizada para evitar espacios en blanco
+  private noWhitespaceValidator(control: AbstractControl) {
+    const isWhitespace = (control.value || '').toString().trim().length === 0;
+    return !isWhitespace ? null : { 'whitespace': true };
   }
 
   private async mostrarAlerta(header: string, message: string) {

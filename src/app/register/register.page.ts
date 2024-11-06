@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationExtras } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
@@ -26,169 +26,62 @@ export class RegisterPage implements OnInit {
     private bd: ServicebdService
   ) {
     this.formularioRegistro = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), this.passwordStrengthValidator()]],
-      confirmPassword: ['', [Validators.required]],
-      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$')]],
-      phone: ['', [Validators.required, this.phonevalidator()]],
+      email: ['', [Validators.required, Validators.email, this.noWhitespaceValidator]],
+      password: ['', [Validators.required, Validators.minLength(8), this.passwordStrengthValidator(), this.noWhitespaceValidator]],
+      confirmPassword: ['', [Validators.required, this.noWhitespaceValidator]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$'), this.noWhitespaceValidator]],
+      phone: ['', [Validators.required, this.phoneValidator(), this.noWhitespaceValidator]],
     }, { validator: this.matchPasswords('password', 'confirmPassword') });
   }
 
   ngOnInit() { }
 
-  // MENSAJE DE ERROR EN LA CONTRASEÑA
-  get passwordErrorMessage() {
-    const passwordControl = this.formularioRegistro.get('password');
-  
-    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('required')) {
-      return 'La contraseña es obligatoria.';
-    }
-    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('minlength')) {
-      return 'La contraseña debe tener al menos 8 caracteres.';
-    }
-    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('uppercase')) {
-      return 'La contraseña debe contener al menos una letra mayúscula.';
-    }
-    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('lowercase')) {
-      return 'La contraseña debe contener al menos una letra minúscula.';
-    }
-    if ((passwordControl?.touched || passwordControl?.dirty) && passwordControl?.hasError('number')) {
-      return 'La contraseña debe contener al menos un número.';
-    }
-  
-    return null;
-  }
-  
-  // MENSAJE DE ERROR EN LA CONFIRMACIÓN DE CONTRASEÑA
-  get confirmPasswordErrorMessage() {
-    const confirmPasswordControl = this.formularioRegistro.get('confirmPassword');
-
-    if ((confirmPasswordControl?.touched || confirmPasswordControl?.dirty) && confirmPasswordControl?.hasError('required')) {
-      return 'La confirmación de la contraseña es obligatoria.';
-    }
-    if ((confirmPasswordControl?.touched || confirmPasswordControl?.dirty) && confirmPasswordControl?.hasError('passwordMismatch')) {
-      return 'Las contraseñas no coinciden.';
-    }
-
-    return null;
+  // Validador para verificar que no haya solo espacios en blanco
+  noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    return isWhitespace ? { whitespace: true } : null;
   }
 
-  // MENSAJE DE ERROR EN TELEFONO
-  get telefonoErrorMessage() {
-    const telefonoControl = this.formularioRegistro.get('phone');
+  // Validador de fortaleza de la contraseña
+  passwordStrengthValidator() {
+    return (control: any) => {
+      const value = control.value || '';
+      const errors: any = {};
 
-    if ((telefonoControl?.touched || telefonoControl?.dirty) && telefonoControl?.hasError('required')) {
-      return 'El número de teléfono es obligatorio.';
-    }
-    if ((telefonoControl?.touched || telefonoControl?.dirty) && telefonoControl?.hasError('numeric')) {
-      return 'El teléfono debe contener solo números.';
-    }
-    if ((telefonoControl?.touched || telefonoControl?.dirty) && telefonoControl?.hasError('minLength')) {
-      return 'El número de teléfono debe tener al menos 8 dígitos.';
-    }
-    if ((telefonoControl?.touched || telefonoControl?.dirty) && telefonoControl?.hasError('maxLength')) {
-      return 'El número de teléfono no puede tener más de 15 dígitos.';
-    }
+      if (!/[A-Z]/.test(value)) errors.uppercase = true;
+      if (!/[a-z]/.test(value)) errors.lowercase = true;
+      if (!/[0-9]/.test(value)) errors.number = true;
 
-    return null;
+      return Object.keys(errors).length > 0 ? errors : null;
+    };
   }
 
-  // MENSAJE DE ERROR EN EL NOMBRE
-  get nombreErrorMessage() {
-    const nombreControl = this.formularioRegistro.get('name');
+  // Validador de teléfono
+  phoneValidator() {
+    return (control: any) => {
+      const value = control.value || '';
+      const errors: any = {};
 
-    if ((nombreControl?.touched || nombreControl?.dirty) && nombreControl?.hasError('required')) {
-      return 'El nombre es obligatorio.';
-    }
-    if ((nombreControl?.touched || nombreControl?.dirty) && nombreControl?.hasError('minLength')) {
-      return 'El nombre debe tener al menos 3 caracteres.';
-    }
-    if ((nombreControl?.touched || nombreControl?.dirty) && nombreControl?.hasError('pattern')) {
-      return 'El nombre solo debe contener letras.';
-    }
+      if (!/^[0-9]+$/.test(value)) errors.numeric = true;
+      if (value.length < 8) errors.minLength = { requiredLength: 8, actualLength: value.length };
+      if (value.length > 15) errors.maxLength = { requiredLength: 15, actualLength: value.length };
 
-    return null;
+      return Object.keys(errors).length > 0 ? errors : null;
+    };
   }
 
-  // MENSAJE DE ERROR EN EMAIL
-  get emailErrorMessage() {
-    const emailControl = this.formularioRegistro.get('email');
-
-    if ((emailControl?.touched || emailControl?.dirty) && emailControl?.hasError('required')) {
-      return 'El correo electrónico es obligatorio.';
-    }
-    if ((emailControl?.touched || emailControl?.dirty) && emailControl?.hasError('email')) {
-      return 'Debe ingresar un correo electrónico válido.';
-    }
-
-    return null;
-  }
-
-  // Validador de contraseñas coincidentes
+  // Validador de coincidencia de contraseñas
   matchPasswords(password: string, confirmPassword: string) {
     return (formGroup: FormGroup) => {
       const passwordControl = formGroup.controls[password];
       const confirmPasswordControl = formGroup.controls[confirmPassword];
 
-      if (confirmPasswordControl.errors && !confirmPasswordControl.errors['passwordMismatch']) {
-        return;
-      }
+      if (confirmPasswordControl.errors && !confirmPasswordControl.errors['passwordMismatch']) return;
       if (passwordControl.value !== confirmPasswordControl.value) {
         confirmPasswordControl.setErrors({ passwordMismatch: true });
       } else {
         confirmPasswordControl.setErrors(null);
       }
-    };
-  }
-
-  passwordStrengthValidator() {
-    return (control: any) => {
-      const value = control.value || '';
-      const errors: any = {};
-  
-      // Verificar si tiene al menos una letra mayúscula
-      if (!/[A-Z]/.test(value)) {
-        errors.uppercase = true;
-      }
-  
-      // Verificar si tiene al menos una letra minúscula
-      if (!/[a-z]/.test(value)) {
-        errors.lowercase = true;
-      }
-  
-      // Verificar si tiene al menos un número
-      if (!/[0-9]/.test(value)) {
-        errors.number = true;
-      }
-  
-      // Si hay errores, devolver el objeto de errores, de lo contrario devolver null
-      return Object.keys(errors).length > 0 ? errors : null;
-    };
-  }
-
-  // Validador para numero de telefono
-  phonevalidator() {
-    return (control: any) => {
-      const value = control.value || '';
-      let errors: any = {};
-
-      // Comprobación si contiene solo números
-      if (!/^[0-9]+$/.test(value)) {
-        errors.numeric = true;
-      }
-
-      // Comprobación de longitud mínima
-      if (value.length < 8) {
-        errors.minLength = { requiredLength: 8, actualLength: value.length };
-      }
-
-      // Comprobación de longitud máxima
-      if (value.length > 15) {
-        errors.maxLength = { requiredLength: 15, actualLength: value.length };
-      }
-
-      // Si hay errores, devolver el objeto de errores, de lo contrario, devolver null
-      return Object.keys(errors).length > 0 ? errors : null;
     };
   }
 
@@ -210,10 +103,8 @@ export class RegisterPage implements OnInit {
         nuevoUsuario.contrasena,
         nuevoUsuario.imagen
       ).then(async (usuarioId) => {
-        // Guardar el usuario_id en NativeStorage
         await this.storage.setItem('usuario_id', usuarioId);
 
-        // Mostrar alerta de éxito
         const alert = await this.alertController.create({
           header: 'Registro exitoso',
           message: 'Tu registro se ha completado correctamente.',
@@ -226,10 +117,9 @@ export class RegisterPage implements OnInit {
         });
 
       }).catch(async (error) => {
-        // Mostrar alerta de error en caso de que falle la inserción
         await this.mostrarAlerta('Formulario inválido', 'No se pudo completar el registro. Por favor, inténtalo de nuevo.');
       });
-    }  else {
+    } else {
       await this.mostrarAlerta('Error', 'Por favor, revise los campos y corrija los errores.');
     }
   }
@@ -242,5 +132,63 @@ export class RegisterPage implements OnInit {
     });
     await alert.present();
   }
+
+  // Métodos de generación de mensajes de error
+  get nombreErrorMessage() {
+    const nombreControl = this.formularioRegistro.get('name');
+    if (nombreControl?.touched || nombreControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+      if (nombreControl?.hasError('required')) return 'El nombre es obligatorio.';
+      if (nombreControl?.hasError('minlength')) return 'El nombre debe tener al menos 3 caracteres.';
+      if (nombreControl?.hasError('pattern')) return 'El nombre solo puede contener letras.';
+      if (nombreControl?.hasError('whitespace')) return 'El nombre no puede estar vacío o ser solo espacios.';
+    }
+    return '';
+  }
+
+  get emailErrorMessage() {
+    const emailControl = this.formularioRegistro.get('email');
+    if (emailControl?.touched || emailControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+      if (emailControl?.hasError('required')) return 'El correo es obligatorio.';
+      if (emailControl?.hasError('email')) return 'Debe ingresar un correo válido.';
+      if (emailControl?.hasError('whitespace')) return 'El correo no puede estar vacío o ser solo espacios.';
+    }
+    return '';
+  }
+
+  get telefonoErrorMessage() {
+    const telefonoControl = this.formularioRegistro.get('phone');
+    if (telefonoControl?.touched || telefonoControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+      if (telefonoControl?.hasError('required')) return 'El teléfono es obligatorio.';
+      if (telefonoControl?.hasError('numeric')) return 'El teléfono solo puede contener números.';
+      if (telefonoControl?.hasError('minLength')) return 'El teléfono debe tener al menos 8 dígitos.';
+      if (telefonoControl?.hasError('maxLength')) return 'El teléfono no puede tener más de 15 dígitos.';
+      if (telefonoControl?.hasError('whitespace')) return 'El teléfono no puede estar vacío o ser solo espacios.';
+    }
+    return '';
+  }
+
+  get passwordErrorMessage() {
+    const passwordControl = this.formularioRegistro.get('password');
+    if (passwordControl?.touched || passwordControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+      if (passwordControl?.hasError('required')) return 'La contraseña es obligatoria.';
+      if (passwordControl?.hasError('minlength')) return 'La contraseña debe tener al menos 8 caracteres.';
+      if (passwordControl?.hasError('uppercase')) return 'La contraseña debe tener al menos una letra mayúscula.';
+      if (passwordControl?.hasError('lowercase')) return 'La contraseña debe tener al menos una letra minúscula.';
+      if (passwordControl?.hasError('number')) return 'La contraseña debe tener al menos un número.';
+      if (passwordControl?.hasError('whitespace')) return 'La contraseña no puede estar vacía o ser solo espacios.';
+    }
+    return '';
+  }
+
+  get confirmPasswordErrorMessage() {
+    const confirmPasswordControl = this.formularioRegistro.get('confirmPassword');
+    if (confirmPasswordControl?.touched || confirmPasswordControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+      if (confirmPasswordControl?.hasError('required')) return 'La confirmación de contraseña es obligatoria.';
+      if (confirmPasswordControl?.hasError('passwordMismatch')) return 'Las contraseñas no coinciden.';
+      if (confirmPasswordControl?.hasError('whitespace')) return 'La confirmación de contraseña no puede estar vacía o ser solo espacios.';
+    }
+    return '';
+  }
 }
+
 
