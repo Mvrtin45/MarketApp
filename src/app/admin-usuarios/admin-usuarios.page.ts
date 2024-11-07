@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
@@ -18,7 +19,7 @@ export class AdminUsuariosPage implements OnInit {
     }
   ];
 
-  constructor(private router: Router, private bd: ServicebdService) {
+  constructor(private router: Router, private bd: ServicebdService, private alertController: AlertController) {
   }
 
   ngOnInit() {
@@ -51,31 +52,30 @@ export class AdminUsuariosPage implements OnInit {
   }
 
   banear(usuario: any) {
-    const action = usuario.is_banned ? 'restaurar' : 'banear'; // Si ya está baneado, restauramos
-    const actionText = action === 'banear' ? '¿Estás seguro de que deseas banear a este usuario?' : '¿Estás seguro de que deseas restaurar a este usuario?';
-  
-    this.alertController.create({
-      header: action === 'banear' ? 'Banear Usuario' : 'Restaurar Usuario',
-      message: actionText,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: action === 'banear' ? 'Banear' : 'Restaurar',
-          handler: () => {
-            if (action === 'banear') {
-              this.bd.banearUsuario(usuario.usuario_id);
-            } else {
-              this.bd.restaurarUsuario(usuario.usuario_id);
-            }
-            // Actualizar la lista de usuarios después de banear/restaurar
-            this.usuarios = this.usuarios.filter(u => u.usuario_id !== usuario.usuario_id);
-          }
-        }
-      ]
-    }).then(alert => alert.present());
+    this.bd.banearUsuario(usuario.usuario_id).then(() => {
+      this.presentAlert('Éxito', `Usuario ${usuario.usuario_id} baneado correctamente.`);
+      usuario.estado = 0; // Actualizar estado en la lista localmente
+    }).catch(e => {
+      this.presentAlert('Error', `Error al banear el usuario: ${e.message}`);
+    });
   }
-  
+
+  restaurar(usuario: any) {
+    this.bd.restaurarUsuario(usuario.usuario_id).then(() => {
+      this.presentAlert('Éxito', `Usuario ${usuario.usuario_id} restaurado correctamente.`);
+      usuario.estado = 1; // Actualizar estado en la lista localmente
+    }).catch(e => {
+      this.presentAlert('Error', `Error al restaurar el usuario: ${e.message}`);
+    });
+  }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
 }
