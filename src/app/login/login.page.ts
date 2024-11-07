@@ -23,7 +23,6 @@ export class LoginPage implements OnInit {
     private storage: NativeStorage,
     private bd: ServicebdService
   ) {
-    // Agregamos la validación personalizada para evitar espacios en blanco
     this.formularioLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email, this.noWhitespaceValidator]],
       password: ['', [Validators.required, this.noWhitespaceValidator]],
@@ -38,16 +37,26 @@ export class LoginPage implements OnInit {
       const formPassword = this.formularioLogin.get('password')?.value;
   
       try {
+        // Comprobamos si el usuario es el administrador
         if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
           await this.mostrarAlerta('Inicio de sesión exitoso.', 'Redirigiendo al apartado de administrador...');
           this.router.navigate(['/admin']);
         } else {
+          // Verificamos el usuario en la base de datos
           const usuario = await this.bd.verificarUsuario(formcorreo, formPassword);
   
           if (usuario) {
-            await this.storage.setItem('usuario_id', usuario.usuario_id); 
-            await this.mostrarAlerta('Inicio de sesión exitoso.', '¡Bienvenido a AppMarket!');
-            this.router.navigate(['/tabs/tab1']);
+            // Comprobamos el estado del usuario
+            const estado = await this.bd.comprobarEstadoUsuario(usuario.usuario_id);
+  
+            if (estado === 0) {  // Si el usuario está baneado
+              await this.mostrarAlerta('Acceso denegado', 'Tu cuenta ha sido baneada.');
+            } else {
+              // Si el usuario está activo, guardamos los datos y lo redirigimos
+              await this.storage.setItem('usuario_id', usuario.usuario_id);
+              await this.mostrarAlerta('Inicio de sesión exitoso.', '¡Bienvenido a AppMarket!');
+              this.router.navigate(['/tabs/tab1']);
+            }
           } else {
             await this.mostrarAlerta('Error', 'Correo o contraseña incorrectos.');
           }

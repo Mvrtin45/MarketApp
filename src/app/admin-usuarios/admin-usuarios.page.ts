@@ -50,4 +50,32 @@ export class AdminUsuariosPage implements OnInit {
     this.router.navigate(['/agregar-usuario']); 
   }
 
+  banear(usuario: any) {
+    const action = usuario.is_banned ? 'restaurar' : 'banear'; // Si ya está baneado, restauramos
+    const actionText = action === 'banear' ? '¿Estás seguro de que deseas banear a este usuario?' : '¿Estás seguro de que deseas restaurar a este usuario?';
+  
+    this.alertController.create({
+      header: action === 'banear' ? 'Banear Usuario' : 'Restaurar Usuario',
+      message: actionText,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: action === 'banear' ? 'Banear' : 'Restaurar',
+          handler: () => {
+            if (action === 'banear') {
+              this.bd.banearUsuario(usuario.usuario_id);
+            } else {
+              this.bd.restaurarUsuario(usuario.usuario_id);
+            }
+            // Actualizar la lista de usuarios después de banear/restaurar
+            this.usuarios = this.usuarios.filter(u => u.usuario_id !== usuario.usuario_id);
+          }
+        }
+      ]
+    }).then(alert => alert.present());
+  }
+  
 }

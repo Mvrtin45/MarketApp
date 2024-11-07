@@ -7,6 +7,7 @@ import { Publicaciones } from './publicaciones';
 import { Usuarios } from './usuarios';
 import { Rol } from './rol';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { Ventas } from './ventas';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,11 @@ export class ServicebdService {
 
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
-  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL , email_usu VARCHAR(50) NOT NULL UNIQUE , telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT , rol_id INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
+  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL (rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
   tablaFavoritos: string ="CREATE TABLE IF NOT EXISTS Favoritos ( favorito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
-  
+  tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, monto INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
@@ -33,6 +35,7 @@ export class ServicebdService {
   listadoUsuarios = new BehaviorSubject([]);
   listadoRol = new BehaviorSubject([]);
   listadoAgruparPublicacionesConUsuarios = new BehaviorSubject<Publicaciones[]>([]);
+  listadoVentas = new BehaviorSubject([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -76,6 +79,10 @@ export class ServicebdService {
         })
     );
   }
+
+  fetchVentas(): Observable<Ventas[]> {
+    return this.listadoVentas.asObservable();
+  }
   
 
   dbState(){
@@ -104,7 +111,7 @@ export class ServicebdService {
 
   async crearTablas() {
     try {
-      //await this.database.executeSql('DROP TABLE IF EXISTS Publicaciones', []);
+      //await this.database.executeSql('DROP TABLE IF EXISTS Usuarios', []);
       // Ejecutar la creación de Tablas
       await this.database.executeSql(this.tablaPublicaciones, []);
       await this.database.executeSql(this.tablaUsuarios, []);
@@ -175,7 +182,8 @@ export class ServicebdService {
             email_usu: res.rows.item(i).email_usu,
             telefono_usu: res.rows.item(i).telefono_usu,
             contrasena_usu: res.rows.item(i).contrasena_usu,
-            rol: res.rows.item(i).rol
+            rol: res.rows.item(i).rol,
+            estado: res.rows.item(i).estado
           });
         }
       }
@@ -184,6 +192,28 @@ export class ServicebdService {
     });
   }
 
+  seleccionarVentas() {
+    return this.database.executeSql('SELECT * FROM Ventas', []).then(res => {
+      // Variable para almacenar el resultado de la consulta
+      let items: Ventas[] = [];
+      // Validar si trae al menos un registro
+      if (res.rows.length > 0) {
+        // Recorrer el resultado
+        for (var i = 0; i < res.rows.length; i++) {
+          // Agregar los registros a la lista
+          items.push({
+            venta_id: res.rows.item(i).venta_id,
+            usuario_id: res.rows.item(i).usuario_id,
+            producto_id: res.rows.item(i).producto_id,
+            fecha_venta: res.rows.item(i).fecha_venta,
+            monto: res.rows.item(i).monto
+          });
+        }
+      }
+      // Actualizar el observable
+      this.listadoUsuarios.next(items as any);
+    });
+  }
   
   //OBTENER
   getPublicacionById(id: string) {
@@ -318,6 +348,17 @@ export class ServicebdService {
     });
   }
   
+  banearUsuario(usuario_id: number) {
+    const query = `UPDATE Usuarios SET estado = 0 WHERE usuario_id = ?`;
+    return this.database.executeSql(query, [usuario_id])
+      .then(() => {
+        this.presentAlert('Éxito', `Usuario ${usuario_id} baneado correctamente.`);
+      })
+      .catch(e => {
+        this.presentAlert('Error', `Error al banear el usuario: ${e.message}`);
+      });
+  }
+
   // MODIFICAR
   modificarUsuario(id: string, nombre: string, email: string, telefono: number, contrasena: string, rol: string) {
     return this.database.executeSql('UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ?, contrasena_usu = ?, rol_id = ? WHERE usuario_id = ?', [nombre, email, telefono, contrasena, rol, id]).then(res => {
@@ -364,29 +405,40 @@ export class ServicebdService {
     });
   } 
 
-  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, imagen_usu: string) {
+  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, imagen_usu: string, estado: number = 1) { // estado por defecto es 1
     try {
-        // Insertar usuario en la base de datos
-        const res = await this.database.executeSql(
-            'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id, imagen_usu ) VALUES (?, ?, ?, ?, ?, ?)',
-            [nombre, email, telefono, contrasena, 1, imagen_usu] 
-        );
-        if (res.insertId) {
-            // Guardar los datos del usuario recién creado en Native Storage
-            const usuario = {
-                iduser: res.insertId, // res.insertId devuelve el ID del usuario insertado
-                nombre,
-                email,
-                telefono
-            };
-            await this.storage.setItem('usuario', usuario);
-        }
-        // Seleccionar usuarios para refrescar cualquier lista o datos dependientes
-        this.seleccionarUsuarios();
+      // Insertar usuario en la base de datos
+      const res = await this.database.executeSql(
+        'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id, estado, imagen_usu) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [nombre, email, telefono, contrasena, 1, estado, imagen_usu]  // estado pasa como parámetro
+      );
+      if (res.insertId) {
+        // Guardar los datos del usuario recién creado en Native Storage
+        const usuario = {
+          iduser: res.insertId, // res.insertId devuelve el ID del usuario insertado
+          nombre,
+          email,
+          telefono
+        };
+        await this.storage.setItem('usuario', usuario);
+      }
+      // Seleccionar usuarios para refrescar cualquier lista o datos dependientes
+      this.seleccionarUsuarios();
     } catch (e) {
-        // Mostrar alerta de error si falla la inserción
-        await this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
+      // Mostrar alerta de error si falla la inserción
+      await this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
     }
+  }
+
+  insertarVenta(usuario_id: number, producto_id: number, monto: number) {
+    const query = `INSERT INTO Ventas (usuario_id, producto_id, monto) VALUES (?, ?, ?)`;
+    return this.database.executeSql(query, [usuario_id, producto_id, monto])
+      .then(() => {
+        this.presentAlert('Éxito', 'Venta registrada correctamente.');
+      })
+      .catch(e => {
+        this.presentAlert('Error', `Error al registrar la venta: ${e.message}`);
+      });
   }
 
   // VERIFICAR
@@ -455,6 +507,23 @@ export class ServicebdService {
     });
   }
 
+  comprobarEstadoUsuario(usuario_id: number) {
+    const query = `SELECT estado FROM Usuarios WHERE usuario_id = ?`;
+    return this.database.executeSql(query, [usuario_id])
+      .then(res => {
+        if (res.rows.length > 0) {
+          return res.rows.item(0).estado; // Retorna 0 o 1, dependiendo del estado
+        } else {
+          throw new Error('Usuario no encontrado');
+        }
+      })
+      .catch(e => {
+        this.presentAlert('Error', 'No se pudo verificar el estado del usuario. Intenta nuevamente.');
+        console.error('Error al comprobar estado de usuario:', e);
+        throw e;  // Vuelvo a lanzar el error para que el flujo de la aplicación lo maneje
+      });
+  }
+
   // ACTUALIZAR
   async actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
     try {
@@ -501,5 +570,9 @@ export class ServicebdService {
     } catch (e) {
         await this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
     }
+  }
+
+  restaurarUsuario(usuario_id: number) {
+    return this.database.executeSql('UPDATE Usuarios SET estado = 1 WHERE usuario_id = ?', [usuario_id]);
   }
 }

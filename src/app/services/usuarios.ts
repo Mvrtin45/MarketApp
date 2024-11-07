@@ -4,6 +4,7 @@ export class Usuarios {
     email_usu!: string;
     contrasena_usu!: string;
     telefono_usu!: number; 
-    rol!: string; 
+    rol!: string;
+    estado!: number;
     
 }
