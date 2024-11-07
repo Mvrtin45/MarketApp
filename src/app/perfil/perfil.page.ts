@@ -18,7 +18,6 @@ export class PerfilPage implements OnInit {
   telefono: string = '';
   direccion: string = '';
   photoUrl: string = '/assets/icon/logo.jpg'; // Imagen por defecto
-  imagen: any = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -32,7 +31,6 @@ export class PerfilPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Espera a que la base de datos esté lista antes de cargar los datos del usuario
     this.bd.dbState().subscribe(data => {
       if (data) {
         this.cargarUsuarioActual();
@@ -43,37 +41,33 @@ export class PerfilPage implements OnInit {
   async cargarUsuarioActual() {
     try {
       const storedUserId = await this.storage.getItem('usuario_id');
-      console.log('Stored User ID:', storedUserId);
       if (storedUserId) {
-        this.bd.fetchUsuarios().subscribe(res => {
+        this.bd.fetchUsuarios().subscribe(async res => {
           this.usuario = res.find(user => user.usuario_id === storedUserId);
           if (this.usuario) {
             this.nombre = this.usuario.nombre_usu;
             this.email = this.usuario.email_usu;
             this.telefono = this.usuario.telefono_usu;
+
+            // Cargar la imagen del perfil desde BLOB
             if (this.usuario.imagen_usu) {
-              this.photoUrl = this.usuario.imagen_usu;
+              const blob = this.usuario.imagen_usu as Blob;
+              this.photoUrl = URL.createObjectURL(blob);
+            } else {
+              this.photoUrl = '/assets/icon/logo.jpg';
             }
           } else {
-            this.presentAlert("ERROR", "No se pudieron obtener los datos del usuario.");
+            this.presentAlert("Error", "No se pudieron obtener los datos del usuario.");
           }
+        }, error => {
+          this.presentAlert("Error", `Error al recuperar datos del usuario: ${JSON.stringify(error)}`);
         });
       } else {
-        this.presentAlert("ERROR", "No se pudo obtener el ID del usuario.");
+        this.presentAlert("Error", "No se pudo obtener el ID del usuario desde el almacenamiento.");
       }
     } catch (error) {
-      this.presentAlert("ERROR", "Error al cargar los datos del usuario.");
+      this.presentAlert("Error", `Error al cargar los datos del usuario: ${JSON.stringify(error)}`);
     }
-  }
-
-  async presentAlert(titulo: string, msj: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: msj,
-      buttons: ['OK'],
-    });
-
-    await alert.present();
   }
 
   modificar() {
@@ -137,39 +131,64 @@ export class PerfilPage implements OnInit {
   async takePhoto() {
     try {
       const imagePath = await this.camaraService.takePhoto();
-      this.photoUrl = imagePath;
-
+      const blob = await this.convertToBlob(imagePath);
+      const imageUrl = URL.createObjectURL(blob);  // Crear URL de la imagen como string
+  
+      this.photoUrl = imageUrl; // Asignar la URL generada a la propiedad photoUrl
+  
       if (this.usuario && this.usuario.usuario_id) {
-        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imagePath);
+        // Pasar la URL generada como string
+        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imageUrl); 
       }
     } catch (error) {
       console.error('Error al tomar la foto:', error);
-      await this.presentAlert("Error", "No se pudo actualizar la imagen.");
+      await this.presentAlert("Error", "No se pudo tomar la foto.");
     }
   }
 
   async selectImage() {
     try {
       const imagePath = await this.camaraService.pickImage();
-      this.photoUrl = imagePath;
-
+      const blob = await this.convertToBlob(imagePath);
+      const imageUrl = URL.createObjectURL(blob);  // Crear URL de la imagen como string
+  
+      this.photoUrl = imageUrl; // Asignar la URL generada a la propiedad photoUrl
+  
       if (this.usuario && this.usuario.usuario_id) {
-        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imagePath);
+        // Pasar la URL generada como string
+        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imageUrl); 
       }
     } catch (error) {
       console.error('Error al seleccionar la imagen:', error);
-      await this.presentAlert("ERROR", 'Error al seleccionar la imagen.');
+      await this.presentAlert("Error", "Error al seleccionar la imagen.");
     }
   }
 
   async deletePhoto() {
-    this.photoUrl = '/assets/icon/logo.jpg';
+    this.photoUrl = '/assets/icon/logo.jpg'; // Imagen por defecto si se elimina la foto
     if (this.usuario && this.usuario.usuario_id) {
-      await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, null);
+      // Pasar una cadena vacía "" para indicar que no hay imagen
+      await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, ''); 
     }
   }
 
-  logout() {
+  async logout() {
+    await this.storage.clear();
     this.router.navigate(['/login']);
+  }
+
+  async convertToBlob(imagePath: string): Promise<Blob> {
+    const response = await fetch(imagePath);
+    return await response.blob();
+  }
+
+  async presentAlert(titulo: string, msj: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: msj,
+      buttons: ['OK'],
+    });
+
+    await alert.present();
   }
 }

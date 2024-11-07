@@ -552,25 +552,21 @@ export class ServicebdService {
     }
   }
 
-  async actualizarImagenUsuario(usuario_id: number, imagen_usu: string | null): Promise<void> {
-    console.log('Usuario ID:', usuario_id); // Verificar que el ID es correcto
+  async actualizarImagenUsuario(usuario_id: number, imagen_usu: Blob | string): Promise<void> {
     const sql = 'UPDATE Usuarios SET imagen_usu = ? WHERE usuario_id = ?';
     const data = [imagen_usu, usuario_id];
-    console.log('Actualizar usuario ID:', usuario_id);
-    console.log('Nuevo path de imagen:', imagen_usu); 
-
+ 
     try {
         const res = await this.database.executeSql(sql, data);
-        
         if (res.rowsAffected > 0) {
-            await this.presentAlert("Actualización", "Imagen actualizada exitosamente.");
+            console.log("Imagen guardada correctamente.");
         } else {
-          await this.presentAlert("Error", `No se encontró un usuario con ese ID. Respuesta: ${JSON.stringify(res)}`);
+            console.error("No se encontró un usuario con ese ID.");
         }
-    } catch (e) {
-        await this.presentAlert('Actualizar', 'Error: ' + JSON.stringify(e));
+    } catch (error) {
+        console.error("Error al actualizar la imagen:", error);
     }
-  }
+ }
 
   restaurarUsuario(usuario_id: number) {
     return this.database.executeSql('UPDATE Usuarios SET estado = 1 WHERE usuario_id = ?', [usuario_id]);
