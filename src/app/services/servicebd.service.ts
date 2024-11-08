@@ -20,7 +20,7 @@ export class ServicebdService {
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL (rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
-  tablaFavoritos: string ="CREATE TABLE IF NOT EXISTS Favoritos ( favorito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+  tablaFavoritos: string = "CREATE TABLE IF NOT EXISTS Favoritos ( favorito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
   tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, monto INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
 
   // Variables para los insert por defecto en nuestras tablas 
@@ -28,7 +28,7 @@ export class ServicebdService {
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
-  registroFavoritos: string ="INSERT INTO Favoritos (producto_id, usuario_id) VALUES (1, 1);";
+  registroFavoritos: string = "INSERT INTO Favoritos (producto_id, usuario_id) VALUES (1, 1);";
 
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
@@ -182,6 +182,7 @@ export class ServicebdService {
             email_usu: res.rows.item(i).email_usu,
             telefono_usu: res.rows.item(i).telefono_usu,
             contrasena_usu: res.rows.item(i).contrasena_usu,
+            imagen_usu: res.rows.item(i).imagen_usu,
             rol: res.rows.item(i).rol,
             estado: res.rows.item(i).estado
           });
@@ -295,11 +296,12 @@ export class ServicebdService {
       const storedUserId = await this.storage.getItem('usuario_id');
       console.log('ID de usuario almacenado:', storedUserId); // Verifica el valor
   
-      const query = `SELECT usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE usuario_id = ?`;
+      const query = `SELECT imagen_usu, usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE usuario_id = ?`;
       const res = await this.database.executeSql(query, [storedUserId]);
   
       if (res.rows.length > 0) {
         return {
+          imagen_usu: res.rows.item(0).imagen_usu,
           usuario_id: res.rows.item(0).usuario_id,
           nombre_usu: res.rows.item(0).nombre_usu,
           email_usu: res.rows.item(0).email_usu,
@@ -552,21 +554,31 @@ export class ServicebdService {
     }
   }
 
-  async actualizarImagenUsuario(usuario_id: number, imagen_usu: Blob | string): Promise<void> {
+  async actualizarImagenUsuario(usuario_id: number, imagen_usu: string): Promise<void> {
     const sql = 'UPDATE Usuarios SET imagen_usu = ? WHERE usuario_id = ?';
     const data = [imagen_usu, usuario_id];
- 
+  
     try {
-        const res = await this.database.executeSql(sql, data);
-        if (res.rowsAffected > 0) {
-            console.log("Imagen guardada correctamente.");
-        } else {
-            console.error("No se encontró un usuario con ese ID.");
-        }
+      const res = await this.database.executeSql(sql, data);
+      if (res.rowsAffected > 0) {
+        alert("Imagen guardada correctamente.");
+      } else {
+        alert("No se encontró un usuario con ese ID.");
+      }
     } catch (error) {
-        console.error("Error al actualizar la imagen:", error);
+      alert("Error al actualizar la imagen: " + error);
     }
- }
+  }
+  
+
+  async convertirBlobABase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string); // Esto devolverá el base64 completo, incluyendo el encabezado
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
 
   restaurarUsuario(usuario_id: number) {
     return this.database.executeSql('UPDATE Usuarios SET estado = 1 WHERE usuario_id = ?', [usuario_id]);

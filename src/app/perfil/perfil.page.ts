@@ -48,25 +48,20 @@ export class PerfilPage implements OnInit {
             this.nombre = this.usuario.nombre_usu;
             this.email = this.usuario.email_usu;
             this.telefono = this.usuario.telefono_usu;
-
-            // Cargar la imagen del perfil desde BLOB
-            if (this.usuario.imagen_usu) {
-              const blob = this.usuario.imagen_usu as Blob;
-              this.photoUrl = URL.createObjectURL(blob);
-            } else {
-              this.photoUrl = '/assets/icon/logo.jpg';
-            }
+  
+            // Asigna el valor de la imagen desde base64 directamente a `photoUrl`
+            this.photoUrl = this.usuario.imagen_usu || '/assets/icon/logo.jpg';
           } else {
-            this.presentAlert("Error", "No se pudieron obtener los datos del usuario.");
+            alert("No se pudieron obtener los datos del usuario.");
           }
         }, error => {
-          this.presentAlert("Error", `Error al recuperar datos del usuario: ${JSON.stringify(error)}`);
+          alert("Error al recuperar datos del usuario: " + JSON.stringify(error));
         });
       } else {
-        this.presentAlert("Error", "No se pudo obtener el ID del usuario desde el almacenamiento.");
+        alert("No se pudo obtener el ID del usuario desde el almacenamiento.");
       }
     } catch (error) {
-      this.presentAlert("Error", `Error al cargar los datos del usuario: ${JSON.stringify(error)}`);
+      alert("Error al cargar los datos del usuario: " + JSON.stringify(error));
     }
   }
 
@@ -132,17 +127,14 @@ export class PerfilPage implements OnInit {
     try {
       const imagePath = await this.camaraService.takePhoto();
       const blob = await this.convertToBlob(imagePath);
-      const imageUrl = URL.createObjectURL(blob);  // Crear URL de la imagen como string
-  
-      this.photoUrl = imageUrl; // Asignar la URL generada a la propiedad photoUrl
+      const base64Image = await this.bd.convertirBlobABase64(blob); // Convierte a base64
+      this.photoUrl = base64Image; // Muestra la imagen en la interfaz
   
       if (this.usuario && this.usuario.usuario_id) {
-        // Pasar la URL generada como string
-        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imageUrl); 
+        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, base64Image); // Guarda en la base de datos
       }
     } catch (error) {
-      console.error('Error al tomar la foto:', error);
-      await this.presentAlert("Error", "No se pudo tomar la foto.");
+      alert("No se pudo tomar la foto.");
     }
   }
 
@@ -150,17 +142,14 @@ export class PerfilPage implements OnInit {
     try {
       const imagePath = await this.camaraService.pickImage();
       const blob = await this.convertToBlob(imagePath);
-      const imageUrl = URL.createObjectURL(blob);  // Crear URL de la imagen como string
-  
-      this.photoUrl = imageUrl; // Asignar la URL generada a la propiedad photoUrl
+      const base64Image = await this.bd.convertirBlobABase64(blob); // Convierte a base64
+      this.photoUrl = base64Image; // Muestra la imagen en la interfaz
   
       if (this.usuario && this.usuario.usuario_id) {
-        // Pasar la URL generada como string
-        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, imageUrl); 
+        await this.bd.actualizarImagenUsuario(this.usuario.usuario_id, base64Image); // Guarda en la base de datos
       }
     } catch (error) {
-      console.error('Error al seleccionar la imagen:', error);
-      await this.presentAlert("Error", "Error al seleccionar la imagen.");
+      alert("Error al seleccionar la imagen.");
     }
   }
 
@@ -178,8 +167,14 @@ export class PerfilPage implements OnInit {
   }
 
   async convertToBlob(imagePath: string): Promise<Blob> {
-    const response = await fetch(imagePath);
-    return await response.blob();
+    try {
+      const response = await fetch(imagePath);
+      if (!response.ok) throw new Error("Error al convertir a Blob");
+      return await response.blob();
+    } catch (error) {
+      console.error("Error en convertToBlob:", error);
+      throw error;
+    }
   }
 
   async presentAlert(titulo: string, msj: string) {
