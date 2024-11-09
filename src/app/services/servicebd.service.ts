@@ -562,6 +562,7 @@ export class ServicebdService {
       const res = await this.database.executeSql(sql, data);
       if (res.rowsAffected > 0) {
         alert("Imagen guardada correctamente.");
+        this.seleccionarUsuarios();
       } else {
         alert("No se encontró un usuario con ese ID.");
       }
