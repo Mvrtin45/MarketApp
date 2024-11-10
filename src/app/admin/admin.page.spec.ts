@@ -1,11 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdminPage } from './admin.page';
+import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage';
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 describe('AdminPage', () => {
   let component: AdminPage;
   let fixture: ComponentFixture<AdminPage>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AdminPage],
+      imports: [IonicModule.forRoot(), FormsModule, NativeStorage, SQLite]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AdminPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
