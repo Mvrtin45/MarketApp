@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdminEditarusuariosPage } from './admin-editarusuarios.page';
-import { IonicModule } from '@ionic/angular/ionic-module';
-import { FormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { IonicModule } from '@ionic/angular';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 describe('AdminEditarusuariosPage', () => {
   let component: AdminEditarusuariosPage;
@@ -12,7 +13,8 @@ describe('AdminEditarusuariosPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AdminEditarusuariosPage],
-      imports: [IonicModule.forRoot(), FormsModule, NativeStorage, SQLite]
+      imports: [IonicModule.forRoot(), ReactiveFormsModule],
+      providers: [NativeStorage, SQLite, ActivatedRoute] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminEditarusuariosPage);

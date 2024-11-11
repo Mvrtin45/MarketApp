@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginPage } from './login.page';
-import { IonicModule } from '@ionic/angular/ionic-module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { IonicModule } from '@ionic/angular';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 describe('LoginPage', () => {
@@ -12,7 +12,8 @@ describe('LoginPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LoginPage],
-      imports: [IonicModule.forRoot(), FormsModule, NativeStorage, SQLite]
+      imports: [IonicModule.forRoot(), FormsModule, ReactiveFormsModule],
+      providers: [NativeStorage, SQLite, NgControl] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPage);

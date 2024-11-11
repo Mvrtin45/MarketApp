@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JeanlevisPage } from './jeanlevis.page';
-import { IonicModule } from '@ionic/angular/ionic-module';
-import { FormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { IonicModule } from '@ionic/angular';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 describe('JeanlevisPage', () => {
@@ -12,7 +11,8 @@ describe('JeanlevisPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JeanlevisPage],
-      imports: [IonicModule.forRoot(), FormsModule, NativeStorage, SQLite]
+      imports: [IonicModule.forRoot()],
+      providers: [NativeStorage, SQLite] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(JeanlevisPage);

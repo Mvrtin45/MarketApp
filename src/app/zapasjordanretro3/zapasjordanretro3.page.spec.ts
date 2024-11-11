@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Zapasjordanretro3Page } from './zapasjordanretro3.page';
-import { IonicModule } from '@ionic/angular/ionic-module';
+import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
@@ -12,7 +12,11 @@ describe('Zapasjordanretro3Page', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [Zapasjordanretro3Page],
-      imports: [IonicModule.forRoot(), FormsModule, NativeStorage, SQLite]
+      imports: [
+        IonicModule.forRoot(),
+         FormsModule
+      ],
+      providers: [NativeStorage, SQLite] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(Zapasjordanretro3Page);

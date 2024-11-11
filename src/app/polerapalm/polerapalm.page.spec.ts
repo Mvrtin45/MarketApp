@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PolerapalmPage } from './polerapalm.page';
-import { IonicModule } from '@ionic/angular/ionic-module';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
 describe('PolerapalmPage', () => {
   let component: PolerapalmPage;
@@ -12,7 +12,8 @@ describe('PolerapalmPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [PolerapalmPage],
-      imports: [IonicModule.forRoot(), FormsModule, NativeStorage, SQLite]
+      imports: [IonicModule.forRoot(),FormsModule],
+      providers: [NativeStorage, SQLite] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(PolerapalmPage);

@@ -128,13 +128,13 @@ export class EditarPerfilPage implements OnInit {
           this.email = usuarioActual.email_usu;
           this.telefono = usuarioActual.telefono_usu;
         } else {
-          await this.mostrarAlerta('No se pudo obtener los datos del usuario. EN EL TS editar-perfil');
+          await this.mostrarAlerta('No se pudo obtener los datos del usuario.');
         }
       } else {
-        await this.mostrarAlerta('No se pudo obtener el ID del usuario. ESTORAGE');
+        await this.mostrarAlerta('No se pudo obtener el ID del usuario.');
       }
     } catch (error) {
-      await this.mostrarAlerta('Error al cargar los datos del usuario. METODO ENTERO');
+      await this.mostrarAlerta('Error al cargar los datos del usuario.');
     }
   }
 
