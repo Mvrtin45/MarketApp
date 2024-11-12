@@ -48,7 +48,7 @@ export class PerfilPage implements OnInit {
             this.nombre = this.usuario.nombre_usu;
             this.email = this.usuario.email_usu;
             this.telefono = this.usuario.telefono_usu;
-  
+    
             // Asigna el valor de la imagen desde base64 directamente a `photoUrl`
             this.photoUrl = this.usuario.imagen_usu || '/assets/icon/logo.jpg';
           } else {

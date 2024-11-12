@@ -279,19 +279,23 @@ export class ServicebdService {
   }
 
   obtenerUsuariosConPublicaciones(): Promise<Publicaciones[]> {
-    const query = ` SELECT u.usuario_id, u.nombre_usu, u.email_usu, p.producto_id, p.titulo, p.descripcion, p.talla, p.ubicacion, p.color, p.precio, p.foto_publicacion FROM Usuarios u LEFT JOIN Publicaciones p ON u.usuario_id = p.usuario_id ORDER BY u.usuario_id;`;
+    if (!this.database) {
+      console.warn('La conexión a la base de datos no está inicializada.');
+      return Promise.resolve([]); // Retorna un array vacío en caso de que la base de datos no esté disponible
+    }
+    const query = `SELECT u.usuario_id, u.nombre_usu, u.email_usu, p.producto_id, p.titulo, p.descripcion, p.talla, p.ubicacion, p.color, p.precio, p.foto_publicacion FROM Usuarios u LEFT JOIN Publicaciones p ON u.usuario_id = p.usuario_id ORDER BY u.usuario_id;`;
     return this.database.executeSql(query, []).then(res => {
-        let items: Publicaciones[] = []; 
-        for (let i = 0; i < res.rows.length; i++) {
-            items.push(res.rows.item(i));
-        }
-        console.log('Resultados de la consulta:', items);
-        return items;
+      let items: Publicaciones[] = []; 
+      for (let i = 0; i < res.rows.length; i++) {
+        items.push(res.rows.item(i));
+      }
+      console.log('Resultados de la consulta:', items);
+      return items;
     }).catch(e => {
-        console.error('Error al obtener usuarios con publicaciones:', e);
-        return [];
+      console.error('Error al obtener usuarios con publicaciones:', e);
+      return [];
     });
-}
+  }
 
   async obtenerUsuarioActual() {
     try {
@@ -528,6 +532,31 @@ export class ServicebdService {
       });
   }
 
+  obtenerDatosUsuarioPorEmail(email_usu: string) {
+    const query = `
+      SELECT nombre_usu, email_usu, telefono_usu, imagen_usu
+      FROM Usuarios
+      WHERE email_usu = ?
+    `;
+  
+    return this.database.executeSql(query, [email_usu]).then(res => {
+      if (res.rows.length > 0) {
+        const usuario = {
+          nombre_usu: res.rows.item(0).nombre_usu,
+          email_usu: res.rows.item(0).email_usu,
+          telefono_usu: res.rows.item(0).telefono_usu,
+          imagen_usu: res.rows.item(0).imagen_usu
+        };
+        return usuario;
+      } else {
+        return null;
+      }
+    }).catch(e => {
+      this.presentAlert("ERROR", `No se pudo obtener los datos del usuario. ${e.message}`);
+      return null;
+    });
+  }
+  
   // ACTUALIZAR
   async actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
     try {

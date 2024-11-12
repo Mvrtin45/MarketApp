@@ -11,7 +11,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class AdminEditarpublicacionesPage implements OnInit {
   formularioEditar: FormGroup;
-  publicacion: any;
+  publicacion: any = {};
 
   constructor(
     private fb: FormBuilder, 

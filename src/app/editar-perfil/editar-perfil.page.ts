@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
@@ -23,7 +23,8 @@ export class EditarPerfilPage implements OnInit {
     private router: Router, 
     private alertController: AlertController, 
     private storage: NativeStorage,
-    private bd: ServicebdService
+    private bd: ServicebdService,
+    private platform: Platform
   ) {
     this.formularioEditar = this.fb.group({
       nombre: [
@@ -41,8 +42,8 @@ export class EditarPerfilPage implements OnInit {
 
   // MENSAJE DE ERROR EN NOMBRE
   get nombreErrorMessage() {
-    const nombreControl = this.formularioEditar.get('name');
-
+    const nombreControl = this.formularioEditar.get('nombre'); // Aquí es 'nombre'
+  
     if ((nombreControl?.touched || nombreControl?.dirty) && nombreControl?.hasError('required')) {
       return 'El nombre es obligatorio.';
     }
@@ -52,7 +53,7 @@ export class EditarPerfilPage implements OnInit {
     if ((nombreControl?.touched || nombreControl?.dirty) && nombreControl?.hasError('pattern')) {
       return 'El nombre solo debe contener letras.';
     }
-
+  
     return null;
   }
 
@@ -118,23 +119,36 @@ export class EditarPerfilPage implements OnInit {
 
   async cargarDatosUsuario() {
     try {
-      const storedUserId = await this.storage.getItem('usuario_id'); 
-      this.usuario_Id = storedUserId; // Asegúrate de almacenar el ID del usuario
+      const storedUserId = await this.storage.getItem('usuario_id');
+      this.usuario_Id = storedUserId;
       if (storedUserId) {
-        const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
-        if (usuarioActual) {
-          this.usuario = usuarioActual;
-          this.nombre = usuarioActual.nombre_usu;
-          this.email = usuarioActual.email_usu;
-          this.telefono = usuarioActual.telefono_usu;
+        if (this.platform.is('cordova')) {
+          const usuarioActual = await this.bd.obtenerDatosUsuario(storedUserId);
+          if (usuarioActual && usuarioActual.nombre_usu) {
+            this.usuario = usuarioActual;
+            // Actualizar los valores en el formulario
+            this.formularioEditar.patchValue({
+              nombre: usuarioActual.nombre_usu,
+              email: usuarioActual.email_usu,
+              telefono: usuarioActual.telefono_usu,
+            });
+          } else {
+            await this.mostrarAlerta('No se pudo obtener los datos del usuario o los datos están incompletos.');
+          }
         } else {
-          await this.mostrarAlerta('No se pudo obtener los datos del usuario.');
+          await this.mostrarAlerta('Cordova no está disponible. Este error solo ocurre en pruebas o navegador.');
         }
       } else {
         await this.mostrarAlerta('No se pudo obtener el ID del usuario.');
       }
-    } catch (error) {
-      await this.mostrarAlerta('Error al cargar los datos del usuario.');
+    } catch (error: unknown) {
+      let errorMessage = 'Error al cargar los datos del usuario.';
+      if (error instanceof Error) {
+        errorMessage += ` ${error.message}`;
+      } else {
+        errorMessage += ` ${JSON.stringify(error)}`;
+      }
+      await this.mostrarAlerta(errorMessage);
     }
   }
 

@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('PerfilPage', () => {
   let component: PerfilPage;
@@ -13,8 +13,8 @@ describe('PerfilPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [PerfilPage],
-      imports: [IonicModule.forRoot(), FormsModule],
-      providers: [NativeStorage, SQLite, ActivatedRoute] 
+      imports: [IonicModule.forRoot(), FormsModule, RouterTestingModule],
+      providers: [NativeStorage, SQLite]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PerfilPage);

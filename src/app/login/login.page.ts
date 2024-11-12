@@ -12,7 +12,7 @@ import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 })
 export class LoginPage implements OnInit {
   formularioLogin: FormGroup;
-  correo: string = '';
+  email: string = '';
   telefono!: number;
   nombre: string = "";
 

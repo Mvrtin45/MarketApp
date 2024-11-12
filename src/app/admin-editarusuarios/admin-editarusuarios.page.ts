@@ -11,7 +11,7 @@ import { ServicebdService } from '../services/servicebd.service';
 })
 export class AdminEditarusuariosPage implements OnInit {
   formularioEditar: FormGroup;
-  usuario: any;
+  usuario: any = {};
 
   constructor( 
     private fb: FormBuilder, 

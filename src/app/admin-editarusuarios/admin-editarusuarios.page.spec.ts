@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AdminEditarusuariosPage', () => {
   let component: AdminEditarusuariosPage;
@@ -13,8 +14,8 @@ describe('AdminEditarusuariosPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AdminEditarusuariosPage],
-      imports: [IonicModule.forRoot(), ReactiveFormsModule],
-      providers: [NativeStorage, SQLite, ActivatedRoute] 
+      imports: [IonicModule.forRoot(), ReactiveFormsModule, RouterTestingModule],
+      providers: [NativeStorage, SQLite] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminEditarusuariosPage);

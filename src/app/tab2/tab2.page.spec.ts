@@ -5,6 +5,7 @@ import { Tab2Page } from './tab2.page';
 import { FormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+import { HttpClient, HttpHandler } from '@angular/common/http';
 
 describe('Tab2Page', () => {
   let component: Tab2Page;
@@ -14,7 +15,7 @@ describe('Tab2Page', () => {
     await TestBed.configureTestingModule({
       declarations: [Tab2Page],
       imports: [IonicModule.forRoot(),ExploreContainerComponentModule,FormsModule],
-      providers: [NativeStorage, SQLite] 
+      providers: [NativeStorage, SQLite, HttpClient, HttpHandler] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(Tab2Page);

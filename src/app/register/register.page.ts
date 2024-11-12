@@ -13,7 +13,7 @@ import { ServicebdService } from '../services/servicebd.service';
 export class RegisterPage implements OnInit {
   formularioRegistro: FormGroup;
   nombre: string = "";
-  correo: string = "";
+  email: string = "";
   telefono!: number;
   contrasena: string = "";
   rol: number = 1;
