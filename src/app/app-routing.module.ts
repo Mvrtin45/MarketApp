@@ -167,6 +167,10 @@ const routes: Routes = [
     loadChildren: () => import('./admin-filtrarpubli/admin-filtrarpubli.module').then( m => m.AdminFiltrarpubliPageModule)
   },
   {
+    path: 'detalle-publicacion',
+    loadChildren: () => import('./detalle-publicacion/detalle-publicacion.module').then( m => m.DetallePublicacionPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
   }

@@ -1,0 +1,17 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>detalle-publicacion</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-content *ngIf="publicacion">
+    <h1>{{ publicacion.titulo }}</h1>
+    <p>{{ publicacion.descripcion }}</p>
+    <p>Precio: {{ publicacion.precio | currency }}</p>
+    <p>Color: {{ publicacion.color }}</p>
+    <p>Talla: {{ publicacion.talla }}</p>
+    <p>Ubicación: {{ publicacion.ubicacion }}</p>
+    <img [src]="publicacion.foto_publicacion">
+  </ion-content>
+</ion-content>

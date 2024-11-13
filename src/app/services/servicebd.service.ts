@@ -26,7 +26,7 @@ export class ServicebdService {
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
-  registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
+  registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES ('Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
   registroFavoritos: string = "INSERT INTO Favoritos (producto_id, usuario_id) VALUES (1, 1);";
 
@@ -86,7 +86,6 @@ export class ServicebdService {
     return this.listadoVentas.asObservable();
   }
   
-
   dbState(){
     return this.isDBReady.asObservable();
   }
@@ -122,7 +121,7 @@ export class ServicebdService {
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
-      //await this.database.executeSql(this.registroPublicacion, []);
+      await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
       await this.database.executeSql(this.registroFavoritos, []);
 
@@ -219,7 +218,7 @@ export class ServicebdService {
   }
   
   //OBTENER
-  getPublicacionById(id: string) {
+  getPublicacionById(id: number) {
     return this.database.executeSql('SELECT * FROM Publicaciones WHERE producto_id = ?', [id]).then(data => {
       let publicacion = {};
       if (data.rows.length > 0) {
