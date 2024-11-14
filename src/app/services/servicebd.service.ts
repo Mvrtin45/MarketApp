@@ -25,8 +25,8 @@ export class ServicebdService {
 
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
-  registroRol: string = "INSERT or IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
-  registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES ('Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
+  registroRol: string = "INSERT OR IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
+  registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
   registroFavoritos: string = "INSERT INTO Favoritos (producto_id, usuario_id) VALUES (1, 1);";
 
@@ -129,6 +129,7 @@ export class ServicebdService {
 
       this.seleccionarPublicaciones();
       this.seleccionarUsuarios();
+      this.seleccionarVentas();
 
       // Modificar el estado de la Base de Datos
       this.isDBReady.next(true);
@@ -223,14 +224,14 @@ export class ServicebdService {
       let publicacion = {};
       if (data.rows.length > 0) {
         publicacion = {
-            producto_id: data.rows.item(0).producto_id,
-            titulo: data.item(0).titulo,
-            descripcion: data.rows.item(0).descripcion,
-            talla: data.item(0).talla,
-            ubicacion: data.rows.item(0).ubicacion,
-            color: data.item(0).color,
-            precio: data.item(0).precio,
-            foto_publicacion: data.item(0).foto_publicacion
+          producto_id: data.rows.item(0).producto_id,
+          titulo: data.rows.item(0).titulo,
+          descripcion: data.rows.item(0).descripcion,
+          talla: data.rows.item(0).talla,
+          ubicacion: data.rows.item(0).ubicacion,
+          color: data.rows.item(0).color,
+          precio: data.rows.item(0).precio,
+          foto_publicacion: data.rows.item(0).foto_publicacion
         };
       }
       return publicacion;

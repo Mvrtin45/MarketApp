@@ -27,7 +27,7 @@ export class Tab3Page implements OnInit {
     });
   }
 
-  detalle_publicacion(publicacionId: number) {
-    this.router.navigate(['/detalle-publicacion',publicacionId]);
+  verDetalle(producto_id: number) {
+    this.router.navigate(['/detalle-publicacion', producto_id]);
   }
 }

@@ -1,0 +1,94 @@
+ion-header {
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    .logo-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: auto;
+    }
+
+    .centered-title {
+      flex: 1;
+      text-align: center;
+    }
+  }
+}
+
+ion-content {
+  --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+
+  .product-details-card {
+    margin: 20px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+
+    img {
+      border-radius: 8px;
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+
+    mat-card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      mat-card-title {
+        font-size: 1.4em;
+        font-weight: bold;
+        color: #ffffff;
+      }
+
+      mat-card-subtitle {
+        font-size: 1em;
+        color: #dddddd;
+      }
+    }
+
+    mat-card-content {
+      font-size: 1em;
+      color: #f1f1f1;
+
+      p {
+        font-size: 1em;
+        color: #ffffff;
+        line-height: 1.5em;
+      }
+
+      strong {
+        color: #dddddd;
+      }
+    }
+
+    mat-card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+
+      ion-button {
+        --background: #ffffff;
+        --color: #7e7474;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 8px;
+
+        &:hover {
+          --background: #7e7474;
+          --color: #ffffff;
+        }
+      }
+    }
+  }
+}

@@ -1,17 +1,37 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>detalle-publicacion</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <div class="logo-container">
+      <img src="../assets/icon/logo.jpg" alt="Logo" class="logo" />
+    </div>
+    <ion-title class="centered-title" color="light">
+      2Market
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-content *ngIf="publicacion">
-    <h1>{{ publicacion.titulo }}</h1>
-    <p>{{ publicacion.descripcion }}</p>
-    <p>Precio: {{ publicacion.precio | currency }}</p>
-    <p>Color: {{ publicacion.color }}</p>
-    <p>Talla: {{ publicacion.talla }}</p>
-    <p>Ubicación: {{ publicacion.ubicacion }}</p>
-    <img [src]="publicacion.foto_publicacion">
-  </ion-content>
+  <mat-card class="product-details-card" *ngIf="publicacion">
+    <img mat-card-image [src]="publicacion.foto_publicacion" alt="Foto de publicación">
+    
+    <mat-card-header>
+      <mat-card-title>{{ publicacion.titulo }}</mat-card-title>
+      <mat-card-subtitle>Estado: Nuevo</mat-card-subtitle>
+      <mat-card-subtitle>{{ publicacion.precio | currency }}</mat-card-subtitle>
+    </mat-card-header>
+    <br>
+    <mat-card-content>
+      <p>{{ publicacion.descripcion }}</p>
+      <p><strong>Ubicación:</strong> {{ publicacion.ubicacion }}</p> 
+      <p><strong>Talla:</strong> {{ publicacion.talla }}</p>
+      <p><strong>Color:</strong> {{ publicacion.color }}</p>
+    </mat-card-content>
+    
+    <mat-card-actions>
+      <ion-button expand="block" (click)="addToCart(publicacion.titulo, 'Nuevo', publicacion.precio, publicacion.foto_publicacion, 'Vendedor')">Añadir al Carrito</ion-button>
+      <ion-button expand="block" [routerLink]="['/bandejaentrada']">Contactar Vendedor</ion-button>
+    </mat-card-actions>
+  </mat-card>
 </ion-content>
