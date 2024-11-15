@@ -4,4 +4,8 @@ export class Carrito {
     producto_id!: number;
     cantidad!: number;
     fecha_agregado!: string;
+    precio!: number;
+    subtotal!: number;
+    foto_publicacion!: string;
+    titulo!: string;
 }

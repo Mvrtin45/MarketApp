@@ -16,13 +16,16 @@ import { Carrito } from './carrito';
 export class ServicebdService {
   // Variable de conexión a Base de Datos
   public database!: SQLiteObject;
+  
 
   // Variables de creación de Tablas
-  tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
+  tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones ( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, categoria_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (categoria_id) REFERENCES Categorias(categoria_id) );";
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
+  tablaCategorias: string = "CREATE TABLE IF NOT EXISTS Categorias ( categoria_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_categoria VARCHAR(50) NOT NULL );";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL ( rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
   tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, precio INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
-  tablaCarrito: string ="CREATE TABLE IF NOT EXISTS Carrito ( carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, fecha_agregado DATETIME DEFAULT CURRENT_TIMESTAMP,  FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),  FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+  tablaCarrito: string = "CREATE TABLE IF NOT EXISTS Carrito ( carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, fecha_agregado DATETIME DEFAULT CURRENT_TIMESTAMP, estado VARCHAR(20) DEFAULT 'pendiente', FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id) );";
+  tablaHistorialCarrito: string = "CREATE TABLE IF NOT EXISTS HistorialCarrito ( historial_id INTEGER PRIMARY KEY AUTOINCREMENT, carrito_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, usuario_id INTEGER NOT NULL, accion VARCHAR(10) NOT NULL, fecha_accion DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (carrito_id) REFERENCES Carrito(carrito_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id), FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id) );";
 
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
@@ -36,7 +39,7 @@ export class ServicebdService {
   listadoRol = new BehaviorSubject([]);
   listadoAgruparPublicacionesConUsuarios = new BehaviorSubject<Publicaciones[]>([]);
   listadoVentas = new BehaviorSubject([]);
-  listadoCarrito = new BehaviorSubject([]);
+  listadoCarrito = new BehaviorSubject<Carrito[]>([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -84,8 +87,13 @@ export class ServicebdService {
     return this.listadoVentas.asObservable();
   }
   
-  fetchCarrito(): Observable<Carrito[]>{
-    return this.listadoCarrito.asObservable();
+  fetchCarrito(usuarioId: number): Observable<Carrito[]> {
+    return from(this.obtenerProductosCarritoPendientes(usuarioId)).pipe(
+      tap((productos: Carrito[]) => {
+        console.log('Productos obtenidos del carrito:', JSON.stringify(productos, null, 2));
+        this.listadoCarrito.next(productos); // Actualiza el estado del carrito
+      })
+    );
   }
 
   dbState(){
@@ -114,13 +122,16 @@ export class ServicebdService {
 
   async crearTablas() {
     try {
-      //await this.database.executeSql('DROP TABLE IF EXISTS Ventas', []);
+      //await this.database.executeSql('DROP TABLE IF EXISTS Publicaciones', []);
+      //await this.database.executeSql('DROP TABLE IF EXISTS Carrito', []);
       // Ejecutar la creación de Tablas
       await this.database.executeSql(this.tablaPublicaciones, []);
       await this.database.executeSql(this.tablaUsuarios, []);
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.tablaCarrito, []);
       await this.database.executeSql(this.tablaVentas, []);
+      await this.database.executeSql(this.tablaHistorialCarrito, []);
+      await this.database.executeSql(this.tablaCategorias, []);
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
@@ -221,26 +232,29 @@ export class ServicebdService {
     });
   }
   
-  seleccionarCarrito() {
-    return this.database.executeSql('SELECT * FROM Carrito', []).then(res => {
-      // Variable para almacenar el resultado de la consulta
+  seleccionarCarrito(): void {
+    this.database.executeSql('SELECT * FROM Carrito', []).then(res => {
       let items: Carrito[] = [];
-      // Validar si trae al menos un registro
       if (res.rows.length > 0) {
-        // Recorrer el resultado
-        for (var i = 0; i < res.rows.length; i++) {
-          // Agregar los registros a la lista
+        for (let i = 0; i < res.rows.length; i++) {
           items.push({
             carrito_id: res.rows.item(i).carrito_id,
             usuario_id: res.rows.item(i).usuario_id,
             producto_id: res.rows.item(i).producto_id,
             cantidad: res.rows.item(i).cantidad,
-            fecha_agregado: res.rows.item(i).fecha_agregado
+            fecha_agregado: res.rows.item(i).fecha_agregado,
+            precio: res.rows.item(i).precio,
+            subtotal: res.rows.item(i).subtotal,
+            foto_publicacion: res.rows.item(i).foto_publicacion,
+            titulo: res.rows.item(i).titulo
           });
         }
       }
-      // Actualizar el observable
-      this.listadoCarrito.next(items as any);
+      // Actualizamos el Observable con los elementos del carrito
+      this.listadoCarrito.next(items);
+    }).catch(error => {
+      console.error('Error al seleccionar elementos del carrito:', error);
+      this.presentAlert('Error', 'Hubo un problema al cargar el carrito.');
     });
   }
   
@@ -363,10 +377,31 @@ export class ServicebdService {
     });
   }
 
-  async obtenerProductosCarrito(usuarioId: number): Promise<any[]> {
-    const query = `SELECT * FROM Carrito WHERE usuario_id = ?`;
-    const result = await this.database.executeSql(query, [usuarioId]);
-    return result.rows;
+  obtenerProductosCarritoPendientes(usuarioId: number): Observable<Carrito[]> {
+    const query = `
+      SELECT p.producto_id, p.titulo, p.descripcion, p.precio, p.foto_publicacion, c.cantidad
+      FROM Carrito c
+      JOIN Publicaciones p ON c.producto_id = p.producto_id
+      WHERE c.usuario_id = ? AND c.estado = 'pendiente'
+    `;
+    
+    return new Observable((observer) => {
+      this.database.executeSql(query, [usuarioId]).then(res => {
+        let productos: Carrito[] = [];
+        if (res.rows.length > 0) {
+          for (let i = 0; i < res.rows.length; i++) {
+            productos.push(res.rows.item(i));
+          }
+        }
+        // Actualizamos el estado del carrito en el BehaviorSubject
+        this.listadoCarrito.next(productos);
+        observer.next(productos); // Emitimos los productos al Observable
+        observer.complete(); // Completa el Observable
+      }).catch(error => {
+        console.error("Error al obtener productos pendientes:", error);
+        observer.error(error); // Si ocurre un error, lo emitimos al Observable
+      });
+    });
   }
 
   // ELIMINAR
@@ -400,13 +435,59 @@ export class ServicebdService {
   }
 
   async eliminarProductoCarrito(usuarioId: number, productoId: number) {
-    const query = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
-    await this.database.executeSql(query, [usuarioId, productoId]);
-  }
+    try {
+      // Primero obtenemos el carrito_id correspondiente al usuario y producto
+      const carritoQuery = `SELECT carrito_id FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
+      const carritoResult = await this.database.executeSql(carritoQuery, [usuarioId, productoId]);
 
+      if (carritoResult.rows.length > 0) {
+        const carritoId = carritoResult.rows.item(0).carrito_id; // Obtenemos el carrito_id
+
+        // Eliminar el producto del carrito
+        const queryEliminar = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
+        await this.database.executeSql(queryEliminar, [usuarioId, productoId]);
+
+        // Registrar la acción en el historial con el carrito_id correcto
+        const queryHistorial = `INSERT INTO HistorialCarrito (carrito_id, producto_id, usuario_id, accion, fecha_accion) 
+                                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`;
+        await this.database.executeSql(queryHistorial, [carritoId, productoId, usuarioId, 'eliminado']);
+      } else {
+        console.log('No se encontró el carrito para este usuario y producto.');
+      }
+
+      // Actualizar el listado del carrito después de eliminar
+      await this.obtenerProductosCarritoPendientes(usuarioId);
+    } catch (error) {
+      console.error('Error al eliminar producto del carrito:', error);
+    }
+  }
+  
   async vaciarCarrito(usuarioId: number) {
-    const query = `DELETE FROM Carrito WHERE usuario_id = ?`;
-    await this.database.executeSql(query, [usuarioId]);
+    try {
+      // Obtener los carrito_id del usuario
+      const carritoQuery = `SELECT carrito_id FROM Carrito WHERE usuario_id = ?`;
+      const carritoResult = await this.database.executeSql(carritoQuery, [usuarioId]);
+
+      if (carritoResult.rows.length > 0) {
+        const carritoId = carritoResult.rows.item(0).carrito_id; // Obtenemos el carrito_id
+
+        // Eliminar todos los productos del carrito
+        const queryVaciar = `DELETE FROM Carrito WHERE usuario_id = ?`;
+        await this.database.executeSql(queryVaciar, [usuarioId]);
+
+        // Registrar la acción de vaciar el carrito en el historial
+        const queryHistorial = `INSERT INTO HistorialCarrito (carrito_id, producto_id, usuario_id, accion, fecha_accion) 
+                                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`;
+        await this.database.executeSql(queryHistorial, [carritoId, null, usuarioId, 'vaciar']);
+      } else {
+        console.log('No se encontró el carrito para este usuario.');
+      }
+
+      // Actualizar el listado del carrito después de vaciarlo
+      await this.obtenerProductosCarritoPendientes(usuarioId);
+    } catch (error) {
+      console.error('Error al vaciar el carrito:', error);
+    }
   }
 
   // MODIFICAR
@@ -491,32 +572,54 @@ export class ServicebdService {
       });
   }
 
-  async InsertarProductoCarrito(usuario_id: number, producto_id: number, cantidad: number = 1) {
+  async registrarHistorialCarrito(usuarioId: number, carritoId: number, productoId: number, accion: string) {
+    const query = `
+      INSERT INTO HistorialCarrito (carrito_id, producto_id, usuario_id, accion)
+      VALUES (?, ?, ?, ?)
+    `;
+    return this.database.executeSql(query, [carritoId, productoId, usuarioId, accion])
+      .then(res => {
+        console.log('Acción registrada en el historial', res);
+      })
+      .catch(error => {
+        console.error('Error al registrar acción en el historial:', error);
+        throw error; // Lanza el error si falla la inserción
+      });
+  }
+
+  async insertarProductoCarrito(usuarioId: number, productoId: number, cantidad: number = 1) {
     try {
       const existingProduct = await this.database.executeSql(
         `SELECT * FROM Carrito WHERE usuario_id = ? AND producto_id = ?`,
-        [usuario_id, producto_id]
+        [usuarioId, productoId]
       );
-
+  
       if (existingProduct.rows.length > 0) {
         // Producto ya está en el carrito, actualizar cantidad
         const currentQuantity = existingProduct.rows.item(0).cantidad;
         await this.database.executeSql(
           `UPDATE Carrito SET cantidad = ? WHERE usuario_id = ? AND producto_id = ?`,
-          [currentQuantity + cantidad, usuario_id, producto_id]
+          [currentQuantity + cantidad, usuarioId, productoId]
         );
-        this.seleccionarCarrito();
       } else {
         // Producto no está en el carrito, agregarlo
         await this.database.executeSql(
           `INSERT INTO Carrito (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)`,
-          [usuario_id, producto_id, cantidad]
+          [usuarioId, productoId, cantidad]
         );
-        this.seleccionarCarrito();
       }
+  
+      // Actualizar el listado del carrito
+      await this.obtenerProductosCarritoPendientes(usuarioId);
       this.presentAlert('Éxito', 'Producto añadido o actualizado en el carrito');
-    } catch (error) {
-      this.presentAlert('Error', 'Error al agregar producto al carrito'+ error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        // Si el error es una instancia de Error, se puede acceder a .message
+        this.presentAlert('Error', 'Error al agregar producto al carrito: ' + error.message);
+      } else {
+        // Si el error no es una instancia de Error, se puede manejar de otra manera
+        this.presentAlert('Error', 'Error desconocido al agregar producto al carrito');
+      }
     }
   }
 

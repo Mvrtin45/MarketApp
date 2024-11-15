@@ -29,7 +29,7 @@ export class AdminPublicacionesPage implements OnInit {
     this.bd.dbState().subscribe(data=>{
     //validar si la bd esta lista
     if(data){
-      //subscribir al observable de la listaNoticias
+      //subscribir al observable
       this.bd.fetchPublicaciones().subscribe(res=>{
         this.publicaciones = res;
       })
