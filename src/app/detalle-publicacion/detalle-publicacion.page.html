@@ -30,7 +30,7 @@
     </mat-card-content>
     
     <mat-card-actions>
-      <ion-button expand="block" (click)="addToCart(publicacion.titulo, 'Nuevo', publicacion.precio, publicacion.foto_publicacion, 'Vendedor')">Añadir al Carrito</ion-button>
+      <ion-button expand="block" (click)="addToCart(publicacion.producto_id)">Añadir al Carrito</ion-button>
       <ion-button expand="block" [routerLink]="['/bandejaentrada']">Contactar Vendedor</ion-button>
     </mat-card-actions>
   </mat-card>

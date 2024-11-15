@@ -11,9 +11,6 @@
   </ion-header>
   
 <div *ngIf="productosCarrito.length > 0; else emptyCart">
-    <!-- Botón de actualizar agregado aquí -->
-    <ion-button (click)="recargarDatos()" expand="full">Actualizar</ion-button>
-    
     <ion-list>
       <ion-item *ngFor="let producto of productosCarrito; let i = index">
         <ion-thumbnail slot="start">
@@ -44,7 +41,6 @@
         <ion-icon name="cart-outline" class="cart-icon"></ion-icon>
         <p>Tu carrito está vacío</p>
         <p class="explore-text">¿Qué esperas? Explora nuestra colección y empieza a comprar.</p>
-        <ion-button (click)="recargarDatos()">Actualizar</ion-button>
       </ion-card-header>
     </ion-card>
   </ng-template>

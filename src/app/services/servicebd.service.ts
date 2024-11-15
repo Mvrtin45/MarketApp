@@ -8,6 +8,7 @@ import { Usuarios } from './usuarios';
 import { Rol } from './rol';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { Ventas } from './ventas';
+import { Carrito } from './carrito';
 
 @Injectable({
   providedIn: 'root'
@@ -19,16 +20,15 @@ export class ServicebdService {
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
-  tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL (rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
-  tablaFavoritos: string = "CREATE TABLE IF NOT EXISTS Favoritos ( favorito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
-  tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, monto INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+  tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL ( rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
+  tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, precio INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+  tablaCarrito: string ="CREATE TABLE IF NOT EXISTS Carrito ( carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, fecha_agregado DATETIME DEFAULT CURRENT_TIMESTAMP,  FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id),  FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
 
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT OR IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
-  registroFavoritos: string = "INSERT INTO Favoritos (producto_id, usuario_id) VALUES (1, 1);";
 
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
@@ -36,6 +36,7 @@ export class ServicebdService {
   listadoRol = new BehaviorSubject([]);
   listadoAgruparPublicacionesConUsuarios = new BehaviorSubject<Publicaciones[]>([]);
   listadoVentas = new BehaviorSubject([]);
+  listadoCarrito = new BehaviorSubject([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -69,9 +70,6 @@ export class ServicebdService {
     return this.listadoUsuarios.asObservable();
   }
 
-  fetchRol(): Observable<Rol[]> {
-    return this.listadoRol.asObservable();
-  }
 
   fetchPublicacionesConUsuarios(): Observable<Publicaciones[]> {
     return from(this.obtenerUsuariosConPublicaciones()).pipe(
@@ -86,6 +84,10 @@ export class ServicebdService {
     return this.listadoVentas.asObservable();
   }
   
+  fetchCarrito(): Observable<Carrito[]>{
+    return this.listadoCarrito.asObservable();
+  }
+
   dbState(){
     return this.isDBReady.asObservable();
   }
@@ -112,24 +114,25 @@ export class ServicebdService {
 
   async crearTablas() {
     try {
-      //await this.database.executeSql('DROP TABLE IF EXISTS Usuarios', []);
+      //await this.database.executeSql('DROP TABLE IF EXISTS Ventas', []);
       // Ejecutar la creación de Tablas
       await this.database.executeSql(this.tablaPublicaciones, []);
       await this.database.executeSql(this.tablaUsuarios, []);
       await this.database.executeSql(this.tablaRol, []);
-      await this.database.executeSql(this.tablaFavoritos, []);
+      await this.database.executeSql(this.tablaCarrito, []);
+      await this.database.executeSql(this.tablaVentas, []);
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
       await this.database.executeSql(this.registroPublicacion, []);
       await this.database.executeSql(this.registroRol, []);
-      await this.database.executeSql(this.registroFavoritos, []);
 
 
 
       this.seleccionarPublicaciones();
       this.seleccionarUsuarios();
       this.seleccionarVentas();
+      this.seleccionarCarrito();
 
       // Modificar el estado de la Base de Datos
       this.isDBReady.next(true);
@@ -214,7 +217,30 @@ export class ServicebdService {
         }
       }
       // Actualizar el observable
-      this.listadoUsuarios.next(items as any);
+      this.listadoVentas.next(items as any);
+    });
+  }
+  
+  seleccionarCarrito() {
+    return this.database.executeSql('SELECT * FROM Carrito', []).then(res => {
+      // Variable para almacenar el resultado de la consulta
+      let items: Carrito[] = [];
+      // Validar si trae al menos un registro
+      if (res.rows.length > 0) {
+        // Recorrer el resultado
+        for (var i = 0; i < res.rows.length; i++) {
+          // Agregar los registros a la lista
+          items.push({
+            carrito_id: res.rows.item(i).carrito_id,
+            usuario_id: res.rows.item(i).usuario_id,
+            producto_id: res.rows.item(i).producto_id,
+            cantidad: res.rows.item(i).cantidad,
+            fecha_agregado: res.rows.item(i).fecha_agregado
+          });
+        }
+      }
+      // Actualizar el observable
+      this.listadoCarrito.next(items as any);
     });
   }
   
@@ -337,6 +363,12 @@ export class ServicebdService {
     });
   }
 
+  async obtenerProductosCarrito(usuarioId: number): Promise<any[]> {
+    const query = `SELECT * FROM Carrito WHERE usuario_id = ?`;
+    const result = await this.database.executeSql(query, [usuarioId]);
+    return result.rows;
+  }
+
   // ELIMINAR
   eliminarPublicacion(id: string) {
     return this.database.executeSql('DELETE FROM Publicaciones WHERE producto_id = ?', [id]).then(res => {
@@ -365,6 +397,16 @@ export class ServicebdService {
       .catch(e => {
         this.presentAlert('Error', `Error al banear el usuario: ${e.message}`);
       });
+  }
+
+  async eliminarProductoCarrito(usuarioId: number, productoId: number) {
+    const query = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
+    await this.database.executeSql(query, [usuarioId, productoId]);
+  }
+
+  async vaciarCarrito(usuarioId: number) {
+    const query = `DELETE FROM Carrito WHERE usuario_id = ?`;
+    await this.database.executeSql(query, [usuarioId]);
   }
 
   // MODIFICAR
@@ -447,6 +489,35 @@ export class ServicebdService {
       .catch(e => {
         this.presentAlert('Error', `Error al registrar la venta: ${e.message}`);
       });
+  }
+
+  async InsertarProductoCarrito(usuario_id: number, producto_id: number, cantidad: number = 1) {
+    try {
+      const existingProduct = await this.database.executeSql(
+        `SELECT * FROM Carrito WHERE usuario_id = ? AND producto_id = ?`,
+        [usuario_id, producto_id]
+      );
+
+      if (existingProduct.rows.length > 0) {
+        // Producto ya está en el carrito, actualizar cantidad
+        const currentQuantity = existingProduct.rows.item(0).cantidad;
+        await this.database.executeSql(
+          `UPDATE Carrito SET cantidad = ? WHERE usuario_id = ? AND producto_id = ?`,
+          [currentQuantity + cantidad, usuario_id, producto_id]
+        );
+        this.seleccionarCarrito();
+      } else {
+        // Producto no está en el carrito, agregarlo
+        await this.database.executeSql(
+          `INSERT INTO Carrito (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)`,
+          [usuario_id, producto_id, cantidad]
+        );
+        this.seleccionarCarrito();
+      }
+      this.presentAlert('Éxito', 'Producto añadido o actualizado en el carrito');
+    } catch (error) {
+      this.presentAlert('Error', 'Error al agregar producto al carrito'+ error);
+    }
   }
 
   // VERIFICAR

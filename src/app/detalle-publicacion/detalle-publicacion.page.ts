@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ServicebdService } from '../services/servicebd.service';
-import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -11,11 +10,11 @@ import { AlertController } from '@ionic/angular';
 })
 export class DetallePublicacionPage implements OnInit {
   publicacion: any;
+  usuarioId: number = 1; // Asume que ya tienes el ID del usuario autenticado
 
   constructor(
     private route: ActivatedRoute,
     private bd: ServicebdService,
-    private storage: NativeStorage,
     private alertController: AlertController
   ) {}
 
@@ -38,36 +37,12 @@ export class DetallePublicacionPage implements OnInit {
     });
   }
 
-  async addToCart(nombre: string, estado: string, precio: number, foto: string, vendedor: string) { 
-    const productosCarrito: any[] = await this.cargarCarrito();
-
-    const existingProductIndex = productosCarrito.findIndex(item => item.nombre === nombre && item.vendedor === vendedor);
-
-    if (existingProductIndex >= 0) {
-      productosCarrito[existingProductIndex].cantidad++;
-    } else {
-      productosCarrito.push({
-        nombre: nombre,
-        estado: estado,
-        precio: precio,
-        foto: foto,
-        vendedor: vendedor,
-        cantidad: 1,
-        stock: 10 
-      });
-    }
-
-    await this.storage.setItem('productos_carrito', productosCarrito);
-    await this.showAddAlert();
-  }
-
-  async cargarCarrito(): Promise<any[]> { 
+  async addToCart(producto_id: number) {
     try {
-      const productos = await this.storage.getItem('productos_carrito');
-      return productos || [];
+      await this.bd.InsertarProductoCarrito(this.usuarioId, producto_id);
+      this.showAddAlert();
     } catch (error) {
-      console.log('Error al cargar productos del carrito', error);
-      return [];
+      console.error('Error al agregar producto al carrito', error);
     }
   }
 
