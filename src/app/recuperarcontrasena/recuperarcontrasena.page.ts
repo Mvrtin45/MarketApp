@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, AlertController } from '@ionic/angular';
+import { NavController, AlertController, MenuController } from '@ionic/angular';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AuthfireBaseService } from 'src/app/services/authfire-base.service';
 import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
@@ -10,15 +12,19 @@ import { ServicebdService } from '../services/servicebd.service';
 })
 export class RecuperarcontrasenaPage implements OnInit {
   formularioRecuperar: FormGroup;
+  correo: string = '';
   emailErrorMessage: string = '';
-  correo: string = "";
 
   constructor(
     private formBuilder: FormBuilder,
     private navCtrl: NavController,
     private alertController: AlertController,
-    private bd: ServicebdService 
+    private menu: MenuController,
+    private afAuth: AngularFireAuth,
+    private authService: AuthfireBaseService,
+    private bd: ServicebdService
   ) {
+    // Definición del formulario con validaciones
     this.formularioRecuperar = this.formBuilder.group({
       email: [
         '',
@@ -30,12 +36,16 @@ export class RecuperarcontrasenaPage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Desactiva el menú en esta página
+    this.menu.enable(false);
+  }
 
-  async recuperarContrasena() {
+  // Método para enviar el correo de recuperación de contraseña
+  async enviarCorreo() {
     this.emailErrorMessage = ''; // Reinicia el mensaje de error
 
-    // Validaciones
+    // Validación del correo
     if (!this.correo) {
       this.emailErrorMessage = 'El correo es obligatorio.';
       return;
@@ -55,11 +65,26 @@ export class RecuperarcontrasenaPage implements OnInit {
     }
 
     // Si el correo existe, procede a enviar el correo de recuperación
-    // Aquí puedes implementar la lógica para enviar el correo de recuperación
-    await this.mostrarAlertaCorreoEnviado();
+    this.authService.resetContra(this.correo).then(() => {
+      this.mostrarAlerta('Resetear Contraseña', 'Se ha enviado un correo para restablecer su contraseña');
+    }).catch(() => {
+      this.mostrarAlerta('Error', 'No se pudo enviar el correo');
+    });
   }
 
   // Método para mostrar la alerta después de enviar el correo de recuperación
+  async mostrarAlerta(titulo: string, mensaje: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: mensaje,
+      buttons: ['OK'],
+      cssClass: 'estilo-alertas'
+    });
+
+    await alert.present();
+  }
+
+  // Método para mostrar la alerta de correo enviado con el enlace de recuperación
   async mostrarAlertaCorreoEnviado() {
     const alert = await this.alertController.create({
       header: 'Correo enviado',
@@ -68,7 +93,7 @@ export class RecuperarcontrasenaPage implements OnInit {
         {
           text: 'OK',
           handler: () => {
-            // Redirigir al login después de hacer clic en OK
+            // Redirige al login después de hacer clic en OK
             this.navCtrl.navigateRoot('/login');
           }
         }

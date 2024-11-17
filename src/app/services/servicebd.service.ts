@@ -676,17 +676,19 @@ export class ServicebdService {
     }
   }
 
-  verificarCorreo(correo: string) {
-    return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo]).then(res => {
-      if (res.rows.length > 0) {
-        return true;
-      } else {
-        return false;
-      }
-    }).catch(e => {
-      console.error('Error al verificar el correo:', e);
-      return false;
-    });
+  verificarCorreo(correo: string): Promise<{ correo: string } | null> {
+    return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo])
+      .then(res => {
+        if (res.rows.length > 0) {
+          return { correo: res.rows.item(0).email_usu }; // Devuelve un objeto con el correo encontrado
+        } else {
+          return null; // Devuelve `null` si no se encuentra el correo
+        }
+      })
+      .catch(e => {
+        console.error('Error al verificar el correo:', e);
+        return null; // Devuelve `null` en caso de error
+      });
   }
 
   comprobarEstadoUsuario(usuario_id: number) {
