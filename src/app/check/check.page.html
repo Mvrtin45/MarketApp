@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Compra Finalizada</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Compra Finalizada</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="contenido-pago">
+    <div class="compra-container">
+      <!-- Título del mensaje de éxito o error -->
+      <ion-card-title *ngIf="compraExitosa; else errorTemplate">
+        ¡Compra Exitosa!
+      </ion-card-title>
+
+      <!-- Detalles del producto comprado -->
+      <ion-item>
+        <ion-label>Producto:</ion-label>
+        <ion-text>{{ producto.nombre }}</ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Precio:</ion-label>
+        <!-- Formateamos el precio para CLP -->
+        <ion-text>{{ producto.precio | currency:'CLP':'symbol':'1.0-0' }}</ion-text> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Cantidad:</ion-label>
+        <ion-text>{{ producto.cantidad }}</ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Total:</ion-label>
+        <!-- Mostramos el total en CLP -->
+        <ion-text>{{ producto.total | currency:'CLP':'symbol':'1.0-0' }}</ion-text> 
+      </ion-item>
+
+      <!-- Mensaje de error en caso de que la compra no se haya completado -->
+      <ng-template #errorTemplate>
+        <ion-card-title class="compra-error">
+          Hubo un problema con tu compra. Por favor, intenta de nuevo.
+        </ion-card-title>
+      </ng-template>
+
+      <!-- Botón de regreso -->
+      <ion-button (click)="volverAlInicio()">Volver al Inicio</ion-button>
+    </div>
+  </div>
+</ion-content>

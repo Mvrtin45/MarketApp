@@ -4,7 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'check',
     pathMatch: 'full'
   },
   {
@@ -170,6 +170,14 @@ const routes: Routes = [
   {
     path: 'detalle-publicacion/:producto_id',
     loadChildren: () => import('./detalle-publicacion/detalle-publicacion.module').then( m => m.DetallePublicacionPageModule)
+  },
+  {
+    path: 'pago',
+    loadChildren: () => import('./pago/pago.module').then( m => m.PagoPageModule)
+  },
+  {
+    path: 'check',
+    loadChildren: () => import('./check/check.module').then( m => m.CheckPageModule)
   },
   {
     path: '**',

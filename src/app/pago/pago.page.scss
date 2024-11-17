@@ -1,0 +1,103 @@
+ion-header {
+    ion-toolbar {
+      --background: #7e7474;
+      --color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+  
+      .logo-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: auto;
+      }
+  
+      .centered-title {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  }
+
+.contenido-pago {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* Evitar el desplazamiento no deseado */
+    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg); /* Fondo de imagen */
+    background-size: cover;
+  }
+  
+  /* Contenedor central con el formulario */
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrado absoluto */
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    color: #000;
+    margin-bottom: 20px;
+  }
+  
+  /* Estilos para los campos del formulario */
+  ion-item {
+    --background: transparent;
+    margin-bottom: 20px;
+  }
+  
+  ion-label {
+    color: #000; /* Color del texto negro */
+  }
+  
+  ion-input {
+    --color: #000; /* Texto negro en los campos */
+    --placeholder-color: #999; /* Placeholder gris */
+  }
+  
+  /* Estilo para los mensajes de error */
+  ion-text {
+    font-size: 0.875rem;
+    margin-top: 5px;
+    color: #d9534f; /* Rojo para los mensajes de error */
+  }
+  
+  /* Estilo para el botón de pago */
+  ion-button {
+    --background: #000; /* Fondo negro para el botón */
+    --color: white; /* Texto blanco */
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 20px;
+    padding: 15px;
+  }
+  
+  /* Pantalla de carga */
+  ion-loading {
+    --spinner-color: #000; /* Spinner color negro */
+    --background: rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Estilos responsivos para evitar desplazamientos al mostrar el teclado */
+  @media (max-height: 600px) {
+    .contenido-pago {
+      height: auto; /* Permitir desplazamiento cuando el teclado esté activo */
+    }
+  }

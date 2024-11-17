@@ -29,18 +29,25 @@ export class CarritoPage implements OnInit {
       if (data) {
         console.log("Base de datos lista.");
         await this.obtenerUsuarioActual(); // Asegurarse de obtener el usuario actual primero
+        
         // Verificamos si usuarioId no es null antes de llamar a fetchCarrito
         if (this.usuarioId !== null) {
           // Subscribirse al observable de los productos del carrito
           this.bd.fetchCarrito(this.usuarioId).subscribe(
             (productos) => {
-              // Filtramos los productos por el usuario actual
+              console.log("Productos obtenidos del carrito:", productos); // Verificar los productos obtenidos
               this.productosCarrito = productos.filter(producto => producto.usuario_id === this.usuarioId);
-              console.log("Productos del carrito:", this.productosCarrito);
+              
+              console.log("Productos del carrito después del filtro:", this.productosCarrito);
+  
+              // Validar si hay productos en el carrito
               if (this.productosCarrito.length === 0) {
                 console.warn("El carrito está vacío.");
+              } else {
+                console.log("Productos cargados correctamente en el carrito.");
               }
-              // Calculamos el total y subtotal de los productos en el carrito
+  
+              // Calcular el total y subtotal
               this.calcularTotal();
             },
             (error) => {
@@ -163,9 +170,6 @@ export class CarritoPage implements OnInit {
     console.log("Total calculado:", this.precioTotal);
   }
 
-  async Pago() {
-    await this.router.navigate(['/pago']);
-  }
 
   async presentAlert(titulo: string, msj: string) {
     const alert = await this.alertController.create({
