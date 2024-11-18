@@ -1,26 +1,26 @@
 ion-header {
-    ion-toolbar {
-      --background: #7e7474;
-      --color: #ffffff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-  
-      .logo-container {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 40px;
-        height: auto;
-      }
-  
-      .centered-title {
-        flex: 1;
-        text-align: center;
-      }
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    .logo-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: auto;
+    }
+
+    .centered-title {
+      flex: 1;
+      text-align: center;
     }
   }
+}
 
 .contenido-pago {
     display: flex;

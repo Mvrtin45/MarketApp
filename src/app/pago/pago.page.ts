@@ -30,7 +30,7 @@ export class PagoPage implements OnInit {
       this.cargando = true; // Mostrar la pantalla de carga
       setTimeout(() => {
         this.cargando = false; // Ocultar la pantalla de carga
-        this.router.navigate(['/checkout']); // Redirigir a la página de checkout
+        this.router.navigate(['/check']); // Redirigir a la página de checkout
       }, 3000);
     }
   }

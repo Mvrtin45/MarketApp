@@ -1,105 +1,80 @@
 ion-header {
-    ion-toolbar {
-      --background: #7e7474; /* Color de fondo */
-      --color: #ffffff; /* Color del texto */
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-  
-      .logo-container {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 40px;
-        height: auto;
-      }
-  
-      .centered-title {
-        flex: 1;
-        text-align: center;
-      }
+  ion-toolbar {
+    --background: #7e7474;
+    --color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    .centered-title {
+      flex: 1;
+      text-align: center;
     }
   }
-  
+}
+
+.contenido-pago {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ajusta la altura mínima para cubrir toda la pantalla */
+  background-image: url('https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.compra-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+ion-card-title {
+  font-size: 1.5rem;
+  color: #4CAF50;
+  margin-bottom: 20px;
+
+  &.compra-error {
+    color: #d9534f;
+  }
+}
+
+ion-item {
+  --background: transparent;
+  margin-bottom: 10px;
+}
+
+ion-label {
+  font-weight: bold;
+  color: #333;
+}
+
+ion-text {
+  font-size: 1rem;
+  color: #555;
+}
+
+ion-button {
+  --background: #000;
+  --color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  margin-top: 20px;
+  padding: 12px 0;
+}
+
+@media (max-height: 600px) {
   .contenido-pago {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden; /* Evitar el desplazamiento no deseado */
-    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg); /* Fondo de imagen */
-    background-size: cover;
+    height: auto;
   }
-  
-  /* Contenedor central con los detalles de la compra */
-  .compra-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 400px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Centrado absoluto */
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  /* Títulos de la compra exitosa o error */
-  ion-card-title {
-    font-size: 1.5rem;
-    color: #000;
-    margin-bottom: 20px;
-  }
-  
-  /* Estilos para los campos de detalles del producto */
-  ion-item {
-    --background: transparent;
-    margin-bottom: 15px;
-  }
-  
-  ion-label {
-    color: #000; /* Color del texto negro */
-  }
-  
-  ion-text {
-    font-size: 1rem;
-    color: #333; /* Color gris oscuro para los detalles */
-  }
-  
-  /* Estilo para el botón de volver al inicio o intentar de nuevo */
-  ion-button {
-    --background: #000; /* Fondo negro para el botón */
-    --color: white; /* Texto blanco */
-    font-weight: bold;
-    border-radius: 5px;
-    margin-top: 20px;
-    padding: 15px;
-  }
-  
-  /* Estilo para el mensaje de error */
-  .compra-error {
-    color: #d9534f; /* Rojo para los mensajes de error */
-    font-size: 1rem;
-    margin-top: 20px;
-  }
-  
-  /* Pantalla de carga */
-  ion-loading {
-    --spinner-color: #000; /* Spinner color negro */
-    --background: rgba(0, 0, 0, 0.4);
-  }
-  
-  /* Estilos responsivos para evitar desplazamientos al mostrar el teclado */
-  @media (max-height: 600px) {
-    .contenido-pago {
-      height: auto; /* Permitir desplazamiento cuando el teclado esté activo */
-    }
-  }
-  
+}

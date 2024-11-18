@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
+import { AuthfireBaseService } from '../services/authfire-base.service';
 
 @Component({
   selector: 'app-register',
@@ -23,7 +24,8 @@ export class RegisterPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private storage: NativeStorage,
-    private bd: ServicebdService
+    private bd: ServicebdService,
+    private auth: AuthfireBaseService
   ) {
     this.formularioRegistro = this.fb.group({
       email: ['', [Validators.required, Validators.email, this.noWhitespaceValidator]],
@@ -94,8 +96,8 @@ export class RegisterPage implements OnInit {
         contrasena: this.formularioRegistro.get('password')!.value,
         rol: '1',
         imagen: '/assets/icon/logo.jpg'
-      };
-
+      }
+      this.auth.registro(this.email, this.contrasena);
       this.bd.insertarUsuario(
         nuevoUsuario.nombre,
         nuevoUsuario.correo,
@@ -136,7 +138,7 @@ export class RegisterPage implements OnInit {
   // Métodos de generación de mensajes de error
   get nombreErrorMessage() {
     const nombreControl = this.formularioRegistro.get('name');
-    if (nombreControl?.touched || nombreControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+    if (nombreControl?.touched || nombreControl?.dirty) { // Mostrar solo si se ha tocado o modificado
       if (nombreControl?.hasError('required')) return 'El nombre es obligatorio.';
       if (nombreControl?.hasError('minlength')) return 'El nombre debe tener al menos 3 caracteres.';
       if (nombreControl?.hasError('pattern')) return 'El nombre solo puede contener letras.';
@@ -147,7 +149,7 @@ export class RegisterPage implements OnInit {
 
   get emailErrorMessage() {
     const emailControl = this.formularioRegistro.get('email');
-    if (emailControl?.touched || emailControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+    if (emailControl?.touched || emailControl?.dirty) { // Mostrar solo si se ha tocado o modificado
       if (emailControl?.hasError('required')) return 'El correo es obligatorio.';
       if (emailControl?.hasError('email')) return 'Debe ingresar un correo válido.';
       if (emailControl?.hasError('whitespace')) return 'El correo no puede estar vacío o ser solo espacios.';
@@ -157,7 +159,7 @@ export class RegisterPage implements OnInit {
 
   get telefonoErrorMessage() {
     const telefonoControl = this.formularioRegistro.get('phone');
-    if (telefonoControl?.touched || telefonoControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+    if (telefonoControl?.touched || telefonoControl?.dirty) { // Mostrar solo si se ha tocado o modificado
       if (telefonoControl?.hasError('required')) return 'El teléfono es obligatorio.';
       if (telefonoControl?.hasError('numeric')) return 'El teléfono solo puede contener números.';
       if (telefonoControl?.hasError('minLength')) return 'El teléfono debe tener al menos 8 dígitos.';
@@ -169,7 +171,7 @@ export class RegisterPage implements OnInit {
 
   get passwordErrorMessage() {
     const passwordControl = this.formularioRegistro.get('password');
-    if (passwordControl?.touched || passwordControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+    if (passwordControl?.touched || passwordControl?.dirty) { // Mostrar solo si se ha tocado o modificado
       if (passwordControl?.hasError('required')) return 'La contraseña es obligatoria.';
       if (passwordControl?.hasError('minlength')) return 'La contraseña debe tener al menos 8 caracteres.';
       if (passwordControl?.hasError('uppercase')) return 'La contraseña debe tener al menos una letra mayúscula.';
@@ -182,7 +184,7 @@ export class RegisterPage implements OnInit {
 
   get confirmPasswordErrorMessage() {
     const confirmPasswordControl = this.formularioRegistro.get('confirmPassword');
-    if (confirmPasswordControl?.touched || confirmPasswordControl?.dirty) {  // Mostrar solo si se ha tocado o modificado
+    if (confirmPasswordControl?.touched || confirmPasswordControl?.dirty) { // Mostrar solo si se ha tocado o modificado
       if (confirmPasswordControl?.hasError('required')) return 'La confirmación de contraseña es obligatoria.';
       if (confirmPasswordControl?.hasError('passwordMismatch')) return 'Las contraseñas no coinciden.';
       if (confirmPasswordControl?.hasError('whitespace')) return 'La confirmación de contraseña no puede estar vacía o ser solo espacios.';
