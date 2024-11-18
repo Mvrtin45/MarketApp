@@ -21,7 +21,7 @@ export class ServicebdService {
 
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones ( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, categoria_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (categoria_id) REFERENCES Categorias(categoria_id) );";
-  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
+  tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  pregunta_seguridad VARCHAR(100) NOT NULL, respuesta_seguridad VARCHAR(100) NOT NULL, FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaCategorias: string = "CREATE TABLE IF NOT EXISTS Categorias ( categoria_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_categoria VARCHAR(50) NOT NULL );";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL ( rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
   tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, precio INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
@@ -108,7 +108,7 @@ export class ServicebdService {
   }
 
   fetchCarrito(): Observable<Carrito[]> {
-    return this.listadoCarrito.asObservable();
+    return this.productosCarritoSubject.asObservable();
   }
 
   dbState() {
@@ -138,7 +138,7 @@ export class ServicebdService {
   async crearTablas() {
     try {
       //await this.database.executeSql('DROP TABLE IF EXISTS Publicaciones', []);
-      //await this.database.executeSql('DROP TABLE IF EXISTS Carrito', []);
+      //await this.database.executeSql('DROP TABLE IF EXISTS Usuarios', []);
       // Ejecutar la creación de Tablas
       await this.database.executeSql(this.tablaPublicaciones, []);
       await this.database.executeSql(this.tablaUsuarios, []);
@@ -285,31 +285,10 @@ export class ServicebdService {
       }
       // Actualizamos el Observable con los elementos del carrito
       this.listadoCarrito.next(items);
+      this.productosCarritoSubject.next(items);
     }).catch(error => {
       console.error('Error al seleccionar elementos del carrito:', error);
       this.presentAlert('Error', 'Hubo un problema al cargar el carrito.');
-    });
-  }
-
-  getCarrito(usuarioId: number): Promise<Carrito[]> {
-    const sql = 'SELECT * FROM Carrito WHERE usuario_id = ? AND estado = "pendiente"';
-    return this.database.executeSql(sql, [usuarioId]).then((res) => {
-      const productos: Carrito[] = [];
-      for (let i = 0; i < res.rows.length; i++) {
-        const row = res.rows.item(i);
-        productos.push({
-          carrito_id: row.carrito_id,
-          usuario_id: row.usuario_id,
-          producto_id: row.producto_id,
-          cantidad: row.cantidad,
-          fecha_agregado: row.fecha_agregado,
-          precio: row.precio,
-          subtotal: row.precio * row.cantidad,
-          foto_publicacion: row.foto_publicacion,
-          titulo: row.titulo
-        });
-      }
-      return productos;
     });
   }
 
@@ -461,7 +440,7 @@ export class ServicebdService {
       for (let i = 0; i < res.rows.length; i++) {
         productos.push(res.rows.item(i));
       }
-      this.productosCarritoSubject.next(productos);  // Emitir los productos actualizados
+      this.productosCarritoSubject.next(productos);  
     });
   }
 
@@ -506,15 +485,7 @@ export class ServicebdService {
     }
   }
 
-  // Actualizar el estado del carrito después de un pago
-  actualizarEstadoCarrito(usuarioId: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const sql = `UPDATE Carrito SET estado = 'pagado' WHERE usuario_id = ? AND estado = 'pendiente'`;
-      this.database.executeSql(sql, [usuarioId]).then(resolve).catch(reject);
-    });
-  }
-
-
+  
   // Vaciar el carrito
   async vaciarCarrito() {
     try {
@@ -573,12 +544,12 @@ export class ServicebdService {
     });
   }
 
-  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, imagen_usu: string, estado: number = 1) { // estado por defecto es 1
+  async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, imagen_usu: string, estado: number = 1, preguntaSeguridad: string, respuestaSeguridad: string,) { // estado por defecto es 1
     try {
       // Insertar usuario en la base de datos
       const res = await this.database.executeSql(
-        'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, rol_id, estado, imagen_usu) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [nombre, email, telefono, contrasena, 1, estado, imagen_usu]  // estado pasa como parámetro
+        'INSERT INTO Usuarios (nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id, estado, pregunta_seguridad, respuesta_seguridad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [nombre, email, telefono, contrasena, imagen_usu, 1, estado, preguntaSeguridad, respuestaSeguridad]
       );
       if (res.insertId) {
         // Guardar los datos del usuario recién creado en Native Storage
@@ -586,7 +557,9 @@ export class ServicebdService {
           iduser: res.insertId, // res.insertId devuelve el ID del usuario insertado
           nombre,
           email,
-          telefono
+          telefono,
+          preguntaSeguridad,
+          respuestaSeguridad
         };
         await this.storage.setItem('usuario', usuario);
       }
@@ -616,14 +589,16 @@ export class ServicebdService {
         if (res.rows.length > 0) {
           const updateSql = `UPDATE Carrito SET cantidad = cantidad + 1 WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
           this.database.executeSql(updateSql, [usuarioId, productoId]).then(() => {
-            this.obtenerCarritoActual();  // Actualizar los productos en el carrito
+            this.obtenerCarritoActual(); 
+            this.seleccionarCarrito(); 
             resolve();  // No es necesario devolver nada, por eso 'void'
           }).catch(reject);
         } else {
           const insertSql = `INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) VALUES (?, ?, 1, 'pendiente')`;
           this.database.executeSql(insertSql, [usuarioId, productoId]).then(() => {
-            this.obtenerCarritoActual();  // Actualizar los productos en el carrito
-            resolve();  // No es necesario devolver nada, por eso 'void'
+            this.obtenerCarritoActual();  
+            this.seleccionarCarrito();
+            resolve();  
           }).catch(reject);
         }
       }).catch(reject);

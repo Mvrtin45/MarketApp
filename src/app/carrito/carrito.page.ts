@@ -26,11 +26,9 @@ export class CarritoPage implements OnInit {
     // Nos suscribimos al observable para recibir actualizaciones automáticamente
     this.carritoSubscription = this.bd.productosCarrito$.subscribe((productos) => {
       this.productosCarrito = productos;
-      this.calcularTotales();  // Actualizar los totales cada vez que cambia la lista de productos
+      this.calcularTotales();
+      this.obtenerUsuarioActual();
     });
-
-    // Obtener el usuario actual
-    this.obtenerUsuarioActual();
   }
 
 

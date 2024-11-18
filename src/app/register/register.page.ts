@@ -31,6 +31,8 @@ export class RegisterPage implements OnInit {
       confirmPassword: ['', [Validators.required, this.noWhitespaceValidator]],
       name: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-Z ]+$'), this.noWhitespaceValidator]],
       phone: ['', [Validators.required, this.phoneValidator(), this.noWhitespaceValidator]],
+      securityQuestion: ['', Validators.required],
+      securityAnswer: ['', Validators.required]
     }, { validator: this.matchPasswords('password', 'confirmPassword') });
   }
 
@@ -92,15 +94,20 @@ export class RegisterPage implements OnInit {
         correo: this.formularioRegistro.get('email')!.value,
         telefono: this.formularioRegistro.get('phone')!.value,
         contrasena: this.formularioRegistro.get('password')!.value,
-        rol: '1',
-        imagen: '/assets/icon/logo.jpg'
-      }
+        imagen: '/assets/icon/logo.jpg',
+        rol: 1,
+        preguntaSeguridad1: this.formularioRegistro.get('securityQuestion')!.value,
+        respuestaSeguridad1: this.formularioRegistro.get('securityAnswer')!.value,
+      };
       this.bd.insertarUsuario(
         nuevoUsuario.nombre,
         nuevoUsuario.correo,
         nuevoUsuario.telefono,
         nuevoUsuario.contrasena,
-        nuevoUsuario.imagen
+        nuevoUsuario.imagen,
+        nuevoUsuario.rol,
+        nuevoUsuario.preguntaSeguridad1,
+        nuevoUsuario.respuestaSeguridad1,
       ).then(async (usuarioId) => {
         await this.storage.setItem('usuario_id', usuarioId);
 
@@ -185,6 +192,23 @@ export class RegisterPage implements OnInit {
       if (confirmPasswordControl?.hasError('required')) return 'La confirmación de contraseña es obligatoria.';
       if (confirmPasswordControl?.hasError('passwordMismatch')) return 'Las contraseñas no coinciden.';
       if (confirmPasswordControl?.hasError('whitespace')) return 'La confirmación de contraseña no puede estar vacía o ser solo espacios.';
+    }
+    return '';
+  }
+
+  get seguridadPreguntaErrorMessage() {
+    const seguridadPreguntaControl = this.formularioRegistro.get('securityQuestion');
+    if (seguridadPreguntaControl?.touched || seguridadPreguntaControl?.dirty) { // Mostrar solo si se ha tocado o modificado
+      if (seguridadPreguntaControl?.hasError('required')) return 'La pregunta de seguridad es obligatoria.';
+    }
+    return '';
+  }
+
+  get seguridadRespuestaErrorMessage() {
+    const seguridadRespuestaControl = this.formularioRegistro.get('securityAnswer');
+    if (seguridadRespuestaControl?.touched || seguridadRespuestaControl?.dirty) { // Mostrar solo si se ha tocado o modificado
+      if (seguridadRespuestaControl?.hasError('required')) return 'La respuesta de seguridad es obligatoria.';
+      if (seguridadRespuestaControl?.hasError('whitespace')) return 'La respuesta no puede estar vacía o ser solo espacios.';
     }
     return '';
   }

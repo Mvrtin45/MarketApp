@@ -43,6 +43,27 @@
           <ion-text [class.visible]="confirmPasswordErrorMessage">
             {{ confirmPasswordErrorMessage }}
           </ion-text>
+          <!-- Pregunta de seguridad -->
+          <ion-item>
+            <ion-label position="floating">Pregunta de seguridad</ion-label>
+            <ion-select formControlName="securityQuestion">
+              <ion-select-option value="mascota">¿Cuál es el nombre de tu primera mascota?</ion-select-option>
+              <ion-select-option value="escuela">¿En qué escuela primaria estudiaste?</ion-select-option>
+              <ion-select-option value="color">¿Cuál es tu color favorito?</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-text [class.visible]="seguridadPreguntaErrorMessage">
+            {{ seguridadPreguntaErrorMessage }}
+          </ion-text>
+
+          <!-- Respuesta a la pregunta de seguridad -->
+          <ion-item>
+            <ion-label position="floating">Respuesta de seguridad</ion-label>
+            <ion-input formControlName="securityAnswer" type="text"></ion-input>
+          </ion-item>
+          <ion-text [class.visible]="seguridadRespuestaErrorMessage">
+            {{ seguridadRespuestaErrorMessage }}
+          </ion-text>
           <!-- Botón de registro -->
           <ion-button class="custom-button" expand="block" (click)="registrar()">
             Registrarse
