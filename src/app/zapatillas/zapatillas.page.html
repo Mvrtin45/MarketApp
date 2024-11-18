@@ -20,7 +20,8 @@
         <ion-card color="medium">
           <img src="../assets/icon/vapormax.jpg" alt="Imagen centrada" />
           <ion-card-header>
-            <ion-button fill="clear" [routerLink]="['/zapasvapormax']">Vapor Max Plus "Metallic Gold"</ion-button>
+            <!-- Usamos [routerLink] para pasar el producto_id -->
+            <ion-button fill="clear" [routerLink]="['/detalle-publicacion', 18]">Vapor Max Plus "Metallic Gold"</ion-button>
           </ion-card-header>
           <ion-card-content>
             <ion-label>Estado: Nuevo</ion-label>
@@ -41,7 +42,7 @@
         <ion-card color="medium">
           <img src="../assets/icon/airforceblancas.jpg" alt="Imagen centrada" />
           <ion-card-header>
-            <ion-button fill="clear" [routerLink]="['/zapasairforceonce']">Air Force One "Triple White"</ion-button>
+            <ion-button fill="clear" [routerLink]="['/detalle-publicacion', 14]">Air Force One "Triple White"</ion-button>
           </ion-card-header>
           <ion-card-content>
             <ion-label>Estado: Usado </ion-label>
@@ -63,7 +64,7 @@
           <!--CARD DE ROPA-->
           <img src="../assets/icon/retro3.jpg" alt="Imagen centrada" />
           <ion-card-header>
-            <ion-button fill="clear" [routerLink]="['/zapasjordanretro3']">Air Jordan Retro 3</ion-button>
+            <ion-button fill="clear" [routerLink]="['/detalle-publicacion', 16]">Air Jordan Retro 3</ion-button>
           </ion-card-header>
         
           <ion-card-content>
@@ -86,7 +87,7 @@
           <!--CARD DE ROPA-->
             <img src="../assets/icon/campus.jpg" alt="Imagen centrada" />
           <ion-card-header>
-            <ion-button fill="clear" [routerLink]="['/zapasadidascampus']">Adidas Campus 00</ion-button>
+            <ion-button fill="clear" [routerLink]="['/detalle-publicacion', 13]">Adidas Campus 00</ion-button>
           </ion-card-header>
         
           <ion-card-content>

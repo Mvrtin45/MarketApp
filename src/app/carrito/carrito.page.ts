@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
-import { Carrito } from '../services/carrito';
-import { Observable, from } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-carrito',
@@ -12,171 +10,116 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./carrito.page.scss'],
 })
 export class CarritoPage implements OnInit {
-  productosCarrito: Carrito[] = [];
-  precioTotal: number = 0;
-  subtotal: number = 0;
-  usuarioId: number | null = null;
+  productosCarrito: any[] = [];  // Lista de productos en el carrito
+  subtotal: number = 0;  // Subtotal del carrito
+  precioTotal: number = 0;  // Precio total del carrito
+  usuarioId: number | null = null;  // Variable para almacenar el ID del usuario
+  carritoSubscription: Subscription | null = null;  // Suscripción al observable del carrito
 
   constructor(
+    private alertController: AlertController,  
     private bd: ServicebdService,
-    private alertController: AlertController,
-    private router: Router
+    private router: Router  
   ) {}
 
   ngOnInit() {
-    // Verifica si la base de datos está lista
-    this.bd.dbState().subscribe(async (data) => {
-      if (data) {
-        console.log("Base de datos lista.");
-        await this.obtenerUsuarioActual(); // Asegurarse de obtener el usuario actual primero
-        
-        // Verificamos si usuarioId no es null antes de llamar a fetchCarrito
-        if (this.usuarioId !== null) {
-          // Subscribirse al observable de los productos del carrito
-          this.bd.fetchCarrito(this.usuarioId).subscribe(
-            (productos) => {
-              console.log("Productos obtenidos del carrito:", productos); // Verificar los productos obtenidos
-              this.productosCarrito = productos.filter(producto => producto.usuario_id === this.usuarioId);
-              
-              console.log("Productos del carrito después del filtro:", this.productosCarrito);
-  
-              // Validar si hay productos en el carrito
-              if (this.productosCarrito.length === 0) {
-                console.warn("El carrito está vacío.");
-              } else {
-                console.log("Productos cargados correctamente en el carrito.");
-              }
-  
-              // Calcular el total y subtotal
-              this.calcularTotal();
-            },
-            (error) => {
-              console.error("Error al cargar los productos del carrito:", error);
-              this.presentAlert('Error', 'Hubo un problema al cargar los productos del carrito.');
-              this.productosCarrito = [];
-            }
-          );
-        } else {
-          console.warn("ID de usuario no disponible. No se puede cargar el carrito.");
-        }
-      } else {
-        console.warn("Base de datos no está lista.");
-      }
+    // Nos suscribimos al observable para recibir actualizaciones automáticamente
+    this.carritoSubscription = this.bd.productosCarrito$.subscribe((productos) => {
+      this.productosCarrito = productos;
+      this.calcularTotales();  // Actualizar los totales cada vez que cambia la lista de productos
     });
+
+    // Obtener el usuario actual
+    this.obtenerUsuarioActual();
   }
 
+
+  // Obtener el usuario actual
   async obtenerUsuarioActual() {
     try {
       const usuario = await this.bd.obtenerUsuarioActual();
       if (usuario) {
-        this.usuarioId = usuario.usuario_id;
-        console.log("ID de usuario obtenido:", this.usuarioId);
+        this.usuarioId = usuario.usuario_id;  // Guardar el ID del usuario
+        console.log('Usuario actual:', usuario);
+        this.cargarCarrito();  // Cargar el carrito después de obtener el usuario
       } else {
-        this.presentAlert('Error', 'Usuario no encontrado.');
+        console.log('No se encontró el usuario actual.');
       }
     } catch (error) {
-      this.presentAlert('Error', 'Error al obtener el usuario actual.');
+      console.error('Error al obtener el usuario actual:', error);
     }
   }
 
+  // Cargar los productos del carrito del usuario
   cargarCarrito() {
     if (this.usuarioId !== null) {
-      // Ahora pasamos 'this.usuarioId' a 'fetchCarrito'
-      from(this.bd.fetchCarrito(this.usuarioId)).pipe(
-        tap((productos) => {
-          this.productosCarrito = productos.filter(producto => producto.usuario_id === this.usuarioId);
-          console.log("Productos pendientes en el carrito:", this.productosCarrito);
-  
-          if (this.productosCarrito.length === 0) {
-            console.warn("El carrito está vacío.");
-          }
-  
-          this.calcularTotal(); // Calcular el total de los productos
-        })
-      ).subscribe({
-        error: (error) => {
-          console.error("Error al cargar los productos pendientes del carrito:", error);
-          this.presentAlert('Error', 'Hubo un problema al cargar los productos del carrito.');
-          this.productosCarrito = [];
-        }
+      this.bd.getProductosCarrito(this.usuarioId).then((productos: any[]) => {
+        this.productosCarrito = productos;
+        this.calcularTotales();  // Calcular los totales después de cargar los productos
+      }).catch(error => {
+        console.log('Error al cargar carrito', error);
+        this.mostrarAlerta('Error', 'Hubo un problema al cargar tu carrito. Por favor, inténtalo de nuevo.');
       });
     }
   }
 
-  async eliminarProducto(index: number) {
-    const productoId = this.productosCarrito[index].producto_id;
-    const carritoId = this.productosCarrito[index].carrito_id;
-
-    if (this.usuarioId !== null && carritoId !== null) {
-      try {
-        await this.bd.eliminarProductoCarrito(this.usuarioId, productoId);
-
-        if (carritoId !== null) {
-          // Registrar en historial
-          await this.bd.registrarHistorialCarrito(this.usuarioId, carritoId, productoId, 'eliminar');
-        } else {
-          console.error('No se puede registrar en el historial, carrito_id es null');
-        }
-
-        this.productosCarrito.splice(index, 1);
-        console.log("Producto eliminado del carrito. Carrito actualizado:", this.productosCarrito);
-        this.calcularTotal();
-        this.presentAlert('Producto eliminado', 'El producto ha sido eliminado del carrito.');
-      } catch (error) {
-        console.error('Error al eliminar el producto del carrito:', error);
-        this.presentAlert('Error', 'Error al eliminar el producto del carrito.');
-      }
-    }
+  // Calcular el subtotal y total
+  calcularTotales() {
+    this.subtotal = 0;
+    this.precioTotal = 0;
+    this.productosCarrito.forEach(producto => {
+      const subtotalProducto = producto.precio * producto.cantidad;
+      this.subtotal += subtotalProducto;
+    });
+    this.precioTotal = this.subtotal;  // Si tienes un descuento o cargos adicionales, agrégalo aquí
   }
 
-  async vaciarCarrito() {
+  // Eliminar un producto del carrito
+  eliminarProducto(productoId: number) {
     if (this.usuarioId !== null) {
-      try {
-        await this.bd.vaciarCarrito(this.usuarioId);
-
-        // Registrar en historial
-        for (const producto of this.productosCarrito) {
-          const carritoId = producto.carrito_id;
-
-          if (carritoId !== null) {
-            await this.bd.registrarHistorialCarrito(this.usuarioId, carritoId, producto.producto_id, 'vaciar');
-          } else {
-            console.error('El carrito_id es nulo, no se puede registrar en el historial');
-          }
-        }
-
-        // Vaciar carrito
-        this.productosCarrito = [];
-        this.precioTotal = 0;
-        console.log("Carrito vacío.");
-        this.presentAlert('Carrito vacío', 'Todos los productos han sido eliminados del carrito.');
-      } catch (error) {
-        console.error('Error al vaciar el carrito:', error);
-        this.presentAlert('Error', 'Error al vaciar el carrito.');
-      }
+      this.bd.eliminarProductoDelCarrito(productoId).then(() => {
+        // El carrito se actualizará automáticamente por la suscripción
+      }).catch(error => {
+        console.log('Error al eliminar el producto', error);
+        this.mostrarAlerta('Error', 'Hubo un problema al eliminar el producto. Intenta nuevamente.');
+      });
     }
   }
 
-  calcularTotal() {
-    this.subtotal = this.productosCarrito.reduce((total, producto) => {
-      const precio = producto.precio ?? 0;
-      const cantidad = producto.cantidad ?? 1;
-      producto.subtotal = precio * cantidad;
-      return total + producto.subtotal;
-    }, 0);
-
-    this.precioTotal = this.subtotal;
-    console.log("Subtotal calculado:", this.subtotal);
-    console.log("Total calculado:", this.precioTotal);
+  // Vaciar el carrito
+  vaciarCarrito() {
+    if (this.usuarioId !== null) {
+      this.bd.vaciarCarrito().then(() => {
+        // El carrito se actualizará automáticamente por la suscripción
+      }).catch(error => {
+        console.log('Error al vaciar el carrito', error);
+        this.mostrarAlerta('Error', 'Hubo un problema al vaciar el carrito. Intenta nuevamente.');
+      });
+    }
   }
 
-
-  async presentAlert(titulo: string, msj: string) {
+  // Mostrar una alerta con un mensaje
+  async mostrarAlerta(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
-      message: msj,
-      buttons: ['OK'],
+      message: mensaje,
+      buttons: ['OK']
     });
     await alert.present();
+  }
+
+  // Proceder al pago
+  async procederAlPago() {
+    if (this.productosCarrito.length === 0) {
+      const alert = await this.alertController.create({
+        header: 'Carrito vacío',
+        message: 'No puedes proceder al pago con un carrito vacío.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } else {
+      this.router.navigate(['/pago']);
+      console.log('Procediendo al pago...');
+    }
   }
 }

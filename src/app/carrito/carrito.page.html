@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true" class="cart-content">
-  <ion-header [translucent]="true">
+  <ion-header>
     <ion-toolbar>
       <div class="logo-container">
         <img src="../assets/icon/logo.jpg" alt="Logo" class="logo" />
@@ -10,7 +10,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <div *ngIf="productosCarrito && productosCarrito.length > 0; else emptyCart">
+  <div *ngIf="productosCarrito.length > 0; else emptyCart">
     <ion-list>
       <ion-item *ngFor="let producto of productosCarrito; let i = index">
         <ion-thumbnail slot="start">
@@ -19,24 +19,28 @@
         <ion-label class="product-info">
           <div class="product-details">
             <h2>{{ producto.titulo || 'Producto sin nombre' }}</h2>
-            <h3>Precio unitario: ${{ producto.precio || 0 }}</h3>
-            <h3>Cantidad: {{ producto.cantidad || 1 }}</h3>
-            <h3>Subtotal: ${{ ((producto.precio || 0) * (producto.cantidad || 1)).toFixed(2) }}</h3>
+            <p>Precio unitario: ${{ producto.precio || 0 }}</p>
+            <p>Cantidad: {{ producto.cantidad || 1 }}</p>
+            <p>Subtotal: ${{ ((producto.precio || 0) * (producto.cantidad || 1)).toFixed(2) }}</p>
           </div>
-          <ion-button color="danger" class="eliminar-button" (click)="eliminarProducto(i)">Eliminar</ion-button>
-          <ion-button expand="full" color="success" routerLink="/pago" class="boton-pago">
-            Proceder al Pago
-          </ion-button>
+          <div class="action-buttons">
+            <ion-button color="danger" class="eliminar-button" (click)="eliminarProducto(producto.producto_id)">
+              Eliminar
+            </ion-button>
+          </div>
         </ion-label>
       </ion-item>
     </ion-list>
-
-    <ion-button class="clear-cart-button" expand="full" (click)="vaciarCarrito()">Vaciar carrito</ion-button>
 
     <div class="total-container">
       <h3>Subtotal: ${{ subtotal.toFixed(2) }}</h3>
       <h3>Total: ${{ precioTotal.toFixed(2) }}</h3>
     </div>
+
+    <ion-button class="clear-cart-button" expand="full" (click)="vaciarCarrito()">Vaciar carrito</ion-button>
+    <ion-button expand="full" color="success" routerLink="/pago" class="boton-pago">
+      Proceder al Pago
+    </ion-button>
   </div>
 
   <ng-template #emptyCart>

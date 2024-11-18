@@ -10,7 +10,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class DetallePublicacionPage implements OnInit {
   publicacion: any;
-  usuarioId: number = 1; // Asume que ya tienes el ID del usuario autenticado
+  usuarioId: number | null = null;  // Ahora es null inicialmente, ya que obtendrás el ID dinámicamente
 
   constructor(
     private route: ActivatedRoute,
@@ -22,6 +22,26 @@ export class DetallePublicacionPage implements OnInit {
     const productoId = +this.route.snapshot.paramMap.get('producto_id')!;
     if (productoId) {
       this.cargarPublicacion(productoId);
+    }
+
+    // Obtener el usuarioId de manera dinámica
+    this.obtenerUsuarioId();
+  }
+
+  // Método para obtener el usuarioId del usuario autenticado
+  async obtenerUsuarioId() {
+    try {
+      const usuario = await this.bd.obtenerUsuarioActual();  // Llamada al servicio que te proporciona el usuario actual
+      if (usuario) {
+        this.usuarioId = usuario.usuario_id;  // Asignamos el usuarioId dinámicamente
+        console.log('Usuario actual:', usuario);
+      } else {
+        console.log('No se encontró el usuario autenticado');
+        this.presentAlert('Error', 'No se encontró el usuario autenticado.');
+      }
+    } catch (error) {
+      console.error('Error al obtener el usuario', error);
+      this.presentAlert('Error', 'Ocurrió un error al obtener el usuario.');
     }
   }
 
@@ -40,14 +60,18 @@ export class DetallePublicacionPage implements OnInit {
     });
   }
 
-  // Método para agregar el producto al carrito
-  async addToCart(producto_id: number) {
-    try {
-      await this.bd.insertarProductoCarrito(this.usuarioId, producto_id);
-      this.showAddAlert();
-    } catch (error) {
-      console.error('Error al agregar producto al carrito', error);
-      this.presentAlert('Error', 'Ocurrió un error al agregar el producto al carrito.');
+  // Método para agregar el producto al carrito sin registrar en el historial
+  addToCart(productoId: number) {
+    if (this.usuarioId !== null) {  // Asegurarse de que el usuarioId está disponible
+      this.bd.insertarProductoCarrito(this.usuarioId, productoId)
+        .then(() => {
+          this.presentAlert('Éxito', 'Producto agregado al carrito');  // Navegar al carrito para ver los cambios
+        })
+        .catch((error) => {
+          this.presentAlert('Error', 'No se pudo agregar el producto al carrito');
+        });
+    } else {
+      this.presentAlert('Error', 'No se ha encontrado el usuario autenticado.');
     }
   }
 

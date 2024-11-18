@@ -44,84 +44,12 @@ const routes: Routes = [
     loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
   },
   {
-    path: 'zapasblackcat',
-    loadChildren: () => import('./zapasblackcat/zapasblackcat.module').then( m => m.ZapasblackcatPageModule)
-  },
-  {
-    path: 'jeansae',
-    loadChildren: () => import('./jeansae/jeansae.module').then( m => m.JeansaePageModule)
-  },
-  {
-    path: 'chaquetaamiri',
-    loadChildren: () => import('./chaquetaamiri/chaquetaamiri.module').then( m => m.ChaquetaamiriPageModule)
-  },
-  {
-    path: 'polerabasicasf',
-    loadChildren: () => import('./polerabasicasf/polerabasicasf.module').then( m => m.PolerabasicasfPageModule)
-  },
-  {
     path: 'subirpubli',
     loadChildren: () => import('./subirpubli/subirpubli.module').then( m => m.SubirpubliPageModule)
   },
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then( m => m.AdminPageModule)
-  },
-  {
-    path: 'cargocorteiz',
-    loadChildren: () => import('./cargocorteiz/cargocorteiz.module').then( m => m.CargocorteizPageModule)
-  },
-  {
-    path: 'zapasretro1',
-    loadChildren: () => import('./zapasretro1/zapasretro1.module').then( m => m.Zapasretro1PageModule)
-  },
-  {
-    path: 'poleracolocolo',
-    loadChildren: () => import('./poleracolocolo/poleracolocolo.module').then( m => m.PoleracolocoloPageModule)
-  },
-  {
-    path: 'polerapalm',
-    loadChildren: () => import('./polerapalm/polerapalm.module').then( m => m.PolerapalmPageModule)
-  },
-  {
-    path: 'poleraudechile',
-    loadChildren: () => import('./poleraudechile/poleraudechile.module').then( m => m.PoleraudechilePageModule)
-  },
-  {
-    path: 'zapasvapormax',
-    loadChildren: () => import('./zapasvapormax/zapasvapormax.module').then( m => m.ZapasvapormaxPageModule)
-  },
-  {
-    path: 'zapasairforceonce',
-    loadChildren: () => import('./zapasairforceonce/zapasairforceonce.module').then( m => m.ZapasairforceoncePageModule)
-  },
-  {
-    path: 'zapasjordanretro3',
-    loadChildren: () => import('./zapasjordanretro3/zapasjordanretro3.module').then( m => m.Zapasjordanretro3PageModule)
-  },
-  {
-    path: 'zapasadidascampus',
-    loadChildren: () => import('./zapasadidascampus/zapasadidascampus.module').then( m => m.ZapasadidascampusPageModule)
-  },
-  {
-    path: 'jeanfn',
-    loadChildren: () => import('./jeanfn/jeanfn.module').then( m => m.JeanfnPageModule)
-  },
-  {
-    path: 'jeanamiri',
-    loadChildren: () => import('./jeanamiri/jeanamiri.module').then( m => m.JeanamiriPageModule)
-  },
-  {
-    path: 'jeanskinny',
-    loadChildren: () => import('./jeanskinny/jeanskinny.module').then( m => m.JeanskinnyPageModule)
-  },
-  {
-    path: 'jeanlevis',
-    loadChildren: () => import('./jeanlevis/jeanlevis.module').then( m => m.JeanlevisPageModule)
-  },
-  {
-    path: 'zapatosvestir',
-    loadChildren: () => import('./zapatosvestir/zapatosvestir.module').then( m => m.ZapatosvestirPageModule)
   },
   {
     path: 'metodopago',

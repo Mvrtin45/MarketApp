@@ -16,7 +16,8 @@ import { Carrito } from './carrito';
 export class ServicebdService {
   // Variable de conexión a Base de Datos
   public database!: SQLiteObject;
-  
+  private productosCarritoSubject = new BehaviorSubject<any[]>([]);
+
 
   // Variables de creación de Tablas
   tablaPublicaciones: string = "CREATE TABLE IF NOT EXISTS Publicaciones ( producto_id INTEGER PRIMARY KEY AUTOINCREMENT, titulo VARCHAR(100) NOT NULL, descripcion TEXT NOT NULL, talla VARCHAR(10) NOT NULL, ubicacion VARCHAR(50) NOT NULL, color VARCHAR(20) NOT NULL, precio INTEGER NOT NULL, foto_publicacion TEXT NOT NULL, usuario_id INTEGER, categoria_id INTEGER, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (categoria_id) REFERENCES Categorias(categoria_id) );";
@@ -24,14 +25,32 @@ export class ServicebdService {
   tablaCategorias: string = "CREATE TABLE IF NOT EXISTS Categorias ( categoria_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_categoria VARCHAR(50) NOT NULL );";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL ( rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
   tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, precio INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
-  tablaCarrito: string = "CREATE TABLE IF NOT EXISTS Carrito ( carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, fecha_agregado DATETIME DEFAULT CURRENT_TIMESTAMP, estado VARCHAR(20) DEFAULT 'pendiente', FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id) );";
-  tablaHistorialCarrito: string = "CREATE TABLE IF NOT EXISTS HistorialCarrito ( historial_id INTEGER PRIMARY KEY AUTOINCREMENT, carrito_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, usuario_id INTEGER NOT NULL, accion VARCHAR(10) NOT NULL, fecha_accion DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (carrito_id) REFERENCES Carrito(carrito_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id), FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id) );";
+  tablaCarrito: string = "CREATE TABLE IF NOT EXISTS Carrito ( carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER, cantidad INTEGER DEFAULT 1, estado TEXT DEFAULT 'pendiente', FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id), FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
+  tablaItemsCarrito: string = "CREATE TABLE IF NOT EXISTS ItemsCarrito ( item_id INTEGER PRIMARY KEY AUTOINCREMENT, carrito_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, FOREIGN KEY (carrito_id) REFERENCES Carritos(carrito_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
 
   // Variables para los insert por defecto en nuestras tablas 
   registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
   registroRol: string = "INSERT OR IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
+  registroPublicacionCargoCorteiz: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (2, 'Pantalones Cargo Corteiz', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Puerto Montt', 'Negro', 19990, '../assets/icon/cargocorteiz.jpg');";
+  registroPublicacionChaquetaAmiri: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (3, 'Chaqueta Amiri', 'Esta en buenas condiciones, con detalles de diseño que destacan su calidad y un estilo moderno que sigue siendo relevante.', 'L', 'Puerto Montt', 'Negra', 79990, '../assets/icon/chaquetaamiri.jpg');";
+  registroPublicacionJeansAmiri: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (4, 'Jeans Amiri', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Cerrillos', 'Azul', 50000, '../assets/icon/pantalon1.jpg');";
+  registroPublicacionJeansFn: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (5, 'Jeans Fashon Nova', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Lampa', 'Azul', 90000, '../assets/icon/jeansfn.jpg');";
+  registroPublicacionJeansLevis: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (6, 'Jeans Levis 501', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'S', 'Peñalolen', 'Azul', 30000, '../assets/icon/pantalon2.jpg');";
+  registroPublicacionJeansAmericanEagle: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (7, 'Jeans American Eagle', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', '42EUR', 'Puerto Montt', 'Azul', 29990, '../assets/icon/jeansfn.jpg');";
+  registroPublicacionJeansSkinny: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (8, 'Jeans Skinny', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'L', 'Puerto Montt', 'Azul', 25000, '../assets/icon/pantalon3.jpg');";
+  registroPublicacionPoleraBasica: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (9, 'Polera Básica Slim Fit', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puerto Montt', 'Negro', 23990, '../assets/icon/polerabasica.jpg');";
+  registroPublicacionPoleraColo: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (10, 'Polera Colo Colo 24/25', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puente Alto', 'Blanco', 34990, '../assets/icon/poleracolocolo.jpg');";
+  registroPublicacionPoleraUchile: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (11, 'Polera Universidad de Chile 23/24', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Conchali', 'Azul', 34990, '../assets/icon/poleraudechile.jpg');";
+  registroPublicacionPoleraPalm: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (12, 'Polera Palm Angels', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puerto Montt', 'Negro', 29990, '../assets/icon/polerapalm.jpg');";
+  registroPublicacionZapatillaCampus: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (13, 'Adidas Campus 00', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '6.5US', 'Renca', 'Blanco', 90000, '../assets/icon/campus.jpg');";
+  registroPublicacionZapatillaAirForce: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (14, 'Air Force One Triple White', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '10US', 'Puente Alto', 'Blanco', 70000, '../assets/icon/airforceblancas.jpg');";
+  registroPublicacionZapatillaBlackCat: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (15, 'Zapatillas Air Jordan Retro 4 Black Cat', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '9US', 'Santiago', 'Negro', 129990, '../assets/icon/jordan4blackcat.jpg');";
+  registroPublicacionZapatillaRetro3: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (16, 'Air Jordan Retro 3', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '9US', 'Renca', 'Blanco', 50000, '../assets/icon/retro3.jpg');";
+  registroPublicacionZapatillaRetro1: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (17, 'Zapatillas Retro 1', 'Nuevas las pedí y me quedaron Chicas.', '10US', 'Puerto Montt', 'Blanco', 60000, '../assets/icon/retro1.jpg');";
+  registroPublicacionZapatillaVaporMax: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (18, 'Vapor Max Plus Metallic Gold', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '7.5US', 'Maipú', 'Negro', 90000, '../assets/icon/vapormax.jpg');";
+  registroPublicacionZapatillaVestir: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (19, 'Zapatos de Vestir', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '10US', 'Santiago', 'Negro', 30000, '../assets/icon/zapatosvestir.jpg');";
 
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
@@ -39,22 +58,23 @@ export class ServicebdService {
   listadoRol = new BehaviorSubject([]);
   listadoAgruparPublicacionesConUsuarios = new BehaviorSubject<Publicaciones[]>([]);
   listadoVentas = new BehaviorSubject([]);
+  productosCarrito$ = this.productosCarritoSubject.asObservable();
   listadoCarrito = new BehaviorSubject<Carrito[]>([]);
 
   //variable para el status de la Base de datos
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-   constructor(
-    private sqlite: SQLite, 
-    private platform: Platform, 
+  constructor(
+    private sqlite: SQLite,
+    private platform: Platform,
     private alertController: AlertController,
-    private storage: NativeStorage) { 
-      if (!isDevMode()) {
-        this.createBD();
-      }
-   }
-   
-  async presentAlert(titulo: string, msj:string) {
+    private storage: NativeStorage) {
+    if (!isDevMode()) {
+      this.createBD();
+    }
+  }
+
+  async presentAlert(titulo: string, msj: string) {
     const alert = await this.alertController.create({
       header: titulo,
       message: msj,
@@ -76,44 +96,39 @@ export class ServicebdService {
 
   fetchPublicacionesConUsuarios(): Observable<Publicaciones[]> {
     return from(this.obtenerUsuariosConPublicaciones()).pipe(
-        tap((publicaciones: Publicaciones[]) => {
-            console.log('Publicaciones obtenidas:', JSON.stringify(publicaciones, null, 2)); 
-            this.listadoAgruparPublicacionesConUsuarios.next(publicaciones);
-        })
+      tap((publicaciones: Publicaciones[]) => {
+        console.log('Publicaciones obtenidas:', JSON.stringify(publicaciones, null, 2));
+        this.listadoAgruparPublicacionesConUsuarios.next(publicaciones);
+      })
     );
   }
 
   fetchVentas(): Observable<Ventas[]> {
     return this.listadoVentas.asObservable();
   }
-  
-  fetchCarrito(usuarioId: number): Observable<Carrito[]> {
-    return from(this.obtenerProductosCarritoPendientes(usuarioId)).pipe(
-      tap((productos: Carrito[]) => {
-        console.log('Productos obtenidos del carrito:', JSON.stringify(productos, null, 2));
-        this.listadoCarrito.next(productos); // Actualiza el estado del carrito
-      })
-    );
+
+  fetchCarrito(): Observable<Carrito[]> {
+    return this.listadoCarrito.asObservable();
   }
 
-  dbState(){
+  dbState() {
     return this.isDBReady.asObservable();
   }
 
   //función para crear la Base de Datos
-  createBD(){
+  createBD() {
     //verificar si la plataforma esta disponible
-    this.platform.ready().then(()=>{
+    this.platform.ready().then(() => {
       //crear la Base de Datos
       this.sqlite.create({
         name: 'AppMarket.db',
         location: 'default'
-      }).then((db: SQLiteObject)=>{
+      }).then((db: SQLiteObject) => {
         //capturar la conexion a la BD
         this.database = db;
         //llamamos a la función para crear las tablas
         this.crearTablas();
-      }).catch(e=>{
+      }).catch(e => {
         this.presentAlert('Base de Datos', 'Error en crear la BD: ' + JSON.stringify(e));
       })
     })
@@ -130,12 +145,30 @@ export class ServicebdService {
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.tablaCarrito, []);
       await this.database.executeSql(this.tablaVentas, []);
-      await this.database.executeSql(this.tablaHistorialCarrito, []);
       await this.database.executeSql(this.tablaCategorias, []);
+      await this.database.executeSql(this.tablaItemsCarrito, []);
 
       // Ejecutar los insert por defecto en el caso que existan
       await this.database.executeSql(this.registroUsuarioAdmin, []);
       await this.database.executeSql(this.registroPublicacion, []);
+      await this.database.executeSql(this.registroPublicacionCargoCorteiz, []);
+      await this.database.executeSql(this.registroPublicacionChaquetaAmiri, []);
+      await this.database.executeSql(this.registroPublicacionJeansAmiri, []);//Aaaaaaaaaaa
+      await this.database.executeSql(this.registroPublicacionJeansFn, []);
+      await this.database.executeSql(this.registroPublicacionJeansLevis, []);//aaaaaaaaaaaaa
+      await this.database.executeSql(this.registroPublicacionJeansAmericanEagle, []);
+      await this.database.executeSql(this.registroPublicacionJeansSkinny, []);
+      await this.database.executeSql(this.registroPublicacionPoleraBasica, []);
+      await this.database.executeSql(this.registroPublicacionPoleraColo, []);
+      await this.database.executeSql(this.registroPublicacionPoleraUchile, []);
+      await this.database.executeSql(this.registroPublicacionPoleraPalm, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaCampus, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaAirForce, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaBlackCat, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaRetro3, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaRetro1, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaVaporMax, []);
+      await this.database.executeSql(this.registroPublicacionZapatillaVestir, []);
       await this.database.executeSql(this.registroRol, []);
 
 
@@ -182,7 +215,7 @@ export class ServicebdService {
       this.listadoPublicaciones.next(items as any);
     });
   }
-  
+
   seleccionarUsuarios() {
     return this.database.executeSql('SELECT * FROM Usuarios', []).then(res => {
       // Variable para almacenar el resultado de la consulta
@@ -231,7 +264,7 @@ export class ServicebdService {
       this.listadoVentas.next(items as any);
     });
   }
-  
+
   seleccionarCarrito(): void {
     this.database.executeSql('SELECT * FROM Carrito', []).then(res => {
       let items: Carrito[] = [];
@@ -257,7 +290,29 @@ export class ServicebdService {
       this.presentAlert('Error', 'Hubo un problema al cargar el carrito.');
     });
   }
-  
+
+  getCarrito(usuarioId: number): Promise<Carrito[]> {
+    const sql = 'SELECT * FROM Carrito WHERE usuario_id = ? AND estado = "pendiente"';
+    return this.database.executeSql(sql, [usuarioId]).then((res) => {
+      const productos: Carrito[] = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        const row = res.rows.item(i);
+        productos.push({
+          carrito_id: row.carrito_id,
+          usuario_id: row.usuario_id,
+          producto_id: row.producto_id,
+          cantidad: row.cantidad,
+          fecha_agregado: row.fecha_agregado,
+          precio: row.precio,
+          subtotal: row.precio * row.cantidad,
+          foto_publicacion: row.foto_publicacion,
+          titulo: row.titulo
+        });
+      }
+      return productos;
+    });
+  }
+
   //OBTENER
   getPublicacionById(id: number) {
     return this.database.executeSql('SELECT * FROM Publicaciones WHERE producto_id = ?', [id]).then(data => {
@@ -313,7 +368,7 @@ export class ServicebdService {
         return null;
       }
     }).catch(e => {
-      this.presentAlert("ERROR", `No se pudo obtener los datos del usuario. ${e.message}`); 
+      this.presentAlert("ERROR", `No se pudo obtener los datos del usuario. ${e.message}`);
       return null;
     });
   }
@@ -325,7 +380,7 @@ export class ServicebdService {
     }
     const query = `SELECT u.usuario_id, u.nombre_usu, u.email_usu, p.producto_id, p.titulo, p.descripcion, p.talla, p.ubicacion, p.color, p.precio, p.foto_publicacion FROM Usuarios u LEFT JOIN Publicaciones p ON u.usuario_id = p.usuario_id ORDER BY u.usuario_id;`;
     return this.database.executeSql(query, []).then(res => {
-      let items: Publicaciones[] = []; 
+      let items: Publicaciones[] = [];
       for (let i = 0; i < res.rows.length; i++) {
         items.push(res.rows.item(i));
       }
@@ -341,10 +396,10 @@ export class ServicebdService {
     try {
       const storedUserId = await this.storage.getItem('usuario_id');
       console.log('ID de usuario almacenado:', storedUserId); // Verifica el valor
-  
+
       const query = `SELECT imagen_usu, usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE usuario_id = ?`;
       const res = await this.database.executeSql(query, [storedUserId]);
-  
+
       if (res.rows.length > 0) {
         return {
           imagen_usu: res.rows.item(0).imagen_usu,
@@ -377,30 +432,35 @@ export class ServicebdService {
     });
   }
 
-  obtenerProductosCarritoPendientes(usuarioId: number): Observable<Carrito[]> {
-    const query = `
-      SELECT p.producto_id, p.titulo, p.descripcion, p.precio, p.foto_publicacion, c.cantidad
-      FROM Carrito c
-      JOIN Publicaciones p ON c.producto_id = p.producto_id
-      WHERE c.usuario_id = ? AND c.estado = 'pendiente'
-    `;
-    
-    return new Observable((observer) => {
-      this.database.executeSql(query, [usuarioId]).then(res => {
-        let productos: Carrito[] = [];
-        if (res.rows.length > 0) {
-          for (let i = 0; i < res.rows.length; i++) {
-            productos.push(res.rows.item(i));
-          }
+  getProductosCarrito(usuarioId: number): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT p.producto_id, p.titulo, p.descripcion, p.precio, p.foto_publicacion, c.cantidad
+        FROM Carrito c
+        JOIN Publicaciones p ON c.producto_id = p.producto_id
+        WHERE c.usuario_id = ? AND c.estado = 'pendiente'
+      `;
+      this.database.executeSql(sql, [usuarioId]).then((res) => {
+        const productos = [];
+        for (let i = 0; i < res.rows.length; i++) {
+          productos.push(res.rows.item(i));
         }
-        // Actualizamos el estado del carrito en el BehaviorSubject
-        this.listadoCarrito.next(productos);
-        observer.next(productos); // Emitimos los productos al Observable
-        observer.complete(); // Completa el Observable
-      }).catch(error => {
-        console.error("Error al obtener productos pendientes:", error);
-        observer.error(error); // Si ocurre un error, lo emitimos al Observable
-      });
+        resolve(productos);
+      }).catch(reject);
+    });
+  }
+
+  async obtenerCarritoActual() {
+    const storedUserId = await this.storage.getItem('usuario_id');
+      console.log('ID de usuario almacenado:', storedUserId);
+
+    const sql = `SELECT * FROM Carrito WHERE usuario_id = ? AND estado = 'pendiente'`;
+    this.database.executeSql(sql, [storedUserId]).then((res) => {
+      let productos = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        productos.push(res.rows.item(i));
+      }
+      this.productosCarritoSubject.next(productos);  // Emitir los productos actualizados
     });
   }
 
@@ -422,7 +482,7 @@ export class ServicebdService {
       this.presentAlert('Eliminar', 'Error: ' + JSON.stringify(e));
     });
   }
-  
+
   banearUsuario(usuario_id: number) {
     const query = `UPDATE Usuarios SET estado = 0 WHERE usuario_id = ?`;
     return this.database.executeSql(query, [usuario_id])
@@ -434,57 +494,33 @@ export class ServicebdService {
       });
   }
 
-  async eliminarProductoCarrito(usuarioId: number, productoId: number) {
+  async eliminarProductoDelCarrito(producto_id: number) {
     try {
-      // Primero obtenemos el carrito_id correspondiente al usuario y producto
-      const carritoQuery = `SELECT carrito_id FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
-      const carritoResult = await this.database.executeSql(carritoQuery, [usuarioId, productoId]);
-
-      if (carritoResult.rows.length > 0) {
-        const carritoId = carritoResult.rows.item(0).carrito_id; // Obtenemos el carrito_id
-
-        // Eliminar el producto del carrito
-        const queryEliminar = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
-        await this.database.executeSql(queryEliminar, [usuarioId, productoId]);
-
-        // Registrar la acción en el historial con el carrito_id correcto
-        const queryHistorial = `INSERT INTO HistorialCarrito (carrito_id, producto_id, usuario_id, accion, fecha_accion) 
-                                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`;
-        await this.database.executeSql(queryHistorial, [carritoId, productoId, usuarioId, 'eliminado']);
-      } else {
-        console.log('No se encontró el carrito para este usuario y producto.');
-      }
-
-      // Actualizar el listado del carrito después de eliminar
-      await this.obtenerProductosCarritoPendientes(usuarioId);
+      const storedUserId = await this.storage.getItem('usuario_id');
+      const query = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
+      await this.database.executeSql(query, [storedUserId, producto_id]);
+      this.obtenerCarritoActual(); // Vuelve a obtener el carrito actualizado
     } catch (error) {
-      console.error('Error al eliminar producto del carrito:', error);
+      console.error('Error al eliminar el producto del carrito:', error);
     }
   }
-  
-  async vaciarCarrito(usuarioId: number) {
+
+  // Actualizar el estado del carrito después de un pago
+  actualizarEstadoCarrito(usuarioId: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE Carrito SET estado = 'pagado' WHERE usuario_id = ? AND estado = 'pendiente'`;
+      this.database.executeSql(sql, [usuarioId]).then(resolve).catch(reject);
+    });
+  }
+
+
+  // Vaciar el carrito
+  async vaciarCarrito() {
     try {
-      // Obtener los carrito_id del usuario
-      const carritoQuery = `SELECT carrito_id FROM Carrito WHERE usuario_id = ?`;
-      const carritoResult = await this.database.executeSql(carritoQuery, [usuarioId]);
-
-      if (carritoResult.rows.length > 0) {
-        const carritoId = carritoResult.rows.item(0).carrito_id; // Obtenemos el carrito_id
-
-        // Eliminar todos los productos del carrito
-        const queryVaciar = `DELETE FROM Carrito WHERE usuario_id = ?`;
-        await this.database.executeSql(queryVaciar, [usuarioId]);
-
-        // Registrar la acción de vaciar el carrito en el historial
-        const queryHistorial = `INSERT INTO HistorialCarrito (carrito_id, producto_id, usuario_id, accion, fecha_accion) 
-                                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`;
-        await this.database.executeSql(queryHistorial, [carritoId, null, usuarioId, 'vaciar']);
-      } else {
-        console.log('No se encontró el carrito para este usuario.');
-      }
-
-      // Actualizar el listado del carrito después de vaciarlo
-      await this.obtenerProductosCarritoPendientes(usuarioId);
+      const storedUserId = await this.storage.getItem('usuario_id');
+      const query = `DELETE FROM Carrito WHERE usuario_id = ?`;
+      await this.database.executeSql(query, [storedUserId]);
+      this.obtenerCarritoActual();
     } catch (error) {
       console.error('Error al vaciar el carrito:', error);
     }
@@ -501,7 +537,7 @@ export class ServicebdService {
   }
 
   modificarPublicacion(id: string, titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
-    return this.database.executeSql('UPDATE Publicaciones SET titulo = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ? WHERE producto_id = ?', [titulo,descripcion,talla,ubicacion,color,precio,id]).then(res => {
+    return this.database.executeSql('UPDATE Publicaciones SET titulo = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ? WHERE producto_id = ?', [titulo, descripcion, talla, ubicacion, color, precio, id]).then(res => {
       this.presentAlert("Modificar", "Publicacion Modificada");
       this.seleccionarPublicaciones();
     }).catch(e => {
@@ -515,12 +551,12 @@ export class ServicebdService {
         'UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ? WHERE usuario_id = ?',
         [nombre, correo, telefono, iduser]
       );
-  
+
       // Guardar el usuario actualizado en el almacenamiento local para que se pueda usar después
       const usuarioActualizado = { iduser, nombre, telefono, correo };
       await this.storage.setItem('usuario', usuarioActualizado);
       this.seleccionarUsuarios();
-  
+
     } catch (error) {
       // Mostrar alerta de error si la modificación falla
       await this.presentAlert("Modificar", "Error al modificar perfil: " + JSON.stringify(error));
@@ -534,7 +570,7 @@ export class ServicebdService {
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
     });
-  } 
+  }
 
   async insertarUsuario(nombre: string, email: string, telefono: number, contrasena: string, imagen_usu: string, estado: number = 1) { // estado por defecto es 1
     try {
@@ -572,98 +608,68 @@ export class ServicebdService {
       });
   }
 
-  async registrarHistorialCarrito(usuarioId: number, carritoId: number, productoId: number, accion: string) {
-    const query = `
-      INSERT INTO HistorialCarrito (carrito_id, producto_id, usuario_id, accion)
-      VALUES (?, ?, ?, ?)
-    `;
-    return this.database.executeSql(query, [carritoId, productoId, usuarioId, accion])
-      .then(res => {
-        console.log('Acción registrada en el historial', res);
-      })
-      .catch(error => {
-        console.error('Error al registrar acción en el historial:', error);
-        throw error; // Lanza el error si falla la inserción
-      });
-  }
-
-  async insertarProductoCarrito(usuarioId: number, productoId: number, cantidad: number = 1) {
-    try {
-      const existingProduct = await this.database.executeSql(
-        `SELECT * FROM Carrito WHERE usuario_id = ? AND producto_id = ?`,
-        [usuarioId, productoId]
-      );
-  
-      if (existingProduct.rows.length > 0) {
-        // Producto ya está en el carrito, actualizar cantidad
-        const currentQuantity = existingProduct.rows.item(0).cantidad;
-        await this.database.executeSql(
-          `UPDATE Carrito SET cantidad = ? WHERE usuario_id = ? AND producto_id = ?`,
-          [currentQuantity + cantidad, usuarioId, productoId]
-        );
-      } else {
-        // Producto no está en el carrito, agregarlo
-        await this.database.executeSql(
-          `INSERT INTO Carrito (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)`,
-          [usuarioId, productoId, cantidad]
-        );
-      }
-  
-      // Actualizar el listado del carrito
-      await this.obtenerProductosCarritoPendientes(usuarioId);
-      this.presentAlert('Éxito', 'Producto añadido o actualizado en el carrito');
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        // Si el error es una instancia de Error, se puede acceder a .message
-        this.presentAlert('Error', 'Error al agregar producto al carrito: ' + error.message);
-      } else {
-        // Si el error no es una instancia de Error, se puede manejar de otra manera
-        this.presentAlert('Error', 'Error desconocido al agregar producto al carrito');
-      }
-    }
+  insertarProductoCarrito(usuarioId: number, productoId: number): Promise<void> {  
+    return new Promise((resolve, reject) => {
+      const checkSql = `SELECT * FROM Carrito WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
+      this.database.executeSql(checkSql, [usuarioId, productoId]).then((res) => {
+        if (res.rows.length > 0) {
+          const updateSql = `UPDATE Carrito SET cantidad = cantidad + 1 WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
+          this.database.executeSql(updateSql, [usuarioId, productoId]).then(() => {
+            this.obtenerCarritoActual();  // Actualizar los productos en el carrito
+            resolve();  // No es necesario devolver nada, por eso 'void'
+          }).catch(reject);
+        } else {
+          const insertSql = `INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) VALUES (?, ?, 1, 'pendiente')`;
+          this.database.executeSql(insertSql, [usuarioId, productoId]).then(() => {
+            this.obtenerCarritoActual();  // Actualizar los productos en el carrito
+            resolve();  // No es necesario devolver nada, por eso 'void'
+          }).catch(reject);
+        }
+      }).catch(reject);
+    });
   }
 
   // VERIFICAR
   async verificarUsuario(email_usu: string, contrasena_usu: string): Promise<any> {
     try {
-        const query = 'SELECT usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE email_usu = ? AND contrasena_usu = ?';
-        const res = await this.database.executeSql(query, [email_usu, contrasena_usu]);
-        if (res.rows.length > 0) {
-            // Retornar el objeto del usuario encontrado
-            return {
-                usuario_id: res.rows.item(0).usuario_id,
-                nombre_usu: res.rows.item(0).nombre_usu,
-                email_usu: res.rows.item(0).email_usu,
-                telefono_usu: res.rows.item(0).telefono_usu,
-            };
-        } else {
-            return null; // Si no se encuentra el usuario
-        }
+      const query = 'SELECT usuario_id, nombre_usu, email_usu, telefono_usu FROM Usuarios WHERE email_usu = ? AND contrasena_usu = ?';
+      const res = await this.database.executeSql(query, [email_usu, contrasena_usu]);
+      if (res.rows.length > 0) {
+        // Retornar el objeto del usuario encontrado
+        return {
+          usuario_id: res.rows.item(0).usuario_id,
+          nombre_usu: res.rows.item(0).nombre_usu,
+          email_usu: res.rows.item(0).email_usu,
+          telefono_usu: res.rows.item(0).telefono_usu,
+        };
+      } else {
+        return null; // Si no se encuentra el usuario
+      }
     } catch (e) {
-        // Manejar errores y registrar si es necesario
-        await this.presentAlert('Verificación de Usuario', 'Error: ' + JSON.stringify(e));
-        return null;
+      // Manejar errores y registrar si es necesario
+      await this.presentAlert('Verificación de Usuario', 'Error: ' + JSON.stringify(e));
+      return null;
     }
   }
-  
-  async verificarContrasena(currentPassword: string): Promise<boolean> {  
+
+  async verificarContrasena(currentPassword: string): Promise<boolean> {
     try {
       // Obtener el usuario actual desde NativeStorage
       const usuarioActual = await this.storage.getItem('usuario');
       const email = usuarioActual.correo; // Cambia 'email' a 'correo'
-  
+
       // Verificar si el correo existe en la base de datos
       const correoValido = await this.verificarCorreo(email);
       if (!correoValido) {
         console.error('El correo no es válido o no existe.');
         return false;
       }
-  
+
       // Obtener la contraseña almacenada para el correo
       const res = await this.database.executeSql('SELECT contrasena_usu FROM Usuarios WHERE email_usu = ?', [email]);
       if (res.rows.length > 0) {
         const contrasenaAlmacenada = res.rows.item(0).contrasena_usu;
-  
+
         // Verificar si la contraseña ingresada coincide con la almacenada
         return currentPassword === contrasenaAlmacenada;
       } else {
@@ -714,7 +720,7 @@ export class ServicebdService {
       FROM Usuarios
       WHERE email_usu = ?
     `;
-  
+
     return this.database.executeSql(query, [email_usu]).then(res => {
       if (res.rows.length > 0) {
         const usuario = {
@@ -732,25 +738,25 @@ export class ServicebdService {
       return null;
     });
   }
-  
+
   // ACTUALIZAR
   async actualizarContra(email_usu: string, contrasena_usu: string): Promise<void> {
     try {
       // Asegurarse de que el correo esté limpio
       email_usu = email_usu.trim().toLowerCase();
-  
+
       // Verificar si el correo existe antes de intentar actualizar
       const resSelect = await this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [email_usu]);
       console.log('Usuarios encontrados:', resSelect.rows.length);
-  
+
       if (resSelect.rows.length === 0) {
         this.presentAlert("Error", "No se encontró un usuario con ese correo.");
         return;
       }
-  
+
       // Realizar la actualización de la contraseña
       const resUpdate = await this.database.executeSql('UPDATE Usuarios SET contrasena_usu = ? WHERE email_usu = ?', [contrasena_usu, email_usu]);
-  
+
       if (resUpdate.rowsAffected > 0) {
         this.seleccionarUsuarios();
       } else {
@@ -764,7 +770,7 @@ export class ServicebdService {
   async actualizarImagenUsuario(usuario_id: number, imagen_usu: string): Promise<void> {
     const sql = 'UPDATE Usuarios SET imagen_usu = ? WHERE usuario_id = ?';
     const data = [imagen_usu, usuario_id];
-  
+
     try {
       const res = await this.database.executeSql(sql, data);
       if (res.rowsAffected > 0) {
@@ -777,7 +783,6 @@ export class ServicebdService {
       alert("Error al actualizar la imagen: " + error);
     }
   }
-  
 
   async convertirBlobABase64(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
