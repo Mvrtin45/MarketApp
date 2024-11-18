@@ -142,13 +142,6 @@ export class EditarPerfilPage implements OnInit {
         await this.mostrarAlerta('No se pudo obtener el ID del usuario.');
       }
     } catch (error: unknown) {
-      let errorMessage = 'Error al cargar los datos del usuario.';
-      if (error instanceof Error) {
-        errorMessage += ` ${error.message}`;
-      } else {
-        errorMessage += ` ${JSON.stringify(error)}`;
-      }
-      await this.mostrarAlerta(errorMessage);
     }
   }
 

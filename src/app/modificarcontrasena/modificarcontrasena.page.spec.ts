@@ -25,4 +25,10 @@ describe('ModificarcontrasenaPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('inicialización del formulario', () => {
+    expect(component.formularioModificarPassword.contains('currentPassword')).toBeTruthy();
+    expect(component.formularioModificarPassword.contains('newPassword')).toBeTruthy();
+    expect(component.formularioModificarPassword.contains('confirmNewPassword')).toBeTruthy();
+  });
 });

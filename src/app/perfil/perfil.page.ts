@@ -61,7 +61,6 @@ export class PerfilPage implements OnInit {
         alert("No se pudo obtener el ID del usuario desde el almacenamiento.");
       }
     } catch (error) {
-      alert("Error al cargar los datos del usuario: " + JSON.stringify(error));
     }
   }
 

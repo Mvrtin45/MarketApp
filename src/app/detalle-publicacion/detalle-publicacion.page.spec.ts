@@ -3,6 +3,7 @@ import { DetallePublicacionPage } from './detalle-publicacion.page';
 import { IonicModule } from '@ionic/angular';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('DetallePublicacionPage', () => {
   let component: DetallePublicacionPage;
@@ -11,7 +12,7 @@ describe('DetallePublicacionPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DetallePublicacionPage],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [NativeStorage, SQLite] 
     }).compileComponents();
 

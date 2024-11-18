@@ -4,7 +4,6 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-import { ActivatedRoute } from '@angular/router';
 
 describe('RecuperarcontrasenaPage', () => {
   let component: RecuperarcontrasenaPage;

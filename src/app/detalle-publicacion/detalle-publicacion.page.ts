@@ -33,11 +33,10 @@ export class DetallePublicacionPage implements OnInit {
     try {
       const usuario = await this.bd.obtenerUsuarioActual();  // Llamada al servicio que te proporciona el usuario actual
       if (usuario) {
-        this.usuarioId = usuario.usuario_id;  // Asignamos el usuarioId dinámicamente
+        this.usuarioId = usuario.usuario_id;  
         console.log('Usuario actual:', usuario);
       } else {
         console.log('No se encontró el usuario autenticado');
-        this.presentAlert('Error', 'No se encontró el usuario autenticado.');
       }
     } catch (error) {
       console.error('Error al obtener el usuario', error);

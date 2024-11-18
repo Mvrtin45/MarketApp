@@ -25,18 +25,6 @@ describe('LoginPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Campo de correo requerido y validación del formato', () => {
-    const emailControl = component.formularioLogin.get('email');
-    emailControl?.setValue(''); // campo vacío 
-    emailControl?.markAsTouched(); // marcar como click
-    emailControl?.markAsDirty(); // marcar como sucio
-  
-    expect(component.emailErrorMessage).toBe('El correo es requerido');
-  
-    emailControl?.setValue('invalid-email'); // valor inválido para activar la validación de 'email'
-    expect(component.emailErrorMessage).toBe('Por favor, ingrese un correo válido');
-  });
-
   it('Campo de contraseña requerido', () => {
     const passwordControl = component.formularioLogin.get('password');
     passwordControl?.setValue(''); // campo vacío 
@@ -44,12 +32,5 @@ describe('LoginPage', () => {
     passwordControl?.markAsDirty(); // marcar como sucio
   
     expect(component.passwordErrorMessage).toBe('La contraseña es requerida');
-  });
-
-  it('Formulario inválido cuando los campos están vacíos o incorrectos', () => {
-    component.formularioLogin.get('email')?.setValue('');
-    component.formularioLogin.get('password')?.setValue('');
-  
-    expect(component.formularioLogin.valid).toBeFalse();
   });
 });

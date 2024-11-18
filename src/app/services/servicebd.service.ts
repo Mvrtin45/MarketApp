@@ -446,6 +446,7 @@ export class ServicebdService {
           productos.push(res.rows.item(i));
         }
         resolve(productos);
+        this.productosCarritoSubject.next(productos);
       }).catch(reject);
     });
   }

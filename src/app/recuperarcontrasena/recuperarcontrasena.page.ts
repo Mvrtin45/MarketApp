@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, AlertController, MenuController } from '@ionic/angular';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AuthfireBaseService } from 'src/app/services/authfire-base.service';
 import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
@@ -19,9 +17,6 @@ export class RecuperarcontrasenaPage implements OnInit {
     private formBuilder: FormBuilder,
     private navCtrl: NavController,
     private alertController: AlertController,
-    private menu: MenuController,
-    private afAuth: AngularFireAuth,
-    private authService: AuthfireBaseService,
     private bd: ServicebdService
   ) {
     // Definición del formulario con validaciones
@@ -37,8 +32,6 @@ export class RecuperarcontrasenaPage implements OnInit {
   }
 
   ngOnInit() {
-    // Desactiva el menú en esta página
-    this.menu.enable(false);
   }
 
   // Método para enviar el correo de recuperación de contraseña
@@ -63,25 +56,7 @@ export class RecuperarcontrasenaPage implements OnInit {
       this.emailErrorMessage = 'El correo ingresado no está registrado.';
       return;
     }
-
-    // Si el correo existe, procede a enviar el correo de recuperación
-    this.authService.resetContra(this.correo).then(() => {
-      this.mostrarAlerta('Resetear Contraseña', 'Se ha enviado un correo para restablecer su contraseña');
-    }).catch(() => {
-      this.mostrarAlerta('Error', 'No se pudo enviar el correo');
-    });
-  }
-
-  // Método para mostrar la alerta después de enviar el correo de recuperación
-  async mostrarAlerta(titulo: string, mensaje: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: mensaje,
-      buttons: ['OK'],
-      cssClass: 'estilo-alertas'
-    });
-
-    await alert.present();
+    await this.mostrarAlertaCorreoEnviado();
   }
 
   // Método para mostrar la alerta de correo enviado con el enlace de recuperación

@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
-import { AuthfireBaseService } from '../services/authfire-base.service';
 
 @Component({
   selector: 'app-register',
@@ -25,7 +24,6 @@ export class RegisterPage implements OnInit {
     private alertController: AlertController,
     private storage: NativeStorage,
     private bd: ServicebdService,
-    private auth: AuthfireBaseService
   ) {
     this.formularioRegistro = this.fb.group({
       email: ['', [Validators.required, Validators.email, this.noWhitespaceValidator]],
@@ -97,7 +95,6 @@ export class RegisterPage implements OnInit {
         rol: '1',
         imagen: '/assets/icon/logo.jpg'
       }
-      this.auth.registro(this.email, this.contrasena);
       this.bd.insertarUsuario(
         nuevoUsuario.nombre,
         nuevoUsuario.correo,
