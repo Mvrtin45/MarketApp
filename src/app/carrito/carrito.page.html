@@ -48,7 +48,7 @@
       <h3>Total Convertido en {{MonedaDefecto}}: ${{ TotalConvertido.toFixed(2) }}</h3>
     </div>
 
-    <ion-button class="clear-cart-button" expand="full" (click)="vaciarCarrito()">Vaciar carrito</ion-button>
+    <ion-button class="clear-cart-button" expand="full" (click)="vaciarCarrito(usuarioId)">Vaciar carrito</ion-button>
     <ion-button expand="full" color="success" routerLink="/pago" class="boton-pago">
       Proceder al Pago
     </ion-button>

@@ -418,14 +418,19 @@ export class ServicebdService {
         JOIN Publicaciones p ON c.producto_id = p.producto_id
         WHERE c.usuario_id = ? AND c.estado = 'pendiente'
       `;
+      console.log("Ejecutando consulta SQL para obtener productos del carrito", usuarioId);
       this.database.executeSql(sql, [usuarioId]).then((res) => {
         const productos = [];
+        console.log("Resultado de la consulta SQL:", res);
         for (let i = 0; i < res.rows.length; i++) {
           productos.push(res.rows.item(i));
         }
         resolve(productos);
         this.productosCarritoSubject.next(productos);
-      }).catch(reject);
+      }).catch((error) => {
+        console.error("Error al ejecutar consulta SQL:", error);
+        reject(error);
+      });
     });
   }
 
@@ -482,6 +487,17 @@ export class ServicebdService {
     });
   }
 
+  async obtenerPrecioProducto(productoId: number): Promise<number> {
+    const query = `SELECT precio FROM Publicaciones WHERE producto_id = ?`;
+    const result = await this.database.executeSql(query, [productoId]);
+  
+    if (result.rows.length > 0) {
+      return result.rows.item(0).precio;
+    } else {
+      throw new Error('Producto no encontrado');
+    }
+  }
+
   // ELIMINAR
   eliminarPublicacion(id: string) {
     return this.database.executeSql('DELETE FROM Publicaciones WHERE producto_id = ?', [id]).then(res => {
@@ -526,13 +542,11 @@ export class ServicebdService {
   }
 
   // Vaciar el carrito
-  async vaciarCarrito() {
+  async vaciarCarrito(usuarioId: number): Promise<void> {
+    const sql = `DELETE FROM Carrito WHERE usuario_id = ? AND estado = 'pendiente'`;
     try {
-      const storedUserId = await this.storage.getItem('usuario_id');
-      const query = `DELETE FROM Carrito WHERE usuario_id = ?`;
-      await this.database.executeSql(query, [storedUserId]);
-      this.obtenerCarritoActual();
-      this.seleccionarCarrito();
+      await this.database.executeSql(sql, [usuarioId]);
+      console.log('Carrito vaciado exitosamente');
     } catch (error) {
       console.error('Error al vaciar el carrito:', error);
     }
@@ -643,6 +657,45 @@ export class ServicebdService {
         }
       }).catch(reject);
     });
+  }
+
+  async finalizarCompra(): Promise<void> {
+    try {
+      // Obtener el usuario_id del almacenamiento
+      const storedUserId = await this.storage.getItem('usuario_id');
+      
+      if (!storedUserId) {
+        throw new Error('Usuario no autenticado');
+      }
+    
+      // Obtener productos del carrito con estado 'pendiente' usando getProductosCarrito
+      const productosEnCarrito = await this.getProductosCarrito(storedUserId);
+  
+      // Verificar si el carrito está vacío
+      if (productosEnCarrito.length === 0) {
+        console.log("El carrito está vacío");
+        return;
+      }
+  
+      // Insertar cada producto en la tabla de ventas
+      for (const producto of productosEnCarrito) {
+        const queryInsertVenta = `
+          INSERT INTO Ventas (usuario_id, producto_id, precio)
+          VALUES (?, ?, ?)
+        `;
+        // Obtener el precio del producto y calcular el precio total
+        const precioTotal = producto.precio * producto.cantidad;
+        await this.database.executeSql(queryInsertVenta, [
+          storedUserId,
+          producto.producto_id,
+          precioTotal
+        ]);
+      }
+    
+      console.log('Compra finalizada exitosamente y carrito vaciado');
+    } catch (error) {
+      console.error('Error al finalizar la compra:', error);
+    }
   }
 
   // VERIFICAR

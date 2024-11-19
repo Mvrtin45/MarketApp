@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
   selector: 'app-pago',
@@ -11,7 +12,7 @@ export class PagoPage implements OnInit {
   formularioPago!: FormGroup; // Formulario para el pago
   cargando = false; // Estado de carga
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(private fb: FormBuilder, private router: Router, private bd: ServicebdService) {}
 
   ngOnInit() {
     this.formularioPago = this.fb.group({
@@ -25,12 +26,17 @@ export class PagoPage implements OnInit {
     });
   }
 
-  procesarPago() {
+  async procesarPago() {
     if (this.formularioPago.valid) {
-      this.cargando = true; // Mostrar la pantalla de carga
-      setTimeout(() => {
-        this.cargando = false; // Ocultar la pantalla de carga
-        this.router.navigate(['/check']); // Redirigir a la página de checkout
+      this.cargando = true;
+      setTimeout(async () => {
+        this.cargando = false;
+        try {
+          await this.bd.finalizarCompra();
+          this.router.navigate(['/check']);
+        } catch (error) {
+          console.error('Error al finalizar la compra:', error);
+        }
       }, 3000);
     }
   }

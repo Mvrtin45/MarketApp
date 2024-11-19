@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ServicebdService } from '../services/servicebd.service';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-check',
@@ -10,28 +13,78 @@ export class CheckPage implements OnInit {
   // Indicador para saber si la compra fue exitosa
   compraExitosa: boolean = false;
 
-  // Datos del producto (se simulan en este ejemplo)
-  producto = {
-    nombre: 'Camiseta Deportiva',
-    precio: 25990,  // Asegúrate de que sea un número en formato numérico
-    cantidad: 2,
-    total: 51980   // Producto * cantidad, se debe reflejar correctamente
-  };
+  // Lista de productos comprados
+  productosComprados: any[] = [];
 
-  fechaCompra = new Date();
-
-  constructor() { }
+  constructor(
+    private bd: ServicebdService, 
+    private storage: NativeStorage, 
+    private navCtrl: NavController
+  ) {}
 
   ngOnInit() {
-    // Simulamos una respuesta de compra exitosa después de un tiempo
-    setTimeout(() => {
-      this.compraExitosa = true; // Cambiar a false para probar el error
-    }, 3000); // Esperamos 3 segundos para simular el proceso de compra
+    console.log("Inicializando la página de compra");
+
+    // Obtener el ID del usuario almacenado para poder cargar los productos
+    this.storage.getItem('usuario_id').then(async (usuarioId) => {
+      console.log("Usuario ID recuperado:", usuarioId);
+      if (usuarioId) {
+        // Obtenemos los productos del carrito
+        await this.obtenerProductosComprados(usuarioId);
+      } else {
+        console.log("No se encontró el usuario ID");
+      }
+    }).catch((error) => {
+      console.error("Error al obtener el usuario_id de storage:", error);
+    });
   }
 
-  // Método para volver al inicio
+  // Método para obtener los productos comprados
+  async obtenerProductosComprados(usuarioId: number) {
+    console.log("Obteniendo productos para el usuario con ID:", usuarioId);
+    try {
+      // Llamamos a la función en el servicio del carrito para obtener los productos
+      this.productosComprados = await this.bd.getProductosCarrito(usuarioId);
+      console.log("Productos obtenidos:", this.productosComprados);
+
+      // Si hay productos, marcamos la compra como exitosa
+      if (this.productosComprados.length > 0) {
+        this.compraExitosa = true;
+      } else {
+        this.compraExitosa = false;
+        console.log("No se encontraron productos en el carrito");
+      }
+    } catch (error) {
+      console.error('Error al obtener los productos del carrito:', error);
+      this.compraExitosa = false;
+    }
+  }
+
+  // Método para vaciar el carrito y redirigir al perfil
+  async vaciarCarritoYVolver() {
+    try {
+      // Primero vaciamos el carrito
+      const usuarioId = await this.storage.getItem('usuario_id');
+      if (usuarioId) {
+        await this.bd.vaciarCarrito(usuarioId); // Vaciar carrito usando un método en el servicio
+        console.log("Carrito vaciado exitosamente");
+
+        // Luego redirigimos al perfil
+        this.navCtrl.navigateForward('/tabs/perfil', {
+          queryParams: { usuario_id: usuarioId }
+        });
+
+      } else {
+        console.log("No se encontró el usuario ID al intentar vaciar el carrito");
+      }
+    } catch (error) {
+      console.error('Error al vaciar el carrito y redirigir:', error);
+    }
+  }
+
+  // Método para volver al inicio (vaciar el carrito y redirigir al perfil)
   volverAlInicio() {
     console.log("Volviendo al inicio...");
-    // Lógica para redirigir al inicio o página deseada
+    this.vaciarCarritoYVolver(); // Llamamos a la función para vaciar el carrito y redirigir
   }
 }

@@ -56,10 +56,6 @@ const routes: Routes = [
     loadChildren: () => import('./metodopago/metodopago.module').then( m => m.MetodopagoPageModule)
   },
   {
-    path: 'ayudasoporte',
-    loadChildren: () => import('./ayudasoporte/ayudasoporte.module').then( m => m.AyudasoportePageModule)
-  },
-  {
     path: 'bandejaentrada',
     loadChildren: () => import('./bandejaentrada/bandejaentrada.module').then( m => m.BandejaentradaPageModule)
   },

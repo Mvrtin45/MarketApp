@@ -29,5 +29,4 @@ describe('EditarPerfilPage', () => {
   it('formulario no debe ser válido cuando los campos están vacíos', () => {
     expect(component.formularioEditar.valid).toBeFalsy();
   });
-
 });

@@ -142,9 +142,9 @@ export class CarritoPage implements OnInit {
   }
 
   // Vaciar el carrito
-  vaciarCarrito() {
+  vaciarCarrito(usuarioId: number) {
     if (this.usuarioId !== null) {
-      this.bd.vaciarCarrito().then(() => {
+      this.bd.vaciarCarrito(usuarioId).then(() => {
       }).catch(error => {
         console.log('Error al vaciar el carrito', error);
         this.mostrarAlerta('Error', 'Hubo un problema al vaciar el carrito. Intenta nuevamente.');

@@ -12,28 +12,30 @@
         ¡Compra Exitosa!
       </ion-card-title>
 
-      <!-- Detalles del producto comprado -->
-      <ion-item>
-        <ion-label>Producto:</ion-label>
-        <ion-text>{{ producto.nombre }}</ion-text>
-      </ion-item>
+      <!-- Lista de productos comprados -->
+      <ng-container *ngFor="let producto of productosComprados">
+        <ion-item>
+          <ion-label>Producto:</ion-label>
+          <ion-text>{{ producto.titulo }}</ion-text>
+        </ion-item>
 
-      <ion-item>
-        <ion-label>Precio:</ion-label>
-        <!-- Formateamos el precio para CLP -->
-        <ion-text>{{ producto.precio | currency:'CLP':'symbol':'1.0-0' }}</ion-text> 
-      </ion-item>
+        <ion-item>
+          <ion-label>Precio:</ion-label>
+          <ion-text>{{ producto.precio | currency:'CLP':'symbol':'1.0-0' }}</ion-text> 
+        </ion-item>
 
-      <ion-item>
-        <ion-label>Cantidad:</ion-label>
-        <ion-text>{{ producto.cantidad }}</ion-text>
-      </ion-item>
+        <ion-item>
+          <ion-label>Cantidad:</ion-label>
+          <ion-text>{{ producto.cantidad }}</ion-text>
+        </ion-item>
 
-      <ion-item>
-        <ion-label>Total:</ion-label>
-        <!-- Mostramos el total en CLP -->
-        <ion-text>{{ producto.total | currency:'CLP':'symbol':'1.0-0' }}</ion-text> 
-      </ion-item>
+        <ion-item>
+          <ion-label>Total:</ion-label>
+          <ion-text>{{ producto.precio * producto.cantidad | currency:'CLP':'symbol':'1.0-0' }}</ion-text> 
+        </ion-item>
+
+        <ion-item-divider></ion-item-divider> <!-- Separador entre productos -->
+      </ng-container>
 
       <!-- Mensaje de error en caso de que la compra no se haya completado -->
       <ng-template #errorTemplate>
@@ -43,7 +45,7 @@
       </ng-template>
 
       <!-- Botón de regreso -->
-      <ion-button (click)="volverAlInicio()">Volver al Inicio</ion-button>
+      <ion-button expand="block" (click)="volverAlInicio()">Volver al Inicio</ion-button>
     </div>
   </div>
 </ion-content>
