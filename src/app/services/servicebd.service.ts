@@ -284,7 +284,6 @@ export class ServicebdService {
         }
       }
       // Actualizamos el Observable con los elementos del carrito
-      this.listadoCarrito.next(items);
       this.productosCarritoSubject.next(items);
     }).catch(error => {
       console.error('Error al seleccionar elementos del carrito:', error);
@@ -446,7 +445,7 @@ export class ServicebdService {
 
   miPerfil(usuario_id: number){
     return this.database.executeSql(
-      'SELECT * FROM Usuario WHERE usuario_id = ?', [usuario_id]
+      'SELECT * FROM Usuarios WHERE usuario_id = ?', [usuario_id]
     ).then(res => {
       if (res.rows.length > 0) {
         // Si las credenciales son correctas, retorna el usuario encontrado
@@ -477,7 +476,7 @@ export class ServicebdService {
           }
         })
         .catch((error) => {
-          console.error('Error al verificar el usuario:', error);
+          this.presentAlert("Error", "Al verificar usuario por rol");
           reject('Error al acceder a la base de datos'); // En caso de error, rechaza la promesa
         });
     });
@@ -518,7 +517,9 @@ export class ServicebdService {
       const storedUserId = await this.storage.getItem('usuario_id');
       const query = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
       await this.database.executeSql(query, [storedUserId, producto_id]);
-      this.obtenerCarritoActual(); // Vuelve a obtener el carrito actualizado
+      
+      // Llama a obtenerCarritoActual() para asegurar la emisión actualizada del carrito
+      await this.obtenerCarritoActual();
     } catch (error) {
       console.error('Error al eliminar el producto del carrito:', error);
     }
@@ -531,6 +532,7 @@ export class ServicebdService {
       const query = `DELETE FROM Carrito WHERE usuario_id = ?`;
       await this.database.executeSql(query, [storedUserId]);
       this.obtenerCarritoActual();
+      this.seleccionarCarrito();
     } catch (error) {
       console.error('Error al vaciar el carrito:', error);
     }

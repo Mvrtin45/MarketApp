@@ -35,11 +35,13 @@ export class CarritoPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Nos suscribimos al observable para recibir actualizaciones automáticamente
-    this.carritoSubscription = this.bd.productosCarrito$.subscribe((productos) => {
-      this.productosCarrito = productos;
-      this.calcularTotales();
-      this.obtenerUsuarioActual();
+    this.bd.dbState().subscribe(data => {
+      if (data) {
+        this.carritoSubscription = this.bd.fetchCarrito().subscribe(res => {
+          this.productosCarrito = res;
+          this.calcularTotales();
+        });
+      }
     });
     this.convertirMoneda();
     this.menu.enable(true);
@@ -47,8 +49,9 @@ export class CarritoPage implements OnInit {
 
   ionViewWillEnter() {
     this.menu.enable(true);
+    this.obtenerUsuarioActual();
 
-    this.storage.getItem('iduser').then(data=>{
+    this.storage.getItem('usuario_id').then(data=>{
       this.usuarioId = data;
 
       // llama a la consulta solo cuando se haya obtenido el id
@@ -56,7 +59,7 @@ export class CarritoPage implements OnInit {
 
     }).then(data => {
       if (data) {
-        this.usuarioId = data.id_usuario;
+        this.usuarioId = data.usuario_id;
       }
     });
   }
@@ -126,12 +129,15 @@ export class CarritoPage implements OnInit {
   // Eliminar un producto del carrito
   eliminarProducto(productoId: number) {
     if (this.usuarioId !== null) {
-      this.bd.eliminarProductoDelCarrito(productoId).then(() => {
-        // El carrito se actualizará automáticamente por la suscripción
-      }).catch(error => {
-        console.log('Error al eliminar el producto', error);
-        this.mostrarAlerta('Error', 'Hubo un problema al eliminar el producto. Intenta nuevamente.');
-      });
+      this.bd.eliminarProductoDelCarrito(productoId)
+        .then(() => {
+          // Recargar el carrito después de eliminar
+          this.cargarCarrito();
+        })
+        .catch(error => {
+          console.log('Error al eliminar el producto', error);
+          this.mostrarAlerta('Error', 'Hubo un problema al eliminar el producto. Intenta nuevamente.');
+        });
     }
   }
 
@@ -139,7 +145,6 @@ export class CarritoPage implements OnInit {
   vaciarCarrito() {
     if (this.usuarioId !== null) {
       this.bd.vaciarCarrito().then(() => {
-        // El carrito se actualizará automáticamente por la suscripción
       }).catch(error => {
         console.log('Error al vaciar el carrito', error);
         this.mostrarAlerta('Error', 'Hubo un problema al vaciar el carrito. Intenta nuevamente.');

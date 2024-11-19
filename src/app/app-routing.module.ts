@@ -110,6 +110,10 @@ const routes: Routes = [
   {
     path: '**',
     loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
+  },
+  {
+    path: 'miscompras',
+    loadChildren: () => import('./miscompras/miscompras.module').then( m => m.MiscomprasPageModule)
   }
 ];
 @NgModule({

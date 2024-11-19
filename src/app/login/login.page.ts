@@ -50,7 +50,7 @@ export class LoginPage implements OnInit {
         } else {
           // Verificamos el rol y redirigimos según el rol
           if (usuario.rol_id === 2) {  // Administrador
-            await this.mostrarAlerta('Inicio de sesión exitoso', 'Redirigiendo al panel de administración...');
+            await this.mostrarAlerta('Inicio de sesión exitoso', 'Bienvenido al panel de administración...');
             this.router.navigate(['/admin']); // Redirige a la página de administrador
           } else if (usuario.rol_id === 1) {  // Usuario normal
             
@@ -60,7 +60,7 @@ export class LoginPage implements OnInit {
           }
         }
       } catch (error) {
-        console.error('Error al intentar ingresar:', error); // Muestra el error recibido
+        await this.mostrarAlerta('Error', 'No se ha encontrado un usuario con los datos ingresados.'); // Muestra el error recibido
       }
     } else {
       await this.mostrarAlerta('Error', 'Por favor, completa todos los campos correctamente.');

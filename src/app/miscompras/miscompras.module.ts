@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { AyudasoportePageRoutingModule } from './ayudasoporte-routing.module';
+import { MiscomprasPageRoutingModule } from './miscompras-routing.module';
 
-import { AyudasoportePage } from './ayudasoporte.page';
+import { MiscomprasPage } from './miscompras.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AyudasoportePageRoutingModule
+    MiscomprasPageRoutingModule
   ],
-  declarations: [AyudasoportePage]
+  declarations: [MiscomprasPage]
 })
-export class AyudasoportePageModule {}
+export class MiscomprasPageModule {}
