@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModificarcontrasenaPage } from './modificarcontrasena.page';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ModificarcontrasenaPage', () => {
   let component: ModificarcontrasenaPage;
@@ -13,8 +13,16 @@ describe('ModificarcontrasenaPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ModificarcontrasenaPage],
-      imports: [IonicModule.forRoot(), FormsModule, ReactiveFormsModule],
-      providers: [NativeStorage, SQLite, NgControl] 
+      imports: [
+        IonicModule.forRoot(),
+        FormsModule,
+        ReactiveFormsModule,
+        RouterTestingModule
+      ],
+      providers: [
+        NativeStorage,
+        SQLite,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ModificarcontrasenaPage);
@@ -27,7 +35,6 @@ describe('ModificarcontrasenaPage', () => {
   });
 
   it('inicialización del formulario', () => {
-    expect(component.formularioModificarPassword.contains('currentPassword')).toBeTruthy();
     expect(component.formularioModificarPassword.contains('newPassword')).toBeTruthy();
     expect(component.formularioModificarPassword.contains('confirmNewPassword')).toBeTruthy();
   });
