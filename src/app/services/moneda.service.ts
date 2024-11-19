@@ -17,6 +17,8 @@ export class MonedaService {
 
   constructor( private http: HttpClient) { }
 
+  // ------------------------------ API CONVERSORA DE MONEDAS ------------------------------------------------------
+
   obtenerValorMoneda(MonedaBase: string): Observable<any> {
     const url = `https://api.exchangerate-api.com/v4/latest/${MonedaBase}`; 
     return this.http.get(url)

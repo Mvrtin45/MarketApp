@@ -17,15 +17,30 @@
         <ion-card-title>Recuperar Contraseña</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <form (ngSubmit)="enviarCorreo()">
+        <form (ngSubmit)="recuperarContrasena()">
+          <!-- Campo de correo -->
           <ion-item>
             <ion-label position="floating">Correo</ion-label>
             <ion-input [(ngModel)]="correo" name="correo" type="email"></ion-input>
           </ion-item>
-          <!-- Mensajes de error -->
           <ion-text color="danger" *ngIf="emailErrorMessage">
             {{ emailErrorMessage }}
           </ion-text>
+          <!-- Campo de selección de pregunta de seguridad -->
+          <ion-item>
+            <ion-label position="floating">Pregunta de seguridad</ion-label>
+            <ion-select [(ngModel)]="pregunta" name="pregunta">
+              <ion-select-option value="mascota">¿Cuál es el nombre de tu primera mascota?</ion-select-option>
+              <ion-select-option value="escuela">¿En qué escuela primaria estudiaste?</ion-select-option>
+              <ion-select-option value="color">¿Cuál es tu color favorito?</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <!-- Campo de respuesta de seguridad -->
+          <ion-item>
+            <ion-label position="floating">Respuesta de seguridad</ion-label>
+            <ion-input [(ngModel)]="respuesta" name="respuesta" type="text"></ion-input>
+          </ion-item>
+          <!-- Botón de envío -->
           <ion-button class="custom-button" expand="block" type="submit">
             Recuperar contraseña
           </ion-button>

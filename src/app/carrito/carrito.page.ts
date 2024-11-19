@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, MenuController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { MonedaService } from '../services/moneda.service';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 
 @Component({
   selector: 'app-carrito',
@@ -13,13 +15,22 @@ export class CarritoPage implements OnInit {
   productosCarrito: any[] = [];  // Lista de productos en el carrito
   subtotal: number = 0;  // Subtotal del carrito
   precioTotal: number = 0;  // Precio total del carrito
-  usuarioId: number | null = null;  // Variable para almacenar el ID del usuario
+  usuarioId!: number;  // Variable para almacenar el ID del usuario
   carritoSubscription: Subscription | null = null;  // Suscripción al observable del carrito
+  Monedas: string[] = ["USD", "EUR", "CLP", "ARS", "MXN", "BRL", "GBP", "AUD", "CAD", "JPY", "HKD", "PYG", "UYU"];
+  MonedaBase: string = "CLP"; // Peso Chileno por defecto
+  MonedaDefecto: string = "USD"; // Dólar por defecto
+
+  CantidadConv: number = 1;
+  TazaConversion: number = 0;
 
   constructor(
     private alertController: AlertController,  
     private bd: ServicebdService,
-    private router: Router  
+    private router: Router,
+    private apiService: MonedaService, 
+    private storage: NativeStorage,
+    private menu:MenuController
   ) {}
 
   ngOnInit() {
@@ -29,8 +40,41 @@ export class CarritoPage implements OnInit {
       this.calcularTotales();
       this.obtenerUsuarioActual();
     });
+    this.convertirMoneda();
+    this.menu.enable(true);
   }
 
+  ionViewWillEnter() {
+    this.menu.enable(true);
+
+    this.storage.getItem('iduser').then(data=>{
+      this.usuarioId = data;
+
+      // llama a la consulta solo cuando se haya obtenido el id
+      return this.bd.miPerfil(this.usuarioId);
+
+    }).then(data => {
+      if (data) {
+        this.usuarioId = data.id_usuario;
+      }
+    });
+  }
+
+  convertirMoneda() {
+    this.apiService.obtenerValorMoneda(this.MonedaBase).subscribe(
+      (data) => {
+          const rate = data.rates[this.MonedaDefecto]; // Obtener la tasa de cambio para la moneda de destino
+          if (rate) {
+              this.precioTotal = this.CantidadConv * rate; // Realizar la conversión
+          } else {
+              console.error('La moneda de destino no está disponible.');
+          }
+      },
+      (error) => {
+          console.error('Error al obtener tasas de cambio:', error);
+      }
+    );
+  }
 
   // Obtener el usuario actual
   async obtenerUsuarioActual() {
@@ -117,7 +161,6 @@ export class CarritoPage implements OnInit {
       await alert.present();
     } else {
       this.router.navigate(['/pago']);
-      console.log('Procediendo al pago...');
     }
   }
 }

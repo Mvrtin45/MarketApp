@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, AlertController, MenuController } from '@ionic/angular';
+import { NavController, AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
@@ -9,44 +8,38 @@ import { ServicebdService } from '../services/servicebd.service';
   styleUrls: ['./recuperarcontrasena.page.scss'],
 })
 export class RecuperarcontrasenaPage implements OnInit {
-  formularioRecuperar: FormGroup;
   correo: string = '';
+  pregunta: string = '';
+  respuesta: string = '';
   emailErrorMessage: string = '';
+  securityErrorMessage: string = '';
 
   constructor(
-    private formBuilder: FormBuilder,
     private navCtrl: NavController,
     private alertController: AlertController,
     private bd: ServicebdService
-  ) {
-    // Definición del formulario con validaciones
-    this.formularioRecuperar = this.formBuilder.group({
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email
-        ]
-      ]
-    });
-  }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  // Método para enviar el correo de recuperación de contraseña
-  async enviarCorreo() {
-    this.emailErrorMessage = ''; // Reinicia el mensaje de error
+  // Método para manejar la recuperación de contraseña
+  async recuperarContrasena() {
+    this.emailErrorMessage = '';
+    this.securityErrorMessage = '';
 
-    // Validación del correo
+    // Validar campos
     if (!this.correo) {
       this.emailErrorMessage = 'El correo es obligatorio.';
       return;
     }
 
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailPattern.test(this.correo)) {
-      this.emailErrorMessage = 'Por favor, introduce un correo válido.';
+    if (!this.pregunta) {
+      this.securityErrorMessage = 'Selecciona una pregunta de seguridad.';
+      return;
+    }
+
+    if (!this.respuesta) {
+      this.securityErrorMessage = 'La respuesta de seguridad es obligatoria.';
       return;
     }
 
@@ -56,19 +49,27 @@ export class RecuperarcontrasenaPage implements OnInit {
       this.emailErrorMessage = 'El correo ingresado no está registrado.';
       return;
     }
+
+    // Verificar la pregunta y respuesta de seguridad
+    const seguridadValida = await this.bd.verificarPreguntaRespuesta(this.correo, this.pregunta, this.respuesta);
+    if (!seguridadValida) {
+      this.securityErrorMessage = 'La pregunta o respuesta de seguridad no coincide.';
+      return;
+    }
+
+    // Si todo es válido, mostrar alerta de éxito
     await this.mostrarAlertaCorreoEnviado();
   }
 
-  // Método para mostrar la alerta de correo enviado con el enlace de recuperación
+  // Método para mostrar la alerta de recuperación
   async mostrarAlertaCorreoEnviado() {
     const alert = await this.alertController.create({
-      header: 'Correo enviado',
-      message: 'Hemos enviado un enlace de recuperación de contraseña a tu correo.',
+      header: 'Recuperación exitosa',
+      message: 'Puedes proceder a cambiar tu contraseña.',
       buttons: [
         {
           text: 'OK',
           handler: () => {
-            // Redirige al login después de hacer clic en OK
             this.navCtrl.navigateRoot('/login');
           }
         }

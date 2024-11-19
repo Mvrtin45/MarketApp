@@ -444,6 +444,23 @@ export class ServicebdService {
     });
   }
 
+  miPerfil(usuario_id: number){
+    return this.database.executeSql(
+      'SELECT * FROM Usuario WHERE usuario_id = ?', [usuario_id]
+    ).then(res => {
+      if (res.rows.length > 0) {
+        // Si las credenciales son correctas, retorna el usuario encontrado
+        return res.rows.item(0);
+      } else {
+        // Si no hay coincidencias, retorna null
+        return null;
+      }
+    }).catch(e => {
+      this.presentAlert('Usuario', 'Error: ' + JSON.stringify(e));
+      return null;
+    });
+  }
+
   // ELIMINAR
   eliminarPublicacion(id: string) {
     return this.database.executeSql('DELETE FROM Publicaciones WHERE producto_id = ?', [id]).then(res => {
@@ -713,6 +730,21 @@ export class ServicebdService {
       this.presentAlert("ERROR", `No se pudo obtener los datos del usuario. ${e.message}`);
       return null;
     });
+  }
+
+  async verificarPreguntaRespuesta(correo: string, pregunta: string, respuesta: string): Promise<boolean> {
+    try {
+      const res = await this.database.executeSql(
+        `SELECT * FROM Usuarios WHERE email_usu = ? AND pregunta_seguridad = ? AND respuesta_seguridad = ?`,
+        [correo, pregunta, respuesta]
+      );
+      
+      // Si la consulta encuentra una coincidencia, el resultado tendrá una longitud mayor a 0
+      return res.rows.length > 0;
+    } catch (error) {
+      console.error('Error al verificar la pregunta y respuesta de seguridad:', error);
+      return false; // En caso de error, se devuelve `false`
+    }
   }
 
   // ACTUALIZAR
