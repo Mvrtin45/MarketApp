@@ -15,14 +15,6 @@
     <ion-card class="modify-password-card">
       <ion-card-content>
         <form [formGroup]="formularioModificarPassword" (ngSubmit)="modificarPassword()">
-          <!-- Campo de Contraseña Actual -->
-          <ion-item>
-            <ion-label position="floating">Contraseña Actual</ion-label>
-            <ion-input type="password" formControlName="currentPassword"></ion-input>
-          </ion-item>
-          <ion-text [class.visible]="currentPasswordErrorMessage">
-            {{ currentPasswordErrorMessage }}
-          </ion-text>
           <!-- Campo de Nueva Contraseña -->
           <ion-item>
             <ion-label position="floating">Nueva Contraseña</ion-label>
@@ -31,6 +23,7 @@
           <ion-text [class.visible]="newPasswordErrorMessage">
             {{ newPasswordErrorMessage }}
           </ion-text>
+
           <!-- Campo de Confirmar Nueva Contraseña -->
           <ion-item>
             <ion-label position="floating">Confirmar Nueva Contraseña</ion-label>
@@ -39,6 +32,7 @@
           <ion-text [class.visible]="confirmNewPasswordErrorMessage">
             {{ confirmNewPasswordErrorMessage }}
           </ion-text>
+
           <!-- Botón para guardar cambios -->
           <ion-button expand="full" type="submit">Guardar Cambios</ion-button>
         </form>
@@ -46,4 +40,3 @@
     </ion-card>
   </div>
 </ion-content>
-

@@ -29,7 +29,7 @@ export class ServicebdService {
   tablaItemsCarrito: string = "CREATE TABLE IF NOT EXISTS ItemsCarrito ( item_id INTEGER PRIMARY KEY AUTOINCREMENT, carrito_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, FOREIGN KEY (carrito_id) REFERENCES Carritos(carrito_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
 
   // Variables para los insert por defecto en nuestras tablas 
-  registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', '2');";
+  registroUsuarioAdmin: string = "INSERT OR IGNORE INTO Usuarios(usuario_id, nombre_usu, email_usu, telefono_usu, contrasena_usu, imagen_usu, rol_id, estado, pregunta_seguridad, respuesta_seguridad) VALUES (1, 'admin', 'admin@gmail.com', 123456789, 'soyadmin123','imagen', 2, 1, '¿JAJAJAJAJAJ?', 'QUETI');";
   registroRol: string = "INSERT OR IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
@@ -461,6 +461,28 @@ export class ServicebdService {
     });
   }
 
+  verificarRolPorCorreoYPassword(email: string, contrasena: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT usuario_id, rol_id
+        FROM Usuarios
+        WHERE email_usu = ? AND contrasena_usu = ?
+      `;
+      this.database.executeSql(query, [email, contrasena]).then((res) => {
+          if (res.rows.length > 0) {
+            const usuario = res.rows.item(0);
+            resolve(usuario); // Si el usuario existe, devuelve los datos
+          } else {
+            reject('Usuario no encontrado'); // Si no existe, rechaza la promesa
+          }
+        })
+        .catch((error) => {
+          console.error('Error al verificar el usuario:', error);
+          reject('Error al acceder a la base de datos'); // En caso de error, rechaza la promesa
+        });
+    });
+  }
+
   // ELIMINAR
   eliminarPublicacion(id: string) {
     return this.database.executeSql('DELETE FROM Publicaciones WHERE producto_id = ?', [id]).then(res => {
@@ -502,7 +524,6 @@ export class ServicebdService {
     }
   }
 
-  
   // Vaciar el carrito
   async vaciarCarrito() {
     try {

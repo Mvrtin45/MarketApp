@@ -32,61 +32,26 @@
       </ion-item>
     </ion-list>
 
+    <ion-item class="ion-color">
+      <ion-label>Moneda Destino</ion-label>
+      <ion-select [(ngModel)]="MonedaDefecto" (ionChange)="convertirMoneda()">
+        <ion-select-option *ngFor="let x of Monedas" [value]="x">
+          {{ x }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
     <div class="total-container">
-      <h3>Subtotal: ${{ subtotal.toFixed(2) }}</h3>
       <h3>Total: ${{ precioTotal.toFixed(2) }}</h3>
+    </div>
+    <div class="total-container">
+      <h3>Total Convertido en {{MonedaDefecto}}: ${{ TotalConvertido.toFixed(2) }}</h3>
     </div>
 
     <ion-button class="clear-cart-button" expand="full" (click)="vaciarCarrito()">Vaciar carrito</ion-button>
     <ion-button expand="full" color="success" routerLink="/pago" class="boton-pago">
       Proceder al Pago
     </ion-button>
-
-    <div class="convertidor-monedas">
-      <h5 class="ion-margin-horizontal">Convertidor</h5>
-    
-      <ion-card class="ion-margin">
-        <ion-card-header>
-          <ion-card-title class="texto ion-text-center">Selecciona la moneda</ion-card-title>
-        </ion-card-header>
-    
-        <ion-card-content>
-          <ion-item class="ion-color">
-            <ion-label>Moneda Base</ion-label>
-            <ion-select [(ngModel)]="MonedaBase">
-              <ion-select-option *ngFor="let x of Monedas" [value]="x">
-                {{ x }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-    
-          <ion-item class="ion-color">
-            <ion-label>Moneda Destino</ion-label>
-            <ion-select [(ngModel)]="MonedaDefecto">
-              <ion-select-option *ngFor="let x of Monedas" [value]="x">
-                {{ x }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-    
-          <ion-item class="ion-color">
-            <ion-label>Cantidad</ion-label>
-            <ion-input [(ngModel)]="CantidadConv" type="number" placeholder="1" class="ion-text-center"></ion-input>
-          </ion-item>
-    
-          <ion-item class="ion-color">
-            <ion-label>Resultado</ion-label>
-            <ion-label>{{precioTotal | number:"1.0-2" }} {{ MonedaDefecto }}</ion-label>
-          </ion-item>
-        </ion-card-content>
-        <ion-card-footer class="btn-center">
-          <button mat-fab class="boton-reserva" (click)="convertirMoneda()">
-            CONVERTIR
-            <mat-icon class="color-inicio espacio" fontIcon="paid"></mat-icon>
-          </button>
-        </ion-card-footer>
-      </ion-card>
-    </div>
   </div>
 
   <ng-template #emptyCart>

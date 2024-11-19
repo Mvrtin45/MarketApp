@@ -72,6 +72,12 @@ export class PerfilPage implements OnInit {
     this.menuOpen = !this.menuOpen;
   }
 
+  modificarContrasena() {
+    this.router.navigate(['/modificarcontrasena'], {
+      queryParams: { email: this.email }  // Enviamos el correo electrónico como parámetro
+    });
+  }
+
   async selectImageOrTakePhoto() {
     const action = await this.showActionSheet();
     if (action === 'camera') {

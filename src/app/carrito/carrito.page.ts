@@ -17,12 +17,13 @@ export class CarritoPage implements OnInit {
   precioTotal: number = 0;  // Precio total del carrito
   usuarioId!: number;  // Variable para almacenar el ID del usuario
   carritoSubscription: Subscription | null = null;  // Suscripción al observable del carrito
+
+ // API EXCHANGE
   Monedas: string[] = ["USD", "EUR", "CLP", "ARS", "MXN", "BRL", "GBP", "AUD", "CAD", "JPY", "HKD", "PYG", "UYU"];
   MonedaBase: string = "CLP"; // Peso Chileno por defecto
   MonedaDefecto: string = "USD"; // Dólar por defecto
-
-  CantidadConv: number = 1;
   TazaConversion: number = 0;
+  TotalConvertido: number = 0; // Total
 
   constructor(
     private alertController: AlertController,  
@@ -61,11 +62,16 @@ export class CarritoPage implements OnInit {
   }
 
   convertirMoneda() {
+
+    if(!this.MonedaDefecto){
+      this.mostrarAlerta('Error', 'Debe seleccionar una moneda para la conversion');
+    }
     this.apiService.obtenerValorMoneda(this.MonedaBase).subscribe(
       (data) => {
-          const rate = data.rates[this.MonedaDefecto]; // Obtener la tasa de cambio para la moneda de destino
-          if (rate) {
-              this.precioTotal = this.CantidadConv * rate; // Realizar la conversión
+          const tasaConversion = data.rates[this.MonedaDefecto] // Obtener la tasa de cambio para la moneda de destino
+          if (tasaConversion) {
+            this.TazaConversion = tasaConversion;
+            this.TotalConvertido = this.precioTotal * this.TazaConversion; // Realizar la conversión
           } else {
               console.error('La moneda de destino no está disponible.');
           }
@@ -107,13 +113,14 @@ export class CarritoPage implements OnInit {
 
   // Calcular el subtotal y total
   calcularTotales() {
-    this.subtotal = 0;
-    this.precioTotal = 0;
-    this.productosCarrito.forEach(producto => {
-      const subtotalProducto = producto.precio * producto.cantidad;
-      this.subtotal += subtotalProducto;
-    });
-    this.precioTotal = this.subtotal;  // Si tienes un descuento o cargos adicionales, agrégalo aquí
+      this.subtotal = 0;
+      this.precioTotal = 0;
+      this.productosCarrito.forEach(producto => {
+        const subtotalProducto = producto.precio * producto.cantidad; // Precio por cantidad
+        this.subtotal += subtotalProducto;
+      });
+      this.precioTotal = this.subtotal; // Total inicial en CLP
+      this.TotalConvertido = this.precioTotal * this.TazaConversion; // Actualizar el total convertido
   }
 
   // Eliminar un producto del carrito

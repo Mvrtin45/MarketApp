@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-recuperarcontrasena',
@@ -17,7 +18,8 @@ export class RecuperarcontrasenaPage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private alertController: AlertController,
-    private bd: ServicebdService
+    private bd: ServicebdService,
+    private router: Router
   ) {}
 
   ngOnInit() {}
@@ -70,7 +72,10 @@ export class RecuperarcontrasenaPage implements OnInit {
         {
           text: 'OK',
           handler: () => {
-            this.navCtrl.navigateRoot('/login');
+            const navigationExtras: NavigationExtras = {
+              queryParams: { email: this.correo }
+            };
+            this.router.navigate(['/modificarcontrasena'], navigationExtras);
           }
         }
       ]

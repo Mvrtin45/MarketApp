@@ -35,37 +35,35 @@ export class LoginPage implements OnInit {
     if (this.formularioLogin.valid) {
       const formcorreo = this.formularioLogin.get('email')?.value;
       const formPassword = this.formularioLogin.get('password')?.value;
-  
+
       try {
-        // Comprobamos si el usuario es el administrador
-        if (formcorreo === 'admin@gmail.com' && formPassword === 'soyadmin123') {
-          await this.mostrarAlerta('Inicio de sesión exitoso.', 'Redirigiendo al apartado de administrador...');
-          this.router.navigate(['/admin']);
+        // Verificar si el usuario existe con el correo y la contraseña
+        const usuario = await this.bd.verificarRolPorCorreoYPassword(formcorreo, formPassword);
+        console.log('Usuario encontrado:', usuario);
+
+        // Verificamos el estado del usuario
+        const estado = await this.bd.comprobarEstadoUsuario(usuario.usuario_id);
+        console.log('Estado del usuario:', estado);
+
+        if (estado === 0) {  // Usuario inactivo
+          await this.mostrarAlerta('Acceso denegado', 'Tu cuenta ha sido desactivada.');
         } else {
-          // Verificamos el usuario en la base de datos
-          const usuario = await this.bd.verificarUsuario(formcorreo, formPassword);
-  
-          if (usuario) {
-            // Comprobamos el estado del usuario
-            const estado = await this.bd.comprobarEstadoUsuario(usuario.usuario_id);
-  
-            if (estado === 0) {  // Si el usuario está baneado
-              await this.mostrarAlerta('Acceso denegado', 'Tu cuenta ha sido baneada.');
-            } else {
-              // Si el usuario está activo, guardamos los datos y lo redirigimos
-              await this.storage.setItem('usuario_id', usuario.usuario_id);
-              await this.mostrarAlerta('Inicio de sesión exitoso.', '¡Bienvenido a AppMarket!');
-              this.router.navigate(['/tabs/tab1']);
-            }
-          } else {
-            await this.mostrarAlerta('Error', 'Correo o contraseña incorrectos.');
+          // Verificamos el rol y redirigimos según el rol
+          if (usuario.rol_id === 2) {  // Administrador
+            await this.mostrarAlerta('Inicio de sesión exitoso', 'Redirigiendo al panel de administración...');
+            this.router.navigate(['/admin']); // Redirige a la página de administrador
+          } else if (usuario.rol_id === 1) {  // Usuario normal
+            
+            await this.storage.setItem('usuario_id', usuario.usuario_id);
+            await this.mostrarAlerta('Inicio de sesión exitoso', '¡Bienvenido!');
+            this.router.navigate(['/tabs/tab1']); // Redirige a la página principal
           }
         }
       } catch (error) {
-        await this.mostrarAlerta('Error', 'Ocurrió un problema al intentar iniciar sesión. Por favor, intenta de nuevo.');
+        console.error('Error al intentar ingresar:', error); // Muestra el error recibido
       }
     } else {
-      await this.mostrarAlerta('Error', 'Por favor, completa los campos requeridos correctamente.');
+      await this.mostrarAlerta('Error', 'Por favor, completa todos los campos correctamente.');
     }
   }
 

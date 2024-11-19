@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
-import { AlertController } from '@ionic/angular'; // Importa tu servicio de base de datos
+import { AlertController } from '@ionic/angular';
 import { ServicebdService } from '../services/servicebd.service';
 
 @Component({
@@ -19,43 +19,22 @@ export class ModificarcontrasenaPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private nativeStorage: NativeStorage,
-    private bd: ServicebdService// Instancia del servicio de base de datos
+    private bd: ServicebdService,
+    private route: ActivatedRoute
   ) {
     this.formularioModificarPassword = this.fb.group({
-      currentPassword: ['', [Validators.required]],
       newPassword: ['', [Validators.required, Validators.minLength(8), this.uppercaseValidator(), this.lowercaseValidator(), this.numberValidator()]],
       confirmNewPassword: ['', [Validators.required]],
     }, { validator: this.matchPasswords('newPassword', 'confirmNewPassword') });
   }
 
   ngOnInit() {
-    this.obtenerEmailUsuarioActual();
-  }
-
-  // Obtiene el email del usuario actual desde NativeStorage
-  async obtenerEmailUsuarioActual() {
-    try {
-        const data = await this.nativeStorage.getItem('usuario');
-        console.log('Datos recuperados de NativeStorage:', JSON.stringify(data)); // Mostrar el contenido exacto
-        
-        if (data && (data.email || data.correo)) {
-            this.emailUsuarioActual = data.email || data.correo;
-            console.log('Email del usuario actual:', this.emailUsuarioActual);
-        } else {
-            console.warn('No se encontró el email en los datos almacenados.');
-        }
-    } catch (error) {
-        console.error('Error al obtener el email del usuario:', error);
-    }
-  }
-
-  // Validación de error para la contraseña actual
-  get currentPasswordErrorMessage() {
-    const currentPasswordControl = this.formularioModificarPassword.get('currentPassword');
-    if (currentPasswordControl?.touched && currentPasswordControl?.hasError('required')) {
-      return 'La contraseña actual es obligatoria.';
-    }
-    return null;
+    this.route.queryParams.subscribe(params => {
+      if (params['email']) {
+        this.emailUsuarioActual = params['email'];
+        console.log('Correo recibido:', this.emailUsuarioActual);
+      }
+    });
   }
 
   // Validación de error para la nueva contraseña
@@ -132,18 +111,15 @@ export class ModificarcontrasenaPage implements OnInit {
 
   // Método para modificar la contraseña
   async modificarPassword() {
-  if (this.formularioModificarPassword.valid) {
-    const currentPassword = this.formularioModificarPassword.value.currentPassword;
-    const newPassword = this.formularioModificarPassword.value.newPassword;
+    if (this.formularioModificarPassword.valid) {
+      const newPassword = this.formularioModificarPassword.value.newPassword;
 
-    const esValida = await this.bd.verificarContrasena(currentPassword);
-    if (esValida) {
       console.log('Email usado para actualizar contraseña:', this.emailUsuarioActual); // Confirmar email
 
       await this.bd.actualizarContra(this.emailUsuarioActual, newPassword);
       const successAlert = await this.alertController.create({
         header: 'Completado',
-        message: 'Contraseña Actualizada exitosamente.',
+        message: 'Contraseña actualizada exitosamente.',
         buttons: ['OK']
       });
       await successAlert.present();
@@ -151,20 +127,13 @@ export class ModificarcontrasenaPage implements OnInit {
         this.router.navigate(['/login']);
       });
     } else {
-      const errorAlert = await this.alertController.create({
+      const invalidFormAlert = await this.alertController.create({
         header: 'Error',
-        message: 'La contraseña actual no es correcta.',
+        message: 'Por favor, completa los campos requeridos correctamente.',
         buttons: ['OK']
       });
-      await errorAlert.present();
+      await invalidFormAlert.present();
     }
-  } else {
-    const invalidFormAlert = await this.alertController.create({
-      header: 'Error',
-      message: 'Por favor, completa los campos requeridos correctamente.',
-      buttons: ['OK']
-    });
-    await invalidFormAlert.present();
   }
 }
-}
+
