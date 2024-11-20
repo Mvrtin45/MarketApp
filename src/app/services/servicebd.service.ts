@@ -243,27 +243,37 @@ export class ServicebdService {
   }
 
   seleccionarVentas() {
-    return this.database.executeSql('SELECT * FROM Ventas', []).then(res => {
+    return this.database.executeSql(
+      `SELECT V.venta_id, V.fecha_venta, V.precio, U.nombre_usu, P.titulo 
+       FROM Ventas V 
+       INNER JOIN Usuarios U ON V.usuario_id = U.usuario_id 
+       INNER JOIN Publicaciones P ON V.producto_id = P.producto_id`, 
+      []
+    ).then(res => {
       // Variable para almacenar el resultado de la consulta
       let items: Ventas[] = [];
       // Validar si trae al menos un registro
       if (res.rows.length > 0) {
         // Recorrer el resultado
-        for (var i = 0; i < res.rows.length; i++) {
+        for (let i = 0; i < res.rows.length; i++) {
           // Agregar los registros a la lista
           items.push({
             venta_id: res.rows.item(i).venta_id,
             usuario_id: res.rows.item(i).usuario_id,
             producto_id: res.rows.item(i).producto_id,
             fecha_venta: res.rows.item(i).fecha_venta,
-            monto: res.rows.item(i).monto
+            precio: res.rows.item(i).precio,
+            nombre_usu: res.rows.item(i).nombre_usu,
+            titulo: res.rows.item(i).titulo
           });
         }
       }
       // Actualizar el observable
       this.listadoVentas.next(items as any);
+    }).catch(error => {
+      console.error("Error al seleccionar ventas:", error);
     });
-  }
+}
 
   seleccionarCarrito(): void {
     this.database.executeSql('SELECT * FROM Carrito', []).then(res => {
@@ -284,6 +294,7 @@ export class ServicebdService {
         }
       }
       // Actualizamos el Observable con los elementos del carrito
+      this.listadoCarrito.next(items);
       this.productosCarritoSubject.next(items);
     }).catch(error => {
       console.error('Error al seleccionar elementos del carrito:', error);
@@ -292,6 +303,21 @@ export class ServicebdService {
   }
 
   //OBTENER
+  ObtenerComprasUsuario(usuarioId: number) {
+    return this.database.executeSql(`
+      SELECT v.*, p.titulo, p.foto_publicacion 
+      FROM Ventas v
+      JOIN Publicaciones p ON v.producto_id = p.producto_id
+      WHERE v.usuario_id = ?`, [usuarioId])
+      .then(res => {
+        let compras = [];
+        for (let i = 0; i < res.rows.length; i++) {
+          compras.push(res.rows.item(i));
+        }
+        return compras;
+      });
+  }
+
   getPublicacionById(id: number) {
     return this.database.executeSql('SELECT * FROM Publicaciones WHERE producto_id = ?', [id]).then(data => {
       let publicacion = {};
@@ -419,18 +445,29 @@ export class ServicebdService {
         WHERE c.usuario_id = ? AND c.estado = 'pendiente'
       `;
       console.log("Ejecutando consulta SQL para obtener productos del carrito", usuarioId);
-      this.database.executeSql(sql, [usuarioId]).then((res) => {
-        const productos = [];
-        console.log("Resultado de la consulta SQL:", res);
-        for (let i = 0; i < res.rows.length; i++) {
-          productos.push(res.rows.item(i));
-        }
-        resolve(productos);
-        this.productosCarritoSubject.next(productos);
-      }).catch((error) => {
-        console.error("Error al ejecutar consulta SQL:", error);
-        reject(error);
-      });
+  
+      this.database.executeSql(sql, [usuarioId])
+        .then((res) => {
+          const productos = [];
+          console.log("Resultado de la consulta SQL:", res);
+  
+          // Verificar que se tienen filas en el resultado
+          if (res.rows.length > 0) {
+            for (let i = 0; i < res.rows.length; i++) {
+              productos.push(res.rows.item(i));
+            }
+            console.log("Productos obtenidos del carrito:", productos);
+            resolve(productos); // Resolver la promesa con los productos obtenidos
+            this.productosCarritoSubject.next(productos); // Actualizar el observable
+          } else {
+            console.log("No se encontraron productos en el carrito.");
+            resolve([]); // Si no hay productos, resolver con un array vacío
+          }
+        })
+        .catch((error) => {
+          console.error("Error al ejecutar consulta SQL:", error);
+          reject(error); // Rechazar la promesa si ocurre un error en la consulta
+        });
     });
   }
 
@@ -541,7 +578,6 @@ export class ServicebdService {
     }
   }
 
-  // Vaciar el carrito
   async vaciarCarrito(usuarioId: number): Promise<void> {
     const sql = `DELETE FROM Carrito WHERE usuario_id = ? AND estado = 'pendiente'`;
     try {
@@ -623,17 +659,6 @@ export class ServicebdService {
       // Mostrar alerta de error si falla la inserción
       await this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
     }
-  }
-
-  insertarVenta(usuario_id: number, producto_id: number, monto: number) {
-    const query = `INSERT INTO Ventas (usuario_id, producto_id, monto) VALUES (?, ?, ?)`;
-    return this.database.executeSql(query, [usuario_id, producto_id, monto])
-      .then(() => {
-        this.presentAlert('Éxito', 'Venta registrada correctamente.');
-      })
-      .catch(e => {
-        this.presentAlert('Error', `Error al registrar la venta: ${e.message}`);
-      });
   }
 
   insertarProductoCarrito(usuarioId: number, productoId: number): Promise<void> {  

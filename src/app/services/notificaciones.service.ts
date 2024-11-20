@@ -9,7 +9,7 @@ import { ToastController } from '@ionic/angular';
 export class NotificationService {
   private mensajes = [
     '¡Descubre las nuevas tendencias en 2Market! 🌟',
-    '¿Ya viste nuestras ofertas especiales? Visítanos en 2Market 💸',
+    '¿Ya viste nuestros productos especiales? Visítanos en 2Market 💸',
     '¡Vuelve a 2Market y renueva tu estilo! 🔥',
     'El mejor estilo para ti está en 2Market 🔥'
   ];

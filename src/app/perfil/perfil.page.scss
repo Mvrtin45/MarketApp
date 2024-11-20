@@ -54,6 +54,19 @@ ion-content {
   --padding-bottom: 0;
 }
 
+.purchases-container {
+  padding: 16px;
+  .section-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 12px;
+  }
+  ion-item {
+    border: 1px solid #ccc;
+    margin: 8px 0;
+  }
+}
+
 .profile-options {
   display: flex;
   flex-direction: column;

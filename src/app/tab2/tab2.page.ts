@@ -24,24 +24,9 @@ export class Tab2Page {
   ) {}
 
   ngOnInit() {
-    this.convertirMoneda();
+    
   }
 
-  convertirMoneda() {
-    this.apiService.obtenerValorMoneda(this.MonedaBase).subscribe(
-      (data) => {
-          const rate = data.rates[this.MonedaDefecto]; // Obtener la tasa de cambio para la moneda de destino
-          if (rate) {
-              this.Resultado = this.CantidadConv * rate; // Realizar la conversión
-          } else {
-              console.error('La moneda de destino no está disponible.');
-          }
-      },
-      (error) => {
-          console.error('Error al obtener tasas de cambio:', error);
-      }
-  );
-  }
 
   async addToCart(nombre: string, estado: string, precio: number, foto: string, vendedor: string) { 
     const productosCarrito: any[] = await this.cargarCarrito();

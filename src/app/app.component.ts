@@ -11,6 +11,7 @@ import { NotificationService } from './services/notificaciones.service';
 export class AppComponent{
   constructor(
     private nativeStorage: NativeStorage,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    
   ) {}
 }

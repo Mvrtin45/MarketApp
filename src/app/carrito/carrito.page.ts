@@ -74,13 +74,13 @@ export class CarritoPage implements OnInit {
           const tasaConversion = data.rates[this.MonedaDefecto] // Obtener la tasa de cambio para la moneda de destino
           if (tasaConversion) {
             this.TazaConversion = tasaConversion;
-            this.TotalConvertido = this.precioTotal * this.TazaConversion; // Realizar la conversión
+            this.TotalConvertido = this.precioTotal * this.TazaConversion;
           } else {
-              console.error('La moneda de destino no está disponible.');
+            console.warn('Tasa de conversión no disponible para', this.MonedaDefecto);
           }
       },
       (error) => {
-          console.error('Error al obtener tasas de cambio:', error);
+        console.log("Error al obtener tasas de cambio:", JSON.stringify(error));
       }
     );
   }

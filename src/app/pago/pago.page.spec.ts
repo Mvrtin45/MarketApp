@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { ReactiveFormsModule } from '@angular/forms';
 import { PagoPage } from './pago.page';
 import { IonicModule } from '@ionic/angular';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 describe('PagoPage', () => {
   let component: PagoPage;
@@ -11,6 +13,10 @@ describe('PagoPage', () => {
     await TestBed.configureTestingModule({
       declarations: [PagoPage],
       imports: [IonicModule.forRoot(), ReactiveFormsModule],
+      providers: [
+        NativeStorage,
+        SQLite,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PagoPage);

@@ -88,10 +88,6 @@ const routes: Routes = [
     loadChildren: () => import('./admin-editarpublicaciones/admin-editarpublicaciones.module').then( m => m.AdminEditarpublicacionesPageModule)
   },
   {
-    path: 'admin-filtrarpubli',
-    loadChildren: () => import('./admin-filtrarpubli/admin-filtrarpubli.module').then( m => m.AdminFiltrarpubliPageModule)
-  },
-  {
     path: 'detalle-publicacion/:producto_id',
     loadChildren: () => import('./detalle-publicacion/detalle-publicacion.module').then( m => m.DetallePublicacionPageModule)
   },
@@ -104,13 +100,13 @@ const routes: Routes = [
     loadChildren: () => import('./check/check.module').then( m => m.CheckPageModule)
   },
   {
+    path: 'admin-ventas',
+    loadChildren: () => import('./admin-ventas/admin-ventas.module').then( m => m.AdminVentasPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
-  {
-    path: 'miscompras',
-    loadChildren: () => import('./miscompras/miscompras.module').then( m => m.MiscomprasPageModule)
-  }
 ];
 @NgModule({
   imports: [

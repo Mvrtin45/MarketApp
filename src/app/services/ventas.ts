@@ -3,5 +3,7 @@ export class Ventas {
     usuario_id!: number;
     producto_id!: number;
     fecha_venta!: string;
-    monto!: number; 
+    precio!: number; 
+    nombre_usu!: string;
+    titulo!: string;
 }

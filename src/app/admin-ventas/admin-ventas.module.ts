@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MiscomprasPageRoutingModule } from './miscompras-routing.module';
+import { AdminVentasPageRoutingModule } from './admin-ventas-routing.module';
 
-import { MiscomprasPage } from './miscompras.page';
+import { AdminVentasPage } from './admin-ventas.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MiscomprasPageRoutingModule
+    AdminVentasPageRoutingModule
   ],
-  declarations: [MiscomprasPage]
+  declarations: [AdminVentasPage]
 })
-export class MiscomprasPageModule {}
+export class AdminVentasPageModule {}

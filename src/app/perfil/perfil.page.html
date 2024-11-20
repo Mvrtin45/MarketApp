@@ -58,4 +58,23 @@
       </ion-card>
     </div>
   </div>
+
+  <!-- Contenedor de Compras -->
+  <div class="purchases-container">
+    <h2 class="section-title">Mis Compras</h2>
+    <ion-list *ngIf="compras.length > 0; else noCompras">
+      <ion-item *ngFor="let compra of compras">
+        <ion-img [src]="compra.foto_publicacion" alt="Imagen de publicación" />
+        <ion-label>
+          <h2>{{ compra.titulo }}</h2>
+          <p>Precio: {{ compra.precio | currency }}</p>
+          <p>Fecha: {{ compra.fecha_venta | date: 'shortDate' }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <ng-template #noCompras>
+      <p>No tienes compras realizadas.</p>
+    </ng-template>
+  </div>
+
 </ion-content>

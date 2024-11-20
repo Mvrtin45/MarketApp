@@ -13,6 +13,7 @@ import { CamaraService } from '../services/camara.service';
 export class PerfilPage implements OnInit {
   menuOpen: boolean = false;
   usuario: any;
+  compras: any[] = []; 
   email: string = '';
   nombre: string = '';
   telefono: string = '';
@@ -34,6 +35,7 @@ export class PerfilPage implements OnInit {
     this.bd.dbState().subscribe(data => {
       if (data) {
         this.cargarUsuarioActual();
+        this.cargarCompras();
       }
     });
   }
@@ -61,6 +63,21 @@ export class PerfilPage implements OnInit {
         alert("No se pudo obtener el ID del usuario desde el almacenamiento.");
       }
     } catch (error) {
+    }
+  }
+
+  async cargarCompras() {
+    try {
+      const storedUserId = await this.storage.getItem('usuario_id');
+      if (storedUserId) {
+        this.bd.ObtenerComprasUsuario(storedUserId).then(compras => {
+          this.compras = compras;
+        }).catch(error => {
+          alert("Error al recuperar las compras: " + JSON.stringify(error));
+        });
+      }
+    } catch (error) {
+      alert("Error al obtener el ID del usuario desde el almacenamiento.");
     }
   }
 
