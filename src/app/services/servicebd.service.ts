@@ -33,24 +33,24 @@ export class ServicebdService {
   registroRol: string = "INSERT OR IGNORE INTO rol(rol_id, nombre_rol) VALUES (1,'usuario'), (2,'admin');";
   registroPublicacion: string = "INSERT OR IGNORE INTO Publicaciones(producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (1, 'Camiseta Deportiva', 'Camiseta de algodón ideal para entrenamientos', 'M', 'Madrid', 'Azul', 1999, '../assets/icon/logo.jpg');";
   registroPublicacionConUsuario: string = "INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES ('Producto Prueba', 'Descripción del producto', 'M', 'Madrid', 'Azul', 20.99, 'foto_prueba.jpg', 1);";
-  registroPublicacionCargoCorteiz: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (2, 'Pantalones Cargo Corteiz', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Puerto Montt', 'Negro', 19990, '../assets/icon/cargocorteiz.jpg');";
-  registroPublicacionChaquetaAmiri: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (3, 'Chaqueta Amiri', 'Esta en buenas condiciones, con detalles de diseño que destacan su calidad y un estilo moderno que sigue siendo relevante.', 'L', 'Puerto Montt', 'Negra', 79990, '../assets/icon/chaquetaamiri.jpg');";
-  registroPublicacionJeansAmiri: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (4, 'Jeans Amiri', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Cerrillos', 'Azul', 50000, '../assets/icon/pantalon1.jpg');";
-  registroPublicacionJeansFn: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (5, 'Jeans Fashon Nova', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Lampa', 'Azul', 90000, '../assets/icon/jeansfn.jpg');";
-  registroPublicacionJeansLevis: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (6, 'Jeans Levis 501', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'S', 'Peñalolen', 'Azul', 30000, '../assets/icon/pantalon2.jpg');";
-  registroPublicacionJeansAmericanEagle: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (7, 'Jeans American Eagle', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', '42EUR', 'Puerto Montt', 'Azul', 29990, '../assets/icon/jeansfn.jpg');";
-  registroPublicacionJeansSkinny: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (8, 'Jeans Skinny', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'L', 'Puerto Montt', 'Azul', 25000, '../assets/icon/pantalon3.jpg');";
-  registroPublicacionPoleraBasica: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (9, 'Polera Básica Slim Fit', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puerto Montt', 'Negro', 23990, '../assets/icon/polerabasica.jpg');";
-  registroPublicacionPoleraColo: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (10, 'Polera Colo Colo 24/25', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puente Alto', 'Blanco', 34990, '../assets/icon/poleracolocolo.jpg');";
-  registroPublicacionPoleraUchile: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (11, 'Polera Universidad de Chile 23/24', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Conchali', 'Azul', 34990, '../assets/icon/poleraudechile.jpg');";
-  registroPublicacionPoleraPalm: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (12, 'Polera Palm Angels', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puerto Montt', 'Negro', 29990, '../assets/icon/polerapalm.jpg');";
-  registroPublicacionZapatillaCampus: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (13, 'Adidas Campus 00', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '6.5US', 'Renca', 'Blanco', 90000, '../assets/icon/campus.jpg');";
-  registroPublicacionZapatillaAirForce: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (14, 'Air Force One Triple White', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '10US', 'Puente Alto', 'Blanco', 70000, '../assets/icon/airforceblancas.jpg');";
-  registroPublicacionZapatillaBlackCat: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (15, 'Zapatillas Air Jordan Retro 4 Black Cat', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '9US', 'Santiago', 'Negro', 129990, '../assets/icon/jordan4blackcat.jpg');";
-  registroPublicacionZapatillaRetro3: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (16, 'Air Jordan Retro 3', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '9US', 'Renca', 'Blanco', 50000, '../assets/icon/retro3.jpg');";
-  registroPublicacionZapatillaRetro1: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (17, 'Zapatillas Retro 1', 'Nuevas las pedí y me quedaron Chicas.', '10US', 'Puerto Montt', 'Blanco', 60000, '../assets/icon/retro1.jpg');";
-  registroPublicacionZapatillaVaporMax: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (18, 'Vapor Max Plus Metallic Gold', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '7.5US', 'Maipú', 'Negro', 90000, '../assets/icon/vapormax.jpg');";
-  registroPublicacionZapatillaVestir: string ="INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (19, 'Zapatos de Vestir', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '10US', 'Santiago', 'Negro', 30000, '../assets/icon/zapatosvestir.jpg');";
+  registroPublicacionCargoCorteiz: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (2, 'Pantalones Cargo Corteiz', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Puerto Montt', 'Negro', 19990, '../assets/icon/cargocorteiz.jpg');";
+  registroPublicacionChaquetaAmiri: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (3, 'Chaqueta Amiri', 'Esta en buenas condiciones, con detalles de diseño que destacan su calidad y un estilo moderno que sigue siendo relevante.', 'L', 'Puerto Montt', 'Negra', 79990, '../assets/icon/chaquetaamiri.jpg');";
+  registroPublicacionJeansAmiri: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (4, 'Jeans Amiri', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Cerrillos', 'Azul', 50000, '../assets/icon/pantalon1.jpg');";
+  registroPublicacionJeansFn: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (5, 'Jeans Fashon Nova', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Lampa', 'Azul', 90000, '../assets/icon/jeansfn.jpg');";
+  registroPublicacionJeansLevis: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (6, 'Jeans Levis 501', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'S', 'Peñalolen', 'Azul', 30000, '../assets/icon/pantalon2.jpg');";
+  registroPublicacionJeansAmericanEagle: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (7, 'Jeans American Eagle', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', '42EUR', 'Puerto Montt', 'Azul', 29990, '../assets/icon/jeansfn.jpg');";
+  registroPublicacionJeansSkinny: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (8, 'Jeans Skinny', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'L', 'Puerto Montt', 'Azul', 25000, '../assets/icon/pantalon3.jpg');";
+  registroPublicacionPoleraBasica: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (9, 'Polera Básica Slim Fit', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puerto Montt', 'Negro', 23990, '../assets/icon/polerabasica.jpg');";
+  registroPublicacionPoleraColo: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (10, 'Polera Colo Colo 24/25', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puente Alto', 'Blanco', 34990, '../assets/icon/poleracolocolo.jpg');";
+  registroPublicacionPoleraUchile: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (11, 'Polera Universidad de Chile 23/24', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Conchali', 'Azul', 34990, '../assets/icon/poleraudechile.jpg');";
+  registroPublicacionPoleraPalm: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (12, 'Polera Palm Angels', 'Es una polera de segunda mano que todavía está en muy buen estado. Tiene un estilo clásico y sigue siendo cómoda para usar a diario.', 'M', 'Puerto Montt', 'Negro', 29990, '../assets/icon/polerapalm.jpg');";
+  registroPublicacionZapatillaCampus: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (13, 'Adidas Campus 00', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '6.5US', 'Renca', 'Blanco', 90000, '../assets/icon/campus.jpg');";
+  registroPublicacionZapatillaAirForce: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (14, 'Air Force One Triple White', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '10US', 'Puente Alto', 'Blanco', 70000, '../assets/icon/airforceblancas.jpg');";
+  registroPublicacionZapatillaBlackCat: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (15, 'Zapatillas Air Jordan Retro 4 Black Cat', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '9US', 'Santiago', 'Negro', 129990, '../assets/icon/jordan4blackcat.jpg');";
+  registroPublicacionZapatillaRetro3: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (16, 'Air Jordan Retro 3', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '9US', 'Renca', 'Blanco', 50000, '../assets/icon/retro3.jpg');";
+  registroPublicacionZapatillaRetro1: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (17, 'Zapatillas Retro 1', 'Nuevas las pedí y me quedaron Chicas.', '10US', 'Puerto Montt', 'Blanco', 60000, '../assets/icon/retro1.jpg');";
+  registroPublicacionZapatillaVaporMax: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (18, 'Vapor Max Plus Metallic Gold', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '7.5US', 'Maipú', 'Negro', 90000, '../assets/icon/vapormax.jpg');";
+  registroPublicacionZapatillaVestir: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (19, 'Zapatos de Vestir', 'Estas zapatillas de segunda mano están en excelente estado, tienen mucha vida por delante y un estilo que sigue siendo irresistible.', '10US', 'Santiago', 'Negro', 30000, '../assets/icon/zapatosvestir.jpg');";
 
   // Variables para guardar los datos de las consultas en las tablas
   listadoPublicaciones = new BehaviorSubject([]);
@@ -247,7 +247,7 @@ export class ServicebdService {
       `SELECT V.venta_id, V.fecha_venta, V.precio, U.nombre_usu, P.titulo 
        FROM Ventas V 
        INNER JOIN Usuarios U ON V.usuario_id = U.usuario_id 
-       INNER JOIN Publicaciones P ON V.producto_id = P.producto_id`, 
+       INNER JOIN Publicaciones P ON V.producto_id = P.producto_id`,
       []
     ).then(res => {
       // Variable para almacenar el resultado de la consulta
@@ -273,7 +273,7 @@ export class ServicebdService {
     }).catch(error => {
       console.error("Error al seleccionar ventas:", error);
     });
-}
+  }
 
   seleccionarCarrito(): void {
     this.database.executeSql('SELECT * FROM Carrito', []).then(res => {
@@ -315,6 +315,20 @@ export class ServicebdService {
           compras.push(res.rows.item(i));
         }
         return compras;
+      });
+  }
+  ObtenerVentas() {
+    return this.database.executeSql(`
+        SELECT V.venta_id, V.fecha_venta, V.precio, U.nombre_usu, P.titulo 
+        FROM Ventas V 
+        INNER JOIN Usuarios U ON V.usuario_id = U.usuario_id 
+        INNER JOIN Publicaciones P ON V.producto_id = P.producto_id`, [])
+      .then(res => {
+        let ventas = [];
+        for (let i = 0; i < res.rows.length; i++) {
+          ventas.push(res.rows.item(i));
+        }
+        return ventas;
       });
   }
 
@@ -445,12 +459,12 @@ export class ServicebdService {
         WHERE c.usuario_id = ? AND c.estado = 'pendiente'
       `;
       console.log("Ejecutando consulta SQL para obtener productos del carrito", usuarioId);
-  
+
       this.database.executeSql(sql, [usuarioId])
         .then((res) => {
           const productos = [];
           console.log("Resultado de la consulta SQL:", res);
-  
+
           // Verificar que se tienen filas en el resultado
           if (res.rows.length > 0) {
             for (let i = 0; i < res.rows.length; i++) {
@@ -473,7 +487,7 @@ export class ServicebdService {
 
   async obtenerCarritoActual() {
     const storedUserId = await this.storage.getItem('usuario_id');
-      console.log('ID de usuario almacenado:', storedUserId);
+    console.log('ID de usuario almacenado:', storedUserId);
 
     const sql = `SELECT * FROM Carrito WHERE usuario_id = ? AND estado = 'pendiente'`;
     this.database.executeSql(sql, [storedUserId]).then((res) => {
@@ -481,11 +495,11 @@ export class ServicebdService {
       for (let i = 0; i < res.rows.length; i++) {
         productos.push(res.rows.item(i));
       }
-      this.productosCarritoSubject.next(productos);  
+      this.productosCarritoSubject.next(productos);
     });
   }
 
-  miPerfil(usuario_id: number){
+  miPerfil(usuario_id: number) {
     return this.database.executeSql(
       'SELECT * FROM Usuarios WHERE usuario_id = ?', [usuario_id]
     ).then(res => {
@@ -510,13 +524,13 @@ export class ServicebdService {
         WHERE email_usu = ? AND contrasena_usu = ?
       `;
       this.database.executeSql(query, [email, contrasena]).then((res) => {
-          if (res.rows.length > 0) {
-            const usuario = res.rows.item(0);
-            resolve(usuario); // Si el usuario existe, devuelve los datos
-          } else {
-            reject('Usuario no encontrado'); // Si no existe, rechaza la promesa
-          }
-        })
+        if (res.rows.length > 0) {
+          const usuario = res.rows.item(0);
+          resolve(usuario); // Si el usuario existe, devuelve los datos
+        } else {
+          reject('Usuario no encontrado'); // Si no existe, rechaza la promesa
+        }
+      })
         .catch((error) => {
           this.presentAlert("Error", "Al verificar usuario por rol");
           reject('Error al acceder a la base de datos'); // En caso de error, rechaza la promesa
@@ -527,7 +541,7 @@ export class ServicebdService {
   async obtenerPrecioProducto(productoId: number): Promise<number> {
     const query = `SELECT precio FROM Publicaciones WHERE producto_id = ?`;
     const result = await this.database.executeSql(query, [productoId]);
-  
+
     if (result.rows.length > 0) {
       return result.rows.item(0).precio;
     } else {
@@ -570,7 +584,7 @@ export class ServicebdService {
       const storedUserId = await this.storage.getItem('usuario_id');
       const query = `DELETE FROM Carrito WHERE usuario_id = ? AND producto_id = ?`;
       await this.database.executeSql(query, [storedUserId, producto_id]);
-      
+
       // Llama a obtenerCarritoActual() para asegurar la emisión actualizada del carrito
       await this.obtenerCarritoActual();
     } catch (error) {
@@ -626,8 +640,8 @@ export class ServicebdService {
   }
 
   // INSERTAR
-  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, imagen: string, usuario_id: number) {
-    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio, imagen, usuario_id]).then(res => {
+  insertarPublicacion(titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, imagen: string) {
+    return this.database.executeSql('INSERT INTO Publicaciones (titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, talla, ubicacion, color, precio, imagen]).then(res => {
       this.seleccionarPublicaciones();
     }).catch(e => {
       this.presentAlert('Insertar', 'Error: ' + JSON.stringify(e));
@@ -661,23 +675,23 @@ export class ServicebdService {
     }
   }
 
-  insertarProductoCarrito(usuarioId: number, productoId: number): Promise<void> {  
+  insertarProductoCarrito(usuarioId: number, productoId: number): Promise<void> {
     return new Promise((resolve, reject) => {
       const checkSql = `SELECT * FROM Carrito WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
       this.database.executeSql(checkSql, [usuarioId, productoId]).then((res) => {
         if (res.rows.length > 0) {
           const updateSql = `UPDATE Carrito SET cantidad = cantidad + 1 WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
           this.database.executeSql(updateSql, [usuarioId, productoId]).then(() => {
-            this.obtenerCarritoActual(); 
-            this.seleccionarCarrito(); 
+            this.obtenerCarritoActual();
+            this.seleccionarCarrito();
             resolve();  // No es necesario devolver nada, por eso 'void'
           }).catch(reject);
         } else {
           const insertSql = `INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) VALUES (?, ?, 1, 'pendiente')`;
           this.database.executeSql(insertSql, [usuarioId, productoId]).then(() => {
-            this.obtenerCarritoActual();  
+            this.obtenerCarritoActual();
             this.seleccionarCarrito();
-            resolve();  
+            resolve();
           }).catch(reject);
         }
       }).catch(reject);
@@ -688,20 +702,20 @@ export class ServicebdService {
     try {
       // Obtener el usuario_id del almacenamiento
       const storedUserId = await this.storage.getItem('usuario_id');
-      
+
       if (!storedUserId) {
         throw new Error('Usuario no autenticado');
       }
-    
+
       // Obtener productos del carrito con estado 'pendiente' usando getProductosCarrito
       const productosEnCarrito = await this.getProductosCarrito(storedUserId);
-  
+
       // Verificar si el carrito está vacío
       if (productosEnCarrito.length === 0) {
         console.log("El carrito está vacío");
         return;
       }
-  
+
       // Insertar cada producto en la tabla de ventas
       for (const producto of productosEnCarrito) {
         const queryInsertVenta = `
@@ -716,7 +730,7 @@ export class ServicebdService {
           precioTotal
         ]);
       }
-    
+
       console.log('Compra finalizada exitosamente y carrito vaciado');
     } catch (error) {
       console.error('Error al finalizar la compra:', error);
@@ -839,7 +853,7 @@ export class ServicebdService {
         `SELECT * FROM Usuarios WHERE email_usu = ? AND pregunta_seguridad = ? AND respuesta_seguridad = ?`,
         [correo, pregunta, respuesta]
       );
-      
+
       // Si la consulta encuentra una coincidencia, el resultado tendrá una longitud mayor a 0
       return res.rows.length > 0;
     } catch (error) {

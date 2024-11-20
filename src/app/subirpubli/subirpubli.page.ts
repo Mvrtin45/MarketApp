@@ -54,12 +54,6 @@ export class SubirpubliPage implements OnInit {
   // Envío del formulario
   async subirPublicacion() {
     if (this.formularioPublicacion.valid) {
-      // Obtener el usuario actual
-      const usuarioActual = await this.bd.obtenerUsuarioActual();
-      if (!usuarioActual) {
-        await this.mostrarAlerta('Error', 'No se pudo obtener la información del usuario. Por favor, inicie sesión nuevamente.');
-        return;
-      }
   
       const nuevaPublicacion = {
         titulo: this.formularioPublicacion.get('titulo')?.value,
@@ -69,7 +63,6 @@ export class SubirpubliPage implements OnInit {
         color: this.formularioPublicacion.get('color')?.value,
         precio: this.formularioPublicacion.get('precio')?.value,
         imagen: this.selectedFile, // Cambiar a this.selectedFile
-        usuario_id: usuarioActual.usuario_id // Agregar el usuario_id
       };
   
       if (this.selectedFile) { // Asegúrate de que hay un archivo seleccionado
@@ -86,7 +79,6 @@ export class SubirpubliPage implements OnInit {
             nuevaPublicacion.color,
             nuevaPublicacion.precio,
             base64Image,
-            nuevaPublicacion.usuario_id // Pasar el usuario_id como parámetro
           ).then(async () => {
             // Mostrar alerta de éxito
             const alert = await this.alertController.create({
@@ -96,7 +88,7 @@ export class SubirpubliPage implements OnInit {
             });
             await alert.present();
             alert.onDidDismiss().then(() => {
-              this.router.navigate(['/tabs/perfil']);
+              this.router.navigate(['/admin-publicaciones']);
             });
           }).catch(async (error) => {
             await this.mostrarAlerta('Error', 'No se pudo subir la publicación. Por favor, inténtalo de nuevo.');

@@ -40,6 +40,11 @@ export class PerfilPage implements OnInit {
     });
   }
 
+  ionViewWillEnter() {
+    this.cargarUsuarioActual();
+    this.cargarCompras();
+  }
+  
   async cargarUsuarioActual() {
     try {
       const storedUserId = await this.storage.getItem('usuario_id');
