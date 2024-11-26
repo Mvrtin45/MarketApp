@@ -24,8 +24,8 @@ export class RecuperarcontrasenaPage implements OnInit {
 
   ngOnInit() {}
 
-  // Método para manejar la recuperación de contraseña
   async recuperarContrasena() {
+    // Limpiar mensajes de error previos
     this.emailErrorMessage = '';
     this.securityErrorMessage = '';
 
@@ -45,7 +45,7 @@ export class RecuperarcontrasenaPage implements OnInit {
       return;
     }
 
-    // Verificar si el correo existe en la base de datos
+    // Verificar si el correo existe
     const correoExiste = await this.bd.verificarCorreo(this.correo);
     if (!correoExiste) {
       this.emailErrorMessage = 'El correo ingresado no está registrado.';
@@ -63,7 +63,6 @@ export class RecuperarcontrasenaPage implements OnInit {
     await this.mostrarAlertaCorreoEnviado();
   }
 
-  // Método para mostrar la alerta de recuperación
   async mostrarAlertaCorreoEnviado() {
     const alert = await this.alertController.create({
       header: 'Recuperación exitosa',
@@ -73,12 +72,12 @@ export class RecuperarcontrasenaPage implements OnInit {
           text: 'OK',
           handler: () => {
             const navigationExtras: NavigationExtras = {
-              queryParams: { email: this.correo }
+              queryParams: { email: this.correo },
             };
             this.router.navigate(['/modificarcontrasena'], navigationExtras);
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();

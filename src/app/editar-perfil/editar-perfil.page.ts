@@ -150,7 +150,8 @@ export class EditarPerfilPage implements OnInit {
       const { nombre, email, telefono } = this.formularioEditar.value;
   
       try {
-        await this.bd.modificarUsuarioPerfil(nombre, email, telefono, this.usuario_Id);        
+        await this.bd.modificarUsuarioPerfil(nombre, email, telefono, this.usuario_Id);
+  
         const alert = await this.alertController.create({
           header: 'Completado',
           message: 'Cambios guardados exitosamente.',
@@ -160,7 +161,17 @@ export class EditarPerfilPage implements OnInit {
   
         this.router.navigate(['/tabs/perfil']);
       } catch (error) {
-        console.error('Error al guardar cambios:', error);
+        let mensaje = 'Ocurrió un error inesperado.';
+        if (error instanceof Error) {
+          mensaje = error.message;
+        }
+      
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: mensaje,
+          buttons: ['OK']
+        });
+        await alert.present();
       }
     } else {
       const alert = await this.alertController.create({

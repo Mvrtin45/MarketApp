@@ -16,6 +16,7 @@ import { Carrito } from './carrito';
 export class ServicebdService {
   // Variable de conexión a Base de Datos
   public database!: SQLiteObject;
+  isAlertOpen: boolean = false;
   private productosCarritoSubject = new BehaviorSubject<any[]>([]);
 
 
@@ -75,12 +76,22 @@ export class ServicebdService {
   }
 
   async presentAlert(titulo: string, msj: string) {
+    if (this.isAlertOpen) {
+      return; // Si ya hay una alerta abierta, no mostramos otra.
+    }
+    
+    this.isAlertOpen = true; // Marcamos que hay una alerta abierta
+  
     const alert = await this.alertController.create({
       header: titulo,
       message: msj,
       buttons: ['OK'],
     });
-
+  
+    alert.onDidDismiss().then(() => {
+      this.isAlertOpen = false; // Cuando la alerta se cierre, podemos permitir nuevas alertas
+    });
+  
     await alert.present();
   }
 
@@ -94,14 +105,6 @@ export class ServicebdService {
   }
 
 
-  fetchPublicacionesConUsuarios(): Observable<Publicaciones[]> {
-    return from(this.obtenerUsuariosConPublicaciones()).pipe(
-      tap((publicaciones: Publicaciones[]) => {
-        console.log('Publicaciones obtenidas:', JSON.stringify(publicaciones, null, 2));
-        this.listadoAgruparPublicacionesConUsuarios.next(publicaciones);
-      })
-    );
-  }
 
   fetchVentas(): Observable<Ventas[]> {
     return this.listadoVentas.asObservable();
@@ -317,6 +320,7 @@ export class ServicebdService {
         return compras;
       });
   }
+
   ObtenerVentas() {
     return this.database.executeSql(`
         SELECT V.venta_id, V.fecha_venta, V.precio, U.nombre_usu, P.titulo 
@@ -623,19 +627,35 @@ export class ServicebdService {
 
   async modificarUsuarioPerfil(nombre: string, correo: string, telefono: number, iduser: number) {
     try {
-      await this.database.executeSql(
+      // Intentamos actualizar el perfil
+      const result = await this.database.executeSql(
         'UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ? WHERE usuario_id = ?',
         [nombre, correo, telefono, iduser]
       );
-
-      // Guardar el usuario actualizado en el almacenamiento local para que se pueda usar después
-      const usuarioActualizado = { iduser, nombre, telefono, correo };
-      await this.storage.setItem('usuario', usuarioActualizado);
-      this.seleccionarUsuarios();
-
+  
+      // Si no hay errores, mostramos la alerta de éxito
+      if (result.rowsAffected > 0) {
+        // Guardar el usuario actualizado en el almacenamiento local
+        const usuarioActualizado = { iduser, nombre, telefono, correo };
+        await this.storage.setItem('usuario', usuarioActualizado);
+        this.seleccionarUsuarios();
+  
+        // Mostrar alerta de éxito
+        await this.presentAlert('Completado', 'Perfil actualizado correctamente.');
+      } else {
+        // Si no se afectaron filas, mostrar error
+        await this.presentAlert('Error', 'No se pudo actualizar el perfil.');
+      }
+  
     } catch (error) {
-      // Mostrar alerta de error si la modificación falla
-      await this.presentAlert("Modificar", "Error al modificar perfil: " + JSON.stringify(error));
+      // En caso de error, mostramos la alerta con el mensaje de error
+      let mensaje = 'Ocurrió un error inesperado';
+      if (error instanceof Error) {
+        mensaje = error.message;
+      }
+  
+      // Mostrar alerta de error
+      await this.presentAlert('Error', mensaje);
     }
   }
 
@@ -790,18 +810,19 @@ export class ServicebdService {
     }
   }
 
-  verificarCorreo(correo: string): Promise<{ correo: string } | null> {
-    return this.database.executeSql('SELECT * FROM Usuarios WHERE email_usu = ?', [correo])
+  verificarCorreo(correo: string): Promise<boolean> {
+    return this.database.executeSql('SELECT email_usu FROM Usuarios WHERE email_usu = ?', [correo])
       .then(res => {
         if (res.rows.length > 0) {
-          return { correo: res.rows.item(0).email_usu }; // Devuelve un objeto con el correo encontrado
+          return true; // El correo existe
         } else {
-          return null; // Devuelve `null` si no se encuentra el correo
+          this.presentAlert('Correo no encontrado', 'El correo ingresado no está registrado.');
+          return false;
         }
       })
-      .catch(e => {
-        console.error('Error al verificar el correo:', e);
-        return null; // Devuelve `null` en caso de error
+      .catch(() => {
+        this.presentAlert('Error', 'Ocurrió un problema al verificar el correo. Intenta nuevamente.');
+        return false; // Error en la verificación
       });
   }
 
@@ -816,7 +837,7 @@ export class ServicebdService {
         }
       })
       .catch(e => {
-        this.presentAlert('Error', 'No se pudo verificar el estado del usuario. Intenta nuevamente.');
+        this.presentAlert('Error', 'No se pudo verificar el estado del usuario. Intente nuevamente.');
         console.error('Error al comprobar estado de usuario:', e);
         throw e;  // Vuelvo a lanzar el error para que el flujo de la aplicación lo maneje
       });
@@ -853,12 +874,19 @@ export class ServicebdService {
         `SELECT * FROM Usuarios WHERE email_usu = ? AND pregunta_seguridad = ? AND respuesta_seguridad = ?`,
         [correo, pregunta, respuesta]
       );
-
-      // Si la consulta encuentra una coincidencia, el resultado tendrá una longitud mayor a 0
-      return res.rows.length > 0;
+  
+      if (res.rows.length > 0) {
+        return true; // Coincidencia encontrada
+      } else {
+        this.presentAlert(
+          'Pregunta o respuesta incorrecta',
+          'La pregunta o respuesta de seguridad no coincide. Intenta nuevamente.'
+        );
+        return false;
+      }
     } catch (error) {
-      console.error('Error al verificar la pregunta y respuesta de seguridad:', error);
-      return false; // En caso de error, se devuelve `false`
+      this.presentAlert('Error', 'Ocurrió un problema al verificar los datos. Intenta nuevamente.');
+      return false;
     }
   }
 

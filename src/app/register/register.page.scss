@@ -2,10 +2,22 @@ ion-header {
   ion-toolbar {
     --background: #7e7474;
     --color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    .logo-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: auto;
+    }
 
     .centered-title {
+      flex: 1;
       text-align: center;
-      width: 100%;
     }
   }
 }
@@ -15,79 +27,81 @@ ion-header {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
+  overflow: hidden; /* Evitar desplazamiento no deseado */
+  --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg); /* Fondo de imagen */
   background-size: cover;
   background-position: center;
-  padding-bottom: 60px;
 }
 
-.center-content {
+.form-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  text-align: center;
-  color: #000;
-  padding: 20px;
-  margin: 20px; /* Espacio alrededor del contenido */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.registro-card {
   width: 100%;
   max-width: 350px;
-  border: 1px solid black;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centrado absoluto */
+  padding: 20px;
   background-color: white;
   border-radius: 10px;
-}
-
-ion-card-title {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  font-weight: bold;
-  color: #000;
 }
 
-ion-button.custom-button {
-  --background: #000;
-  --color: #fff;
-  font-weight: bold;
-  border-radius: 5px;
-  margin-top: 20px;
+h2 {
+  font-size: 1.5rem;
+  color: #000;
+  margin-bottom: 20px;
 }
 
 ion-item {
   --background: transparent;
+  margin-bottom: 20px;
 }
 
 ion-label {
-  color: #000;
+  color: #000; /* Color del texto negro */
 }
 
 ion-input {
-  --color: #000;
+  --color: #000; /* Texto negro en los campos */
+  --placeholder-color: #999; /* Placeholder gris */
 }
 
-/* Estilos para mantener el espacio de las alertas */
 ion-text {
-  font-size: 12px;
-  height: 20px; /* Fija una altura mínima */
-  display: flex;
-  align-items: center; /* Centrar verticalmente el texto de error */
-  visibility: hidden; /* Oculta el texto por defecto */
+  font-size: 0.875rem;
+  margin-top: 5px;
+  color: #d9534f; /* Rojo para los mensajes de error */
 }
 
-ion-text.visible {
-  visibility: visible; /* Solo se muestra cuando haya un error */
-  color: #ff0000; /* Color de texto de error */
+ion-button {
+  --background: #000; /* Fondo negro para el botón */
+  --color: white; /* Texto blanco */
+  font-weight: bold;
+  border-radius: 5px;
+  margin-top: 20px;
+  padding: 15px;
 }
 
-/* Evitar que el teclado empuje el contenido */
+ion-loading {
+  --spinner-color: #000; /* Spinner color negro */
+  --background: rgba(0, 0, 0, 0.4);
+}
+
+/* Estilos responsivos para evitar desplazamientos al mostrar el teclado */
 @media (max-height: 600px) {
   .registro-content {
-    height: auto;
+    height: auto; /* Permitir desplazamiento cuando el teclado esté activo */
+    overflow-y: auto; /* Activar desplazamiento vertical */
     padding-bottom: 60px; /* Espacio adicional para el teclado */
   }
+
+  .form-container {
+    position: static; /* Permitir que el formulario se desplace */
+    transform: none;
+    margin: 20px;
+  }
 }
-  
