@@ -36,7 +36,17 @@ export class AdminPublicacionesPage implements OnInit {
     }
   })
   }
-
+  ionViewWillEnter() {
+    this.bd.dbState().subscribe(data=>{
+      //validar si la bd esta lista
+      if(data){
+        //subscribir al observable
+        this.bd.fetchPublicaciones().subscribe(res=>{
+          this.publicaciones = res;
+        })
+      }
+    })
+  }
   modificar(publicacion: any) {
     let navigationsExtras: NavigationExtras = {
       state: {

@@ -605,8 +605,8 @@ export class ServicebdService {
     });
   }
 
-  modificarPublicacion(id: string, titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number) {
-    return this.database.executeSql('UPDATE Publicaciones SET titulo = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ? WHERE producto_id = ?', [titulo, descripcion, talla, ubicacion, color, precio, id]).then(res => {
+  modificarPublicacion(id: string, titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, foto_publicacion:string) {
+    return this.database.executeSql('UPDATE Publicaciones SET titulo = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ?, foto_publicacion = ? WHERE producto_id = ?', [titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, id]).then(res => {
       this.presentAlert("Modificar", "Publicacion Modificada");
       this.seleccionarPublicaciones();
     }).catch(e => {

@@ -57,5 +57,17 @@ ion-header {
         }
       }
     }
+    ion-thumbnail img {
+      object-fit: cover;
+      width: 100px;
+      height: 100px;
+    }
+    
+    img {
+      border-radius: 10px;
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    
   }
   
