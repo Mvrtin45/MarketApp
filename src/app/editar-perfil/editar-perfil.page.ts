@@ -133,13 +133,13 @@ export class EditarPerfilPage implements OnInit {
               telefono: usuarioActual.telefono_usu,
             });
           } else {
-            await this.mostrarAlerta('No se pudo obtener los datos del usuario o los datos están incompletos.');
+            await this.mostrarAlerta('Error','No se pudo obtener los datos del usuario o los datos están incompletos.');
           }
         } else {
-          await this.mostrarAlerta('Cordova no está disponible. Este error solo ocurre en pruebas o navegador.');
+          await this.mostrarAlerta('Error','Cordova no está disponible. Este error solo ocurre en pruebas o navegador.');
         }
       } else {
-        await this.mostrarAlerta('No se pudo obtener el ID del usuario.');
+        await this.mostrarAlerta('Error','No se pudo obtener el ID del usuario.');
       }
     } catch (error: unknown) {
     }
@@ -150,44 +150,41 @@ export class EditarPerfilPage implements OnInit {
       const { nombre, email, telefono } = this.formularioEditar.value;
   
       try {
+        // Verificar si el correo ya existe en la base de datos
+        const correoExiste = await this.bd.verificarCorreo(email);
+  
+        if (correoExiste && email !== this.usuario.email_usu) {
+          // Si el correo existe y no pertenece al usuario actual, mostrar un mensaje de error
+          await this.mostrarAlerta('Error','El correo ingresado ya está registrado con otro usuario.');
+          return;
+        }
+  
+        // Si el correo no está duplicado o pertenece al usuario actual, proceder con la actualización
         await this.bd.modificarUsuarioPerfil(nombre, email, telefono, this.usuario_Id);
   
-        const alert = await this.alertController.create({
-          header: 'Completado',
-          message: 'Cambios guardados exitosamente.',
-          buttons: ['OK']
-        });
-        await alert.present();
-  
+        await this.mostrarAlerta( 'Completado', 'Cambios guardados exitosamente.');
         this.router.navigate(['/tabs/perfil']);
       } catch (error) {
         let mensaje = 'Ocurrió un error inesperado.';
         if (error instanceof Error) {
           mensaje = error.message;
         }
-      
-        const alert = await this.alertController.create({
-          header: 'Error',
-          message: mensaje,
-          buttons: ['OK']
-        });
-        await alert.present();
+  
+        await this.mostrarAlerta('Error', mensaje);
       }
     } else {
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'Por favor, completa los campos requeridos correctamente.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      await this.mostrarAlerta(
+        'Error',
+        'Por favor, completa los campos requeridos correctamente.'
+      );
     }
   }
 
-  async mostrarAlerta(mensaje: string) {
+  private async mostrarAlerta(header: string, message: string) {
     const alert = await this.alertController.create({
-      header: 'Error',
-      message: mensaje,
-      buttons: ['OK'],
+      header,
+      message,
+      buttons: ['OK']
     });
     await alert.present();
   }

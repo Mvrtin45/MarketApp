@@ -16,7 +16,6 @@ import { Carrito } from './carrito';
 export class ServicebdService {
   // Variable de conexión a Base de Datos
   public database!: SQLiteObject;
-  isAlertOpen: boolean = false;
   private productosCarritoSubject = new BehaviorSubject<any[]>([]);
 
 
@@ -76,20 +75,10 @@ export class ServicebdService {
   }
 
   async presentAlert(titulo: string, msj: string) {
-    if (this.isAlertOpen) {
-      return; // Si ya hay una alerta abierta, no mostramos otra.
-    }
-    
-    this.isAlertOpen = true; // Marcamos que hay una alerta abierta
-  
     const alert = await this.alertController.create({
       header: titulo,
       message: msj,
       buttons: ['OK'],
-    });
-  
-    alert.onDidDismiss().then(() => {
-      this.isAlertOpen = false; // Cuando la alerta se cierre, podemos permitir nuevas alertas
     });
   
     await alert.present();
@@ -810,20 +799,22 @@ export class ServicebdService {
     }
   }
 
-  verificarCorreo(correo: string): Promise<boolean> {
-    return this.database.executeSql('SELECT email_usu FROM Usuarios WHERE email_usu = ?', [correo])
-      .then(res => {
-        if (res.rows.length > 0) {
-          return true; // El correo existe
-        } else {
-          this.presentAlert('Correo no encontrado', 'El correo ingresado no está registrado.');
-          return false;
-        }
-      })
-      .catch(() => {
-        this.presentAlert('Error', 'Ocurrió un problema al verificar el correo. Intenta nuevamente.');
-        return false; // Error en la verificación
-      });
+  async verificarCorreo(correo: string): Promise<boolean> {
+    try {
+      const res = await this.database.executeSql(
+        'SELECT email_usu FROM Usuarios WHERE email_usu = ?',
+        [correo]
+      );
+      return res.rows.length > 0; // Retorna `true` si el correo existe
+    } catch (error) {
+      // Manejar el error con una alerta
+      let mensaje = 'Ocurrió un error al verificar el correo.';
+      if (error instanceof Error) {
+        mensaje = error.message; // Mensaje específico del error, si está disponible
+      }
+      await this.presentAlert('Error', mensaje);
+      return false; // Retorna `false` si hay un error
+    }
   }
 
   comprobarEstadoUsuario(usuario_id: number) {
