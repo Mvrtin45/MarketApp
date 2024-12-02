@@ -60,15 +60,27 @@ export class DetallePublicacionPage implements OnInit {
   }
 
   // Método para agregar el producto al carrito sin registrar en el historial
-  addToCart(productoId: number) {
-    if (this.usuarioId !== null) {  // Asegurarse de que el usuarioId está disponible
-      this.bd.insertarProductoCarrito(this.usuarioId, productoId)
-        .then(() => {
-          this.presentAlert('Éxito', 'Producto agregado al carrito');  // Navegar al carrito para ver los cambios
-        })
-        .catch((error) => {
-          this.presentAlert('Error', 'No se pudo agregar el producto al carrito');
-        });
+  async addToCart(productoId: number) {
+    if (this.usuarioId !== null) {
+      try {
+        // Obtener los productos del carrito
+        const productosCarrito = await this.bd.getProductosCarrito(this.usuarioId);
+  
+        // Verificar si el producto ya está en el carrito y su cantidad
+        const productoExistente = productosCarrito.find(p => p.producto_id === productoId);
+        if (productoExistente && productoExistente.cantidad >= 3) {
+          // Mostrar alerta si la cantidad es 3 o más
+          this.presentAlert('Límite alcanzado', 'No puedes agregar más de 3 unidades de este producto al carrito.');
+          return;
+        }
+  
+        // Agregar el producto al carrito si no se supera el límite
+        await this.bd.insertarProductoCarrito(this.usuarioId, productoId);
+        this.presentAlert('Éxito', 'Producto agregado al carrito.');
+      } catch (error) {
+        console.error('Error al agregar el producto al carrito:', error);
+        this.presentAlert('Error', 'No se pudo agregar el producto al carrito.');
+      }
     } else {
       this.presentAlert('Error', 'No se ha encontrado el usuario autenticado.');
     }

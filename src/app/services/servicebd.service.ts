@@ -17,6 +17,7 @@ export class ServicebdService {
   // Variable de conexión a Base de Datos
   public database!: SQLiteObject;
   private productosCarritoSubject = new BehaviorSubject<any[]>([]);
+  compraExitosa: boolean = false;
 
 
   // Variables de creación de Tablas
@@ -80,7 +81,7 @@ export class ServicebdService {
       message: msj,
       buttons: ['OK'],
     });
-  
+
     await alert.present();
   }
 
@@ -297,16 +298,32 @@ export class ServicebdService {
   //OBTENER
   ObtenerComprasUsuario(usuarioId: number) {
     return this.database.executeSql(`
-      SELECT v.*, p.titulo, p.foto_publicacion 
+      SELECT v.*, p.titulo, p.foto_publicacion
       FROM Ventas v
       JOIN Publicaciones p ON v.producto_id = p.producto_id
       WHERE v.usuario_id = ?`, [usuarioId])
       .then(res => {
-        let compras = [];
+        let compras: { [productoId: number]: any } = {};  // Usamos 'any' para los valores
+  
         for (let i = 0; i < res.rows.length; i++) {
-          compras.push(res.rows.item(i));
+          const item = res.rows.item(i);
+  
+          // Si el producto ya existe, aumentamos su cantidad, respetando el límite de 3
+          if (compras[item.producto_id]) {
+            // Solo aumentamos si la cantidad es menor a 3
+            if (compras[item.producto_id].cantidad < 3) {
+              compras[item.producto_id].cantidad += 1;
+            }
+          } else {
+            compras[item.producto_id] = {
+              ...item,
+              cantidad: 1 // Inicializamos la cantidad en 1
+            };
+          }
         }
-        return compras;
+  
+        // Convertimos el objeto de compras en un array para usar en el frontend
+        return Object.values(compras);
       });
   }
 
@@ -605,7 +622,7 @@ export class ServicebdService {
     });
   }
 
-  modificarPublicacion(id: string, titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, foto_publicacion:string) {
+  modificarPublicacion(id: string, titulo: string, descripcion: string, talla: string, ubicacion: string, color: string, precio: number, foto_publicacion: string) {
     return this.database.executeSql('UPDATE Publicaciones SET titulo = ?, descripcion = ?, talla = ?, ubicacion = ?, color = ?, precio = ?, foto_publicacion = ? WHERE producto_id = ?', [titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion, id]).then(res => {
       this.presentAlert("Modificar", "Publicacion Modificada");
       this.seleccionarPublicaciones();
@@ -621,28 +638,28 @@ export class ServicebdService {
         'UPDATE Usuarios SET nombre_usu = ?, email_usu = ?, telefono_usu = ? WHERE usuario_id = ?',
         [nombre, correo, telefono, iduser]
       );
-  
+
       // Si no hay errores, mostramos la alerta de éxito
       if (result.rowsAffected > 0) {
         // Guardar el usuario actualizado en el almacenamiento local
         const usuarioActualizado = { iduser, nombre, telefono, correo };
         await this.storage.setItem('usuario', usuarioActualizado);
         this.seleccionarUsuarios();
-  
+
         // Mostrar alerta de éxito
         await this.presentAlert('Completado', 'Perfil actualizado correctamente.');
       } else {
         // Si no se afectaron filas, mostrar error
         await this.presentAlert('Error', 'No se pudo actualizar el perfil.');
       }
-  
+
     } catch (error) {
       // En caso de error, mostramos la alerta con el mensaje de error
       let mensaje = 'Ocurrió un error inesperado';
       if (error instanceof Error) {
         mensaje = error.message;
       }
-  
+
       // Mostrar alerta de error
       await this.presentAlert('Error', mensaje);
     }
@@ -686,17 +703,38 @@ export class ServicebdService {
 
   insertarProductoCarrito(usuarioId: number, productoId: number): Promise<void> {
     return new Promise((resolve, reject) => {
-      const checkSql = `SELECT * FROM Carrito WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
+      const checkSql = `
+            SELECT cantidad 
+            FROM Carrito 
+            WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'
+        `;
       this.database.executeSql(checkSql, [usuarioId, productoId]).then((res) => {
         if (res.rows.length > 0) {
-          const updateSql = `UPDATE Carrito SET cantidad = cantidad + 1 WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'`;
+          const currentQuantity = res.rows.item(0).cantidad;
+
+          // Verificar que no supere el límite de 3
+          if (currentQuantity >= 3) {
+            reject('La cantidad máxima por producto es 3.');
+            return;
+          }
+
+          // Actualizar la cantidad
+          const updateSql = `
+                    UPDATE Carrito 
+                    SET cantidad = cantidad + 1 
+                    WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'
+                `;
           this.database.executeSql(updateSql, [usuarioId, productoId]).then(() => {
             this.obtenerCarritoActual();
             this.seleccionarCarrito();
-            resolve();  // No es necesario devolver nada, por eso 'void'
+            resolve();
           }).catch(reject);
         } else {
-          const insertSql = `INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) VALUES (?, ?, 1, 'pendiente')`;
+          // Insertar un nuevo producto si no existe
+          const insertSql = `
+                    INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) 
+                    VALUES (?, ?, 1, 'pendiente')
+                `;
           this.database.executeSql(insertSql, [usuarioId, productoId]).then(() => {
             this.obtenerCarritoActual();
             this.seleccionarCarrito();
@@ -711,27 +749,26 @@ export class ServicebdService {
     try {
       // Obtener el usuario_id del almacenamiento
       const storedUserId = await this.storage.getItem('usuario_id');
-
+      
       if (!storedUserId) {
         throw new Error('Usuario no autenticado');
       }
-
+  
       // Obtener productos del carrito con estado 'pendiente' usando getProductosCarrito
       const productosEnCarrito = await this.getProductosCarrito(storedUserId);
-
+      
       // Verificar si el carrito está vacío
       if (productosEnCarrito.length === 0) {
         console.log("El carrito está vacío");
         return;
       }
-
+  
       // Insertar cada producto en la tabla de ventas
       for (const producto of productosEnCarrito) {
         const queryInsertVenta = `
           INSERT INTO Ventas (usuario_id, producto_id, precio)
           VALUES (?, ?, ?)
         `;
-        // Obtener el precio del producto y calcular el precio total
         const precioTotal = producto.precio * producto.cantidad;
         await this.database.executeSql(queryInsertVenta, [
           storedUserId,
@@ -739,7 +776,6 @@ export class ServicebdService {
           precioTotal
         ]);
       }
-
       console.log('Compra finalizada exitosamente y carrito vaciado');
     } catch (error) {
       console.error('Error al finalizar la compra:', error);
@@ -865,7 +901,7 @@ export class ServicebdService {
         `SELECT * FROM Usuarios WHERE email_usu = ? AND pregunta_seguridad = ? AND respuesta_seguridad = ?`,
         [correo, pregunta, respuesta]
       );
-  
+
       if (res.rows.length > 0) {
         return true; // Coincidencia encontrada
       } else {

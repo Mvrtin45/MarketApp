@@ -76,6 +76,7 @@ export class PerfilPage implements OnInit {
       const storedUserId = await this.storage.getItem('usuario_id');
       if (storedUserId) {
         this.bd.ObtenerComprasUsuario(storedUserId).then(compras => {
+          console.log('Compras obtenidas:', compras); // Agregar log de depuración
           this.compras = compras;
         }).catch(error => {
           alert("Error al recuperar las compras: " + JSON.stringify(error));

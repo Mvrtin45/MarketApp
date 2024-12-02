@@ -33,9 +33,11 @@ export class CheckPage implements OnInit {
         await this.obtenerProductosComprados(usuarioId);
       } else {
         console.log("No se encontró el usuario ID");
+        this.compraExitosa = false;
       }
     }).catch((error) => {
       console.error("Error al obtener el usuario_id de storage:", error);
+      this.compraExitosa = false;
     });
   }
 
