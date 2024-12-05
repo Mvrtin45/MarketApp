@@ -25,8 +25,8 @@ export class ServicebdService {
   tablaUsuarios: string = "CREATE TABLE IF NOT EXISTS Usuarios ( usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_usu VARCHAR(100) NOT NULL, email_usu VARCHAR(50) NOT NULL UNIQUE, telefono_usu INTEGER NOT NULL, contrasena_usu VARCHAR(20) NOT NULL, imagen_usu TEXT, rol_id INTEGER NOT NULL DEFAULT 1, estado INTEGER NOT NULL DEFAULT 1,  pregunta_seguridad VARCHAR(100) NOT NULL, respuesta_seguridad VARCHAR(100) NOT NULL, FOREIGN KEY (rol_id) REFERENCES ROL(rol_id));";
   tablaCategorias: string = "CREATE TABLE IF NOT EXISTS Categorias ( categoria_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_categoria VARCHAR(50) NOT NULL );";
   tablaRol: string = "CREATE TABLE IF NOT EXISTS ROL ( rol_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre_rol TEXT NOT NULL);";
-  tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas ( venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER, producto_id INTEGER, fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, precio INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
-  tablaCarrito: string = "CREATE TABLE IF NOT EXISTS Carrito ( carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER, cantidad INTEGER DEFAULT 1, estado TEXT DEFAULT 'pendiente', FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id), FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id));";
+  tablaVentas: string = "CREATE TABLE IF NOT EXISTS Ventas (venta_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL CHECK (cantidad BETWEEN 1 AND 3), fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP, precio INTEGER NOT NULL, FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
+  tablaCarrito: string = "CREATE TABLE IF NOT EXISTS Carrito (carrito_id INTEGER PRIMARY KEY AUTOINCREMENT, usuario_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL CHECK (cantidad BETWEEN 1 AND 3), estado TEXT DEFAULT 'pendiente', FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
   tablaItemsCarrito: string = "CREATE TABLE IF NOT EXISTS ItemsCarrito ( item_id INTEGER PRIMARY KEY AUTOINCREMENT, carrito_id INTEGER NOT NULL, producto_id INTEGER NOT NULL, cantidad INTEGER NOT NULL DEFAULT 1, FOREIGN KEY (carrito_id) REFERENCES Carritos(carrito_id), FOREIGN KEY (producto_id) REFERENCES Publicaciones(producto_id));";
 
   // Variables para los insert por defecto en nuestras tablas 
@@ -37,7 +37,7 @@ export class ServicebdService {
   registroPublicacionCargoCorteiz: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (2, 'Pantalones Cargo Corteiz', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Puerto Montt', 'Negro', 19990, '../assets/icon/cargocorteiz.jpg');";
   registroPublicacionChaquetaAmiri: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (3, 'Chaqueta Amiri', 'Esta en buenas condiciones, con detalles de diseño que destacan su calidad y un estilo moderno que sigue siendo relevante.', 'L', 'Puerto Montt', 'Negra', 79990, '../assets/icon/chaquetaamiri.jpg');";
   registroPublicacionJeansAmiri: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (4, 'Jeans Amiri', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Cerrillos', 'Azul', 50000, '../assets/icon/pantalon1.jpg');";
-  registroPublicacionJeansFn: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (5, 'Jeans Fashon Nova', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Lampa', 'Azul', 90000, '../assets/icon/jeansfn.jpg');";
+  registroPublicacionJeansFn: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (5, 'Jeans Fashon Nova', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'M', 'Lampa', 'Azul', 90000, '../assets/icon/jeansfn2.jpg');";
   registroPublicacionJeansLevis: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (6, 'Jeans Levis 501', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'S', 'Peñalolen', 'Azul', 30000, '../assets/icon/pantalon2.jpg');";
   registroPublicacionJeansAmericanEagle: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (7, 'Jeans American Eagle', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', '42EUR', 'Puerto Montt', 'Azul', 29990, '../assets/icon/jeansfn.jpg');";
   registroPublicacionJeansSkinny: string = "INSERT OR IGNORE INTO Publicaciones (producto_id, titulo, descripcion, talla, ubicacion, color, precio, foto_publicacion) VALUES (8, 'Jeans Skinny', 'En buen estado, con un ajuste cómodo y un estilo clásico que se adapta bien a cualquier ocasión.', 'L', 'Puerto Montt', 'Azul', 25000, '../assets/icon/pantalon3.jpg');";
@@ -303,18 +303,19 @@ export class ServicebdService {
       JOIN Publicaciones p ON v.producto_id = p.producto_id
       WHERE v.usuario_id = ?`, [usuarioId])
       .then(res => {
-        let compras: { [productoId: number]: any } = {};  // Usamos 'any' para los valores
+        let compras: { [productoId: number]: any } = {};
   
+        // Iteramos sobre las filas obtenidas
         for (let i = 0; i < res.rows.length; i++) {
           const item = res.rows.item(i);
   
-          // Si el producto ya existe, aumentamos su cantidad, respetando el límite de 3
+          // Si el producto ya está en el carrito, aumentamos la cantidad, respetando el límite de 3
           if (compras[item.producto_id]) {
-            // Solo aumentamos si la cantidad es menor a 3
             if (compras[item.producto_id].cantidad < 3) {
               compras[item.producto_id].cantidad += 1;
             }
           } else {
+            // Si es el primer producto, lo inicializamos con cantidad 1
             compras[item.producto_id] = {
               ...item,
               cantidad: 1 // Inicializamos la cantidad en 1
@@ -322,11 +323,11 @@ export class ServicebdService {
           }
         }
   
-        // Convertimos el objeto de compras en un array para usar en el frontend
+        // Convertimos el objeto de compras en un array y lo devolvemos
         return Object.values(compras);
       });
   }
-
+  
   ObtenerVentas() {
     return this.database.executeSql(`
         SELECT V.venta_id, V.fecha_venta, V.precio, U.nombre_usu, P.titulo 
@@ -708,40 +709,36 @@ export class ServicebdService {
             FROM Carrito 
             WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'
         `;
-      this.database.executeSql(checkSql, [usuarioId, productoId]).then((res) => {
-        if (res.rows.length > 0) {
-          const currentQuantity = res.rows.item(0).cantidad;
+      this.database.executeSql(checkSql, [usuarioId, productoId])
+        .then((res) => {
+          if (res.rows.length > 0) {
+            const currentQuantity = res.rows.item(0).cantidad;
 
-          // Verificar que no supere el límite de 3
-          if (currentQuantity >= 3) {
-            reject('La cantidad máxima por producto es 3.');
-            return;
+            if (currentQuantity >= 3) {
+              reject('La cantidad máxima por producto es 3.');
+              return;
+            }
+
+            const updateSql = `
+                        UPDATE Carrito 
+                        SET cantidad = cantidad + 1 
+                        WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'
+                    `;
+            return this.database.executeSql(updateSql, [usuarioId, productoId]);
+          } else {
+            const insertSql = `
+                        INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) 
+                        VALUES (?, ?, 1, 'pendiente')
+                    `;
+            return this.database.executeSql(insertSql, [usuarioId, productoId]);
           }
-
-          // Actualizar la cantidad
-          const updateSql = `
-                    UPDATE Carrito 
-                    SET cantidad = cantidad + 1 
-                    WHERE usuario_id = ? AND producto_id = ? AND estado = 'pendiente'
-                `;
-          this.database.executeSql(updateSql, [usuarioId, productoId]).then(() => {
-            this.obtenerCarritoActual();
-            this.seleccionarCarrito();
-            resolve();
-          }).catch(reject);
-        } else {
-          // Insertar un nuevo producto si no existe
-          const insertSql = `
-                    INSERT INTO Carrito (usuario_id, producto_id, cantidad, estado) 
-                    VALUES (?, ?, 1, 'pendiente')
-                `;
-          this.database.executeSql(insertSql, [usuarioId, productoId]).then(() => {
-            this.obtenerCarritoActual();
-            this.seleccionarCarrito();
-            resolve();
-          }).catch(reject);
-        }
-      }).catch(reject);
+        })
+        .then(() => {
+          this.obtenerCarritoActual();
+          this.seleccionarCarrito();
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
@@ -749,30 +746,31 @@ export class ServicebdService {
     try {
       // Obtener el usuario_id del almacenamiento
       const storedUserId = await this.storage.getItem('usuario_id');
-      
+
       if (!storedUserId) {
         throw new Error('Usuario no autenticado');
       }
-  
-      // Obtener productos del carrito con estado 'pendiente' usando getProductosCarrito
+
+      // Obtener productos del carrito con estado 'pendiente'
       const productosEnCarrito = await this.getProductosCarrito(storedUserId);
-      
+
       // Verificar si el carrito está vacío
       if (productosEnCarrito.length === 0) {
         console.log("El carrito está vacío");
         return;
       }
-  
+
       // Insertar cada producto en la tabla de ventas
       for (const producto of productosEnCarrito) {
         const queryInsertVenta = `
-          INSERT INTO Ventas (usuario_id, producto_id, precio)
-          VALUES (?, ?, ?)
-        `;
+                INSERT INTO Ventas (usuario_id, producto_id, cantidad, precio)
+                VALUES (?, ?, ?, ?)
+            `;
         const precioTotal = producto.precio * producto.cantidad;
         await this.database.executeSql(queryInsertVenta, [
           storedUserId,
           producto.producto_id,
+          producto.cantidad,
           precioTotal
         ]);
       }

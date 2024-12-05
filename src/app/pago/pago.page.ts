@@ -9,35 +9,31 @@ import { ServicebdService } from '../services/servicebd.service';
   styleUrls: ['./pago.page.scss'],
 })
 export class PagoPage implements OnInit {
-  formularioPago!: FormGroup; // Formulario para el pago
-  cargando = false; // Estado de carga
+  formularioPago!: FormGroup;
+  cargando: boolean = false;
 
   constructor(private fb: FormBuilder, private router: Router, private bd: ServicebdService) {}
 
   ngOnInit() {
     this.formularioPago = this.fb.group({
       numeroTarjeta: ['', [Validators.required, Validators.pattern('^[0-9]{16}$')]],
-      nombreTitular: ['', [Validators.required, Validators.minLength(3)]],
-      fechaExpiracion: [
-        '',
-        [Validators.required, Validators.pattern('^(0[1-9]|1[0-2])/([0-9]{2})$')],
-      ],
-      cvv: ['', [Validators.required, Validators.pattern('^[0-9]{3,4}$')]],
+      nombreTitular: ['', Validators.required],
+      fechaExpiracion: ['', [Validators.required, Validators.pattern('^(0[1-9]|1[0-2])\/(2[0-9])$')]],
+      cvv: ['', [Validators.required, Validators.pattern('^[0-9]{3}$')]],
     });
   }
 
   async procesarPago() {
     if (this.formularioPago.valid) {
       this.cargando = true;
-      setTimeout(async () => {
+      // Simulación de procesamiento de pago
+      setTimeout(() => {
+        this.bd.finalizarCompra();
         this.cargando = false;
-        try {
-          await this.bd.finalizarCompra();
-          this.router.navigate(['/check']);
-        } catch (error) {
-          console.error('Error al finalizar la compra:', error);
-        }
-      }, 3000);
+        this.router.navigate(['/check']);
+      }, 2000);
+    } else {
+      console.log("Formulario de pago no válido");
     }
   }
 }

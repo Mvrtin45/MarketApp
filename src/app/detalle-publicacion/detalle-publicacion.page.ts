@@ -68,14 +68,19 @@ export class DetallePublicacionPage implements OnInit {
   
         // Verificar si el producto ya está en el carrito y su cantidad
         const productoExistente = productosCarrito.find(p => p.producto_id === productoId);
-        if (productoExistente && productoExistente.cantidad >= 3) {
-          // Mostrar alerta si la cantidad es 3 o más
-          this.presentAlert('Límite alcanzado', 'No puedes agregar más de 3 unidades de este producto al carrito.');
-          return;
+        if (productoExistente) {
+          // Si el producto ya está en el carrito y la cantidad es 3, mostramos una alerta
+          if (productoExistente.cantidad >= 3) {
+            this.presentAlert('Límite alcanzado', 'No puedes agregar más de 3 unidades de este producto al carrito.');
+            return;
+          }
+          
+          // Si no, aumentamos la cantidad en el carrito
+          await this.bd.insertarProductoCarrito(this.usuarioId, productoId);
+        } else {
+          // Si el producto no está en el carrito, lo agregamos con cantidad 1
+          await this.bd.insertarProductoCarrito(this.usuarioId, productoId);
         }
-  
-        // Agregar el producto al carrito si no se supera el límite
-        await this.bd.insertarProductoCarrito(this.usuarioId, productoId);
         this.presentAlert('Éxito', 'Producto agregado al carrito.');
       } catch (error) {
         console.error('Error al agregar el producto al carrito:', error);
