@@ -607,9 +607,9 @@ export class ServicebdService {
     const sql = `DELETE FROM Carrito WHERE usuario_id = ? AND estado = 'pendiente'`;
     try {
       await this.database.executeSql(sql, [usuarioId]);
-      console.log('Carrito vaciado exitosamente');
+      await this.obtenerCarritoActual();
     } catch (error) {
-      console.error('Error al vaciar el carrito:', error);
+      this.presentAlert('Error', `Error al vaciar el carrito: ${error}`);
     }
   }
 
@@ -715,6 +715,7 @@ export class ServicebdService {
             const currentQuantity = res.rows.item(0).cantidad;
 
             if (currentQuantity >= 3) {
+              this.presentAlert('Error', 'La cantidad máxima por producto es 3.');
               reject('La cantidad máxima por producto es 3.');
               return;
             }
@@ -738,7 +739,11 @@ export class ServicebdService {
           this.seleccionarCarrito();
           resolve();
         })
-        .catch(reject);
+        .catch((error) => {
+          this.presentAlert('Error', 'Ocurrió un problema al insertar el producto en el carrito.');
+          console.error('Error al insertar en el carrito:', error);
+          reject(error);
+        });
     });
   }
 

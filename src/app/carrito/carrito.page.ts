@@ -11,7 +11,7 @@ import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
   templateUrl: './carrito.page.html',
   styleUrls: ['./carrito.page.scss'],
 })
-export class CarritoPage implements OnInit, OnDestroy {
+export class CarritoPage implements OnInit {
   productosCarrito: any[] = [];
   subtotal: number = 0;
   precioTotal: number = 0;
@@ -46,12 +46,6 @@ export class CarritoPage implements OnInit, OnDestroy {
       }
     });
     this.convertirMoneda();
-  }
-
-  ngOnDestroy() {
-    if (this.carritoSubscription) {
-      this.carritoSubscription.unsubscribe();
-    }
   }
 
   ionViewWillEnter() {

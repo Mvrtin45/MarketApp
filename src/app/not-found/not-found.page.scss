@@ -3,7 +3,7 @@
     flex-direction: column; /* Organiza los elementos en una columna */
     justify-content: space-between; /* Espacia los elementos entre el logo y el contenido inferior */
     height: 100vh; /* Ocupa toda la altura de la ventana */
-    background: url('https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg') no-repeat center center; /* Fondo */
+    --background: url(https://i.pinimg.com/564x/10/05/4e/10054eb016fbdb32ddbd16c57c92c36a.jpg);
     background-size: cover; /* Ajusta la imagen al tamaño de la pantalla */
     color: #000; /* Color del texto */
     text-align: center; /* Centra el texto */
